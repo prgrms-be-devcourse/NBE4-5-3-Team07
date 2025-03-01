@@ -1,5 +1,5 @@
 ## 로컬 MySQL 환경 설정
-application.yml 파일에서 DB 설정을 할 때 필요한 url, id, pw 필드를 application-secret.yml 파일을 참조합니다.  
+application.yml 파일에서 DB 설정을 할 때 필요한 url, id, pw 필드는 application-secret.yml 파일을 참조합니다.  
 프로젝트에서 각자의 로컬 환경에서 MySQL을 사용하기 위해 아래 과정을 진행해 주세요.
 
 - 로컬 환경에 맞춰 아래 내용을 가진 `application-secret.yml` 파일 생성
