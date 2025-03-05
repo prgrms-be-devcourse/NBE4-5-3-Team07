@@ -6,8 +6,7 @@ import com.java.NBE4_5_1_7.domain.interview.entity.dto.request.RandomRequestDto;
 import com.java.NBE4_5_1_7.domain.interview.entity.dto.response.InterviewResponseDto;
 import com.java.NBE4_5_1_7.domain.interview.entity.dto.response.RandomResponseDto;
 import com.java.NBE4_5_1_7.domain.interview.service.InterviewService;
-import com.java.NBE4_5_1_7.domain.member.entity.Member;
-import com.java.NBE4_5_1_7.global.Rq;
+import com.java.NBE4_5_1_7.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +20,13 @@ import java.util.List;
 public class InterviewController {
     private final InterviewService service;
 
-    private final Rq rq;  // Rq 객체 주입
+    private final MemberService memberService;
+
 
     // 전체 머리 질문 ID (로그인 검증 적용)
     @GetMapping("/all")
     public ResponseEntity<List<Long>> allHeadContent() {
+        System.out.println("request member id : " + memberService.getIdFromRq());
         return ResponseEntity.ok(service.allHeadQuestion());
     }
 
