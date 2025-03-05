@@ -46,46 +46,53 @@ public class MemberService {
     }
 
     public Optional<Member> getMemberByAccessToken(String accessToken) {
-
-        Map<String, Object> payload = authTokenService.getPayload(accessToken);
-
-        if (payload == null) {
+        try {
+            Map<String, Object> payload = authTokenService.getPayload(accessToken);
+            if (payload == null) {
+                return Optional.empty();
+            }
+            Number idNo = (Number) payload.get("id");
+            long id = idNo.longValue();
+            String username = (String) payload.get("username");
+            String nickname = (String) payload.get("nickname");
+            Member member = Member.builder()
+                    .id(id)
+                    .username(username)
+                    .nickname(nickname)
+                    .build();
+            return Optional.of(member);
+        } catch (Exception e) {
             return Optional.empty();
         }
-
-        long id = (long) payload.get("id");
-        String username = (String) payload.get("username");
-        String nickname = (String) payload.get("nickname");
-
-        return Optional.of(
-                Member.builder()
-                        .id(id)
-                        .username(username)
-                        .nickname(nickname)
-                        .build()
-        );
     }
+
+    // 아래 코드를 MemberService.java에 추가
+    public Map<String, Object> getRefreshPayload(String refreshToken) {
+        try {
+            Map<String, Object> payload = authTokenService.getRefreshPayload(refreshToken);
+            // 검증: payload의 "type"이 "refresh"인지 확인
+            if (payload != null && "refresh".equals(payload.get("type"))) {
+                return payload;
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
     public Long getIdFromRq() {
         Member member = rq.getActor();
         return member.getId();
     }
 
-    public String genAccessToken(Member member) {
-        return authTokenService.genAccessToken(member);
-    }
-
     public String genRefreshToken(Member member) {
         return authTokenService.genRefreshToken(member);
     }
 
-    // Refresh Token 검증 (payload의 "type"이 "refresh"여야 함)
-    public Map<String, Object> getRefreshPayload(String refreshToken) {
-        Map<String, Object> payload = authTokenService.getRefreshPayload(refreshToken);
-        if (payload != null && "refresh".equals(payload.get("type"))) {
-            return payload;
-        }
-        return null;
+    public String genAccessToken(Member member) {
+        return authTokenService.genAccessToken(member);
     }
+
 
 }

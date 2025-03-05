@@ -412,6 +412,9 @@ export interface components {
         KeywordContentRequestDto: {
             keywordList?: string[];
         };
+        StudyMemoCreateRequestDto: {
+            content?: string;
+        };
         InterviewCommentRequestDto: {
             comment?: string;
             /** Format: int64 */
@@ -606,7 +609,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": string;
+                "application/json": components["schemas"]["StudyMemoCreateRequestDto"];
             };
         };
         responses: {
