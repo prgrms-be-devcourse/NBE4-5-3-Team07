@@ -64,6 +64,11 @@ public class MemberService {
         );
     }
 
+    public Long getIdFromMember(String accessToken) {
+        Member member = getMemberByAccessToken(accessToken).orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
+        return member.getId();
+    }
+
     public String genAccessToken(Member member) {
         return authTokenService.genAccessToken(member);
     }
