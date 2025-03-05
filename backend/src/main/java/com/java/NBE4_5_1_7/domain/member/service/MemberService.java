@@ -66,12 +66,26 @@ public class MemberService {
         );
     }
 
-    public Long getIdFromMember(String accessToken) {
-        Member member = getMemberByAccessToken(accessToken).orElseThrow(() -> new RuntimeException("해당 사용자를 찾을 수 없습니다."));
+    public Long getIdFromRq() {
+        Member member = rq.getActor();
         return member.getId();
     }
 
     public String genAccessToken(Member member) {
         return authTokenService.genAccessToken(member);
     }
+
+    public String genRefreshToken(Member member) {
+        return authTokenService.genRefreshToken(member);
+    }
+
+    // Refresh Token 검증 (payload의 "type"이 "refresh"여야 함)
+    public Map<String, Object> getRefreshPayload(String refreshToken) {
+        Map<String, Object> payload = authTokenService.getRefreshPayload(refreshToken);
+        if (payload != null && "refresh".equals(payload.get("type"))) {
+            return payload;
+        }
+        return null;
+    }
+
 }
