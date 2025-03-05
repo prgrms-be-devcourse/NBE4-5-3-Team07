@@ -1,13 +1,15 @@
 package com.java.NBE4_5_1_7.domain.member.service;
 
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import com.java.NBE4_5_1_7.domain.member.entity.Member;
 import com.java.NBE4_5_1_7.domain.member.repository.MemberRepository;
 import com.java.NBE4_5_1_7.global.Rq;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.Map;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -86,6 +88,10 @@ public class MemberService {
         return member.getId();
     }
 
+    public Member getMemberFromRq() {
+        return rq.getActor();
+    }
+  
     public String genRefreshToken(Member member) {
         return authTokenService.genRefreshToken(member);
     }
