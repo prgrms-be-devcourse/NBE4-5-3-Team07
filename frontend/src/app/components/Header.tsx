@@ -12,6 +12,7 @@ export default function Header() {
     <header className={styles.header}>
       <nav className={styles.nav}>
         <ul className={styles.navList}>
+
           {isAdminPage ? (
             <>
               <li>
