@@ -47,6 +47,7 @@ export default function Header() {
           ) : (
             <>
               <li>
+                <Link href="/studyContent">CS 전공지식 학습하기</Link>
                 <Link href="/">MAIN</Link>
               </li>
               <li>
