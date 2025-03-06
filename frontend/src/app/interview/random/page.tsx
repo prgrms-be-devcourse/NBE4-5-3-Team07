@@ -104,9 +104,7 @@ export default function RandomInterviewPage() {
 
   // (1) 컴포넌트 마운트 시 전체 머리 질문 ID 가져오기
   useEffect(() => {
-    fetch("http://localhost:8080/interview/all", {
-      credentials: "include",
-    })
+    fetch("http://localhost:8080/interview/all")
       .then((res) => {
         if (!res.ok) {
           throw new Error("전체 질문 ID 리스트를 가져오는데 실패했습니다.");
@@ -150,7 +148,6 @@ export default function RandomInterviewPage() {
       const requestBody: RandomRequestDto = { indexList: indices };
       const res = await fetch("http://localhost:8080/interview/random", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
@@ -197,9 +194,7 @@ export default function RandomInterviewPage() {
       if (currentInterview) {
         setHistory((prev) => [...prev, currentInterview]);
       }
-      const res = await fetch(`http://localhost:8080/interview/${id}`, {
-        credentials: "include",
-      });
+      const res = await fetch(`http://localhost:8080/interview/${id}`);
       if (!res.ok) {
         throw new Error("면접 질문을 가져오는데 실패했습니다.");
       }

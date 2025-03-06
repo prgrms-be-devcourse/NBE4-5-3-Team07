@@ -121,9 +121,7 @@ export default function CategoryStudyPage() {
     setCurrentInterview(null);
     setHistory([]);
     setListLoading(true);
-    fetch(`http://localhost:8080/interview/category/${category}`, {
-      credentials: "include",
-    })
+    fetch(`http://localhost:8080/interview/category/${category}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error(
@@ -153,9 +151,7 @@ export default function CategoryStudyPage() {
         }
         return prev;
       });
-      const res = await fetch(`http://localhost:8080/interview/${id}`, {
-        credentials: "include",
-      });
+      const res = await fetch(`http://localhost:8080/interview/${id}`);
       if (!res.ok) {
         throw new Error("면접 질문을 가져오는 데 실패했습니다.");
       }
@@ -301,7 +297,7 @@ export default function CategoryStudyPage() {
       {/* 좌측 카테고리 영역 */}
       <div style={leftPanelStyle}>
         <h3 style={{ textAlign: "center" }}>카테고리 선택</h3>
-        {categories.map((cat) => (
+        {["DATABASE", "NETWORK", "OperatingSystem", "SPRING"].map((cat) => (
           <button
             key={cat}
             onClick={() => handleCategorySelect(cat)}

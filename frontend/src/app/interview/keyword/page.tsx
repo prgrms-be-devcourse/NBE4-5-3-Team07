@@ -68,9 +68,7 @@ export default function KeywordStudyPage() {
   // (A) 키워드 목록 불러오기
   useEffect(() => {
     setKeywordsLoading(true);
-    fetch("http://localhost:8080/interview/keyword", {
-      credentials: "include",
-    })
+    fetch("http://localhost:8080/interview/keyword")
       .then((res) => {
         if (!res.ok) {
           throw new Error("키워드 목록을 불러오는데 실패했습니다.");
@@ -104,7 +102,6 @@ export default function KeywordStudyPage() {
     setHeadIdsLoading(true);
     fetch("http://localhost:8080/interview/keyword/content", {
       method: "POST",
-      credentials: "include",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ keywordList: selectedKeywords }),
     })
@@ -144,9 +141,7 @@ export default function KeywordStudyPage() {
         }
         return prev;
       });
-      const res = await fetch(`http://localhost:8080/interview/${id}`, {
-        credentials: "include",
-      });
+      const res = await fetch(`http://localhost:8080/interview/${id}`);
       if (!res.ok) {
         throw new Error("면접 질문 상세 정보를 불러오는데 실패했습니다.");
       }

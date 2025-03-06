@@ -3,10 +3,9 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-// Message 인터페이스의 필드명을 "text"에서 "content"로 변경
 interface Message {
   role: "user" | "bot";
-  content: string;
+  text: string;
 }
 
 export default function TechInterviewChat() {
@@ -26,17 +25,16 @@ export default function TechInterviewChat() {
     try {
       const res = await fetch("/api/techInterview/start", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ interviewType: type }),
       });
       const data = await res.json();
-      const botMessage: Message = { role: "bot", content: data.response };
+      const botMessage: Message = { role: "bot", text: data.response };
       setMessages([botMessage]);
     } catch (error) {
       console.error("Error starting interview:", error);
       setMessages([
-        { role: "bot", content: "인터뷰 시작 중 오류가 발생했습니다." },
+        { role: "bot", text: "인터뷰 시작 중 오류가 발생했습니다." },
       ]);
     }
   };
@@ -44,23 +42,22 @@ export default function TechInterviewChat() {
   // 답변 전송 및 후속 질문 받기
   const sendAnswer = async () => {
     if (!input.trim()) return;
-    const userMessage: Message = { role: "user", content: input };
+    const userMessage: Message = { role: "user", text: input };
     setMessages((prev) => [...prev, userMessage]);
     try {
       const res = await fetch("/api/techInterview/next", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answer: input, interviewType }),
       });
       const data = await res.json();
-      const botMessage: Message = { role: "bot", content: data.response };
+      const botMessage: Message = { role: "bot", text: data.response };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Error fetching response:", error);
       setMessages((prev) => [
         ...prev,
-        { role: "bot", content: "오류가 발생했습니다. 다시 시도해주세요." },
+        { role: "bot", text: "오류가 발생했습니다. 다시 시도해주세요." },
       ]);
     }
     setInput("");
@@ -76,7 +73,6 @@ export default function TechInterviewChat() {
     try {
       const res = await fetch("/api/techInterview/evaluation", {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversation: messages }),
       });
@@ -146,7 +142,7 @@ export default function TechInterviewChat() {
                 <span className="font-bold">
                   {msg.role === "bot" ? "면접관" : "지원자"}:
                 </span>{" "}
-                {msg.content}
+                {msg.text}
               </div>
             </div>
           ))}
