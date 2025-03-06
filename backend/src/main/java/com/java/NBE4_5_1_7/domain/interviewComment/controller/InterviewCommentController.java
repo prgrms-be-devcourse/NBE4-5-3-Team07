@@ -51,9 +51,9 @@ public class InterviewCommentController {
 	}
 
 	@GetMapping("/{commentId}")
+
 	public ResponseEntity<MyPageInterviewCommentResponseDto> getCommentById(@PathVariable Long commentId) {
 		Member member = memberService.getMemberFromRq();
-
 		MyPageInterviewCommentResponseDto comment = interviewCommentService.getCommentById(commentId, member);
 		return ResponseEntity.ok(comment);
 	}
