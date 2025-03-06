@@ -84,14 +84,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/interview-comments": {
+    "/api/v1/interview/comment": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["all"];
+        get: operations["getCommentsByMemberAndCategory"];
         put?: never;
         post: operations["createComment"];
         delete?: never;
@@ -164,14 +164,14 @@ export interface paths {
         patch: operations["updateStudyMemo"];
         trace?: never;
     };
-    "/api/v1/interview-comments/{commentId}": {
+    "/api/v1/interview/comment/{commentId}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["getCommentById"];
+        get?: never;
         put?: never;
         post?: never;
         delete: operations["deleteComment"];
@@ -513,9 +513,9 @@ export interface components {
         };
         InterviewCommentRequestDto: {
             comment?: string;
+            isPublic?: boolean;
             /** Format: int64 */
             interviewContentId?: number;
-            isPublic?: boolean;
         };
         InterviewCommentResponseDto: {
             /** Format: int64 */
@@ -523,6 +523,9 @@ export interface components {
             comment?: string;
             /** Format: int64 */
             interviewContentId?: number;
+            interviewContentTitle?: string;
+            category?: string;
+            modelAnswer?: string;
             public?: boolean;
         };
         InterviewStartDto: {
@@ -744,9 +747,11 @@ export interface operations {
             };
         };
     };
-    all: {
+    getCommentsByMemberAndCategory: {
         parameters: {
-            query?: never;
+            query: {
+                category: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -989,37 +994,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["StudyMemoResponseDto"];
-                };
-            };
-            /** @description Internal Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["RsDataVoid"];
-                };
-            };
-        };
-    };
-    getCommentById: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                commentId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["InterviewCommentResponseDto"];
                 };
             };
             /** @description Internal Server Error */

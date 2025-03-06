@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.java.NBE4_5_1_7.domain.interview.entity.InterviewCategory;
 import com.java.NBE4_5_1_7.domain.interview.entity.InterviewContent;
 import com.java.NBE4_5_1_7.domain.interview.repository.InterviewContentRepository;
 import com.java.NBE4_5_1_7.domain.interviewComment.dto.request.InterviewCommentRequestDto;
@@ -31,29 +32,37 @@ public class InterviewCommentService {
 
 		InterviewContentComment newComment = new InterviewContentComment();
 		newComment.setAnswer(newDto.getComment());
-		newComment.setPublic(newDto.isPublic());
+		newComment.setPublic(newDto.getIsPublic());
 		newComment.setInterviewContent(interviewContent);
 		newComment.setMember(member);
 
 		InterviewContentComment savedComment = interviewCommentRepository.save(newComment);
 
+		String category = savedComment.getInterviewContent().getCategory().getCategory();
+
 		return new InterviewCommentResponseDto(
 			savedComment.getComment_id(),
 			savedComment.getAnswer(),
 			savedComment.isPublic(),
-			savedComment.getInterviewContent().getInterview_content_id()
+			savedComment.getInterviewContent().getInterview_content_id(),
+			savedComment.getInterviewContent().getQuestion(),
+			category,
+			savedComment.getInterviewContent().getModelAnswer()
 		);
 	}
 
-	public List<InterviewCommentResponseDto> getAllComments(Member member) {
-		List<InterviewContentComment> comments = interviewCommentRepository.findAll();
+	public List<InterviewCommentResponseDto> getCommentsByMemberAndCategory(Member member, InterviewCategory category) {
+		List<InterviewContentComment> comments = interviewCommentRepository.findByMemberAndInterviewContentCategory(member, category);
+
 		return comments.stream()
-			.filter(comment -> comment.getMember().equals(member))
 			.map(comment -> new InterviewCommentResponseDto(
 				comment.getComment_id(),
 				comment.getAnswer(),
 				comment.isPublic(),
-				comment.getInterviewContent().getInterview_content_id()
+				comment.getInterviewContent().getInterview_content_id(),
+				comment.getInterviewContent().getQuestion(),
+				comment.getInterviewContent().getCategory().getCategory(),
+				comment.getInterviewContent().getModelAnswer()
 			))
 			.collect(Collectors.toList());
 	}
@@ -66,11 +75,16 @@ public class InterviewCommentService {
 			throw new ServiceException("403", "본인이 작성한 댓글만 조회할 수 있습니다.");
 		}
 
+		String category = comment.getInterviewContent().getCategory().getCategory();
+
 		return new InterviewCommentResponseDto(
 			comment.getComment_id(),
 			comment.getAnswer(),
 			comment.isPublic(),
-			comment.getInterviewContent().getInterview_content_id()
+			comment.getInterviewContent().getInterview_content_id(),
+			comment.getInterviewContent().getQuestion(),
+			category,
+			comment.getInterviewContent().getModelAnswer()
 			);
 	}
 
@@ -84,13 +98,18 @@ public class InterviewCommentService {
 		}
 
 		comment.setAnswer(updatedDto.getComment());
-		comment.setPublic(updatedDto.isPublic());
+		comment.setPublic(updatedDto.getIsPublic());
+
+		String category = comment.getInterviewContent().getCategory().getCategory();
 
 		return new InterviewCommentResponseDto(
 			comment.getComment_id(),
 			comment.getAnswer(),
 			comment.isPublic(),
-			comment.getInterviewContent().getInterview_content_id()
+			comment.getInterviewContent().getInterview_content_id(),
+			comment.getInterviewContent().getQuestion(),
+			category,
+			comment.getInterviewContent().getModelAnswer()
 			);
 	}
 
