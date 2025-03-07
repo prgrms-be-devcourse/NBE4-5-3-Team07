@@ -3853,9 +3853,9 @@ CA 기업의 공개키는 브라우저가 이미 알고있다. (세계적으로 
 HTTPS도 무조건 안전한 것은 아니다. (신뢰받는 CA 기업이 아닌 자체 인증서 발급한 경우 등)
 
 이때는 HTTPS지만 브라우저에서 `주의 요함`, `안전하지 않은 사이트`와 같은 알림으로 주의 받게 된다."
-187,NetWork,TLS/SSL,TLS/SSL HandShake란?,"HTTPS에서 클라이언트와 서버간 통신 전
+187,NetWork,TLS와 SSL,TLS/SSL HandShake란?,"HTTPS에서 클라이언트와 서버간 통신 전
 SSL 인증서로 신뢰성 여부를 판단하기 위해 연결하는 방식"
-188,NetWork,TLS/SSL,TLS/SSL HandShake 진행 순서,"1. 클라이언트는 서버에게 `client hello` 메시지를 담아 서버로 보낸다.
+188,NetWork,TLS와 SSL,TLS/SSL HandShake 진행 순서,"1. 클라이언트는 서버에게 `client hello` 메시지를 담아 서버로 보낸다.
    이때 암호화된 정보를 함께 담는데, `버전`, `암호 알고리즘`, `압축 방식` 등을 담는다.
 
    <br>
@@ -3907,7 +3907,7 @@ SSL 인증서로 신뢰성 여부를 판단하기 위해 연결하는 방식"
 191,NetWork,로드밸런싱,로드밸런서 서버 장애 대비,"서버를 분배하는 로드 밸런서에 문제가 생길 수 있기 때문에 로드 밸런서를 이중화하여 대비한다.
 
 > Active 상태와 Passive 상태"
-192,NetWork,Blocking I/O & Non-Blocking I/O,Blocking I/O," I/O Blocking 형태의 작업은 
+192,NetWork,Blocking & Non-Blocking,Blocking I/O," I/O Blocking 형태의 작업은
 
    (1) Process(Thread)가 Kernel에게 I/O를 요청하는 함수를 호출
 
@@ -3924,7 +3924,7 @@ SSL 인증서로 신뢰성 여부를 판단하기 위해 연결하는 방식"
    `여러 Client 가 접속하는 서버를 Blocking 방식으로 구현하는 경우` -> I/O 작업을 진행하는 작업을 중지 -> 다른 Client가 진행중인 작업을 중지하면 안되므로, client 별로 별도의 Thread를 생성해야 함 -> 접속자 수가 매우 많아짐
 
    이로 인해, 많아진 Threads 로 *컨텍스트 스위칭 횟수가 증가함,,, 비효율적인 동작 방식*"
-193,NetWork,Blocking I/O & Non-Blocking I/O,Non-Blocking I/O," I/O 작업이 진행되는 동안 User Process의 작업을 중단하지 않음. 
+193,NetWork,Blocking & Non-Blocking ,Non-Blocking I/O," I/O 작업이 진행되는 동안 User Process의 작업을 중단하지 않음.
 
    * 진행 순서
 
@@ -3939,7 +3939,7 @@ SSL 인증서로 신뢰성 여부를 판단하기 위해 연결하는 방식"
         > 이때, recvBuffer는 Kernel이 가지고 있는 메모리에 적재되어 있으므로, Memory간 복사로 인해, I/O보다 훨씬 빠른 속도로 data를 받아올 수 있음.
 
      5. recvfrom 함수는 빠른 속도로 data를 복사한 후, 복사한 data의 길이와 함께 반환함."
-194,NetWork,Blocking I/O & Non-Blocking I/O & Synchronous/Asynchronous,Synchronous/Asynchronous,"동기/비동기는 일을 수행 중인 `동시성`에 주목하자
+194,NetWork,Synchronous와 Asynchronous,Synchronous와 Asynchronous,"동기/비동기는 일을 수행 중인 `동시성`에 주목하자
 
 함수 A, B가 있고, A 안에서 B를 호출했다고 가정해보자. 이때 호출한 함수는 A고, 호출된 함수는 B가 된다. B의 수행 결과나 종료 상태를 A가 신경쓰고 있는 유무의 차이라고 생각하면 된다.
 
@@ -3949,7 +3949,7 @@ SSL 인증서로 신뢰성 여부를 판단하기 위해 연결하는 방식"
 즉, 호출된 함수(B)를 호출한 함수(A)가 신경쓰는지, 호출된 함수(B) 스스로 신경쓰는지를 동기/비동기라고 생각하면 된다.
 
 비동기는 호출시 Callback을 전달하여 작업의 완료 여부를 호출한 함수에게 답하게 된다. (Callback이 오기 전까지 호출한 함수는 신경쓰지 않고 다른 일을 할 수 있음)"
-195,NetWork,Blocking I/O & Non-Blocking I/O & Synchronous/Asynchronous,Synchronous/Asynchronous 예시,"```
+195,NetWork,Synchronous와 Asynchronous,Synchronous와 Asynchronous 예시,"```
 상황 : 치킨집에 직접 치킨을 사러감
 ```
 
@@ -4008,7 +4008,7 @@ SSL 인증서로 신뢰성 여부를 판단하기 위해 연결하는 방식"
 사장님 : 치킨 나왔습니다
 나 : 잘먹겠습니다~
 ```"
-196,SoftWare Engineering,클린코드 & 리펙토링,클린코드란?,"클린코드란, 가독성이 높은 코드를 말한다.
+196,SoftWare Engineering,클린코드 & 리팩토링,클린코드란?,"클린코드란, 가독성이 높은 코드를 말한다.
 
 가독성을 높이려면 다음과 같이 구현해야 한다.
 
@@ -4051,7 +4051,7 @@ public int sub(int a, int b){
 
 둘째는 **함수와 함수 사이의 간격**이다. 여러 함수가 존재할 때 간격을 나누지 않으면 시작과 끝을 구분하는 것이 매우 힘들다.
 "
-197,SoftWare Engineering,클린코드 & 리펙토링,리펙토링이란?,"프로그램의 외부 동작은 그대로 둔 채, 내부의 코드를 정리하면서 개선하는 것을 말함
+197,SoftWare Engineering,클린코드 & 리팩토링,리팩토링이란?,"프로그램의 외부 동작은 그대로 둔 채, 내부의 코드를 정리하면서 개선하는 것을 말함
 
 ```
 이미 공사가 끝난 집이지만, 더 튼튼하고 멋진 집을 만들기 위해 내부 구조를 개선하는 리모델링 작업
@@ -4062,7 +4062,7 @@ public int sub(int a, int b){
 프로젝트가 끝나면, 지저분한 코드를 볼 때 가독성이 떨어지는 부분이 존재한다. 이 부분을 개선시키기 위해 필요한 것이 바로 '리팩토링 기법'
 
 리팩토링 작업은 코드의 가독성을 높이고, 향후 이루어질 유지보수에 큰 도움이 된다."
-198,SoftWare Engineering,클린코드 & 리펙토링,리펙토링이 필요한 코드,"- 중복 코드
+198,SoftWare Engineering,클린코드 & 리팩토링,리팩토링이 필요한 코드,"- 중복 코드
 - 긴 메소드
 - 거대한 클래스
 - Switch 문
@@ -4078,7 +4078,7 @@ public int sub(int a, int b){
 ```
 
 이해하기 쉽고, 수정하기 쉬우면? → 개발 속도가 증가!"
-199,SoftWare Engineering,클린코드 & 리펙토링,리펙토링이 필요한 상황,">  소프트웨어에 새로운 기능을 추가해야 할 때
+199,SoftWare Engineering,클린코드 & 리팩토링,리팩토링이 필요한 상황,">  소프트웨어에 새로운 기능을 추가해야 할 때
 
 ```
 명심해야할 것은, 우선 코드가 제대로 돌아가야 한다는 것. 리팩토링은 우선적으로 해야 할 일이 아님을 명심하자
