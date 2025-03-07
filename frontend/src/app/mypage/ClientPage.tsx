@@ -4,30 +4,11 @@ import React, { useEffect, useState } from "react";
 import styles from "../styles/mypage.module.css";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { components } from "@/lib/backend/apiV1/schema";
 
-interface Note {
-  contentId: number;
-  question: string;
-  answer: string;
-}
-
-interface Comment {
-  commentId: number;
-  comment: string;
-  interviewContentId: number;
-  interviewContentTitle: string;
-  category: string;
-  public: boolean;
-  modelAnswer: String;
-}
-
-interface Memo {
-  memoId: number;
-  memoContent: string;
-  firstCategory: string;
-  title: string;
-  body: string;
-}
+type Note = components["schemas"]["BookmarkResponseDto"];
+type Comment = components["schemas"]["MyPageInterviewCommentResponseDto"];
+type Memo = components["schemas"]["StudyMemoResponseDto"];
 
 interface InterviewData {
   [category: string]: Comment[];
@@ -42,7 +23,7 @@ const ClientPage = () => {
   const [memoDropdownOpen, setMemoDropdownOpen] = useState(false);
   const [answerDropdownOpen, setAnswerDropdownOpen] = useState(false);
   const [selectedMemoCategory, setSelectedMemoCategory] = useState("");
-  const [selectedAnswerCategory, setSelectedAnswerCategory] = useState("");
+  const [selectedCommentCategory, setSelectedCommentCategory] = useState("");
   const [selectedNoteItem, setSelectedNoteItem] = useState<Note | null>(null);
   const [selectedCommentItem, setSelectedCommentItem] =
     useState<Comment | null>(null);
@@ -66,7 +47,7 @@ const ClientPage = () => {
   const answerCategory = ["데이터베이스", "네트워크", "운영체제", "스프링"];
 
   {
-    /* 노트 API 연동 */
+    /* 노트 조회 API */
   }
   const fetchNoteList = async () => {
     try {
@@ -75,9 +56,7 @@ const ClientPage = () => {
         credentials: "include",
       });
 
-      const responseData = await response.json();
-
-      console.log(responseData);
+      const responseData: Note[] = await response.json();
 
       if (!responseData || responseData.length === 0) {
         console.log("No Notes available.");
@@ -91,6 +70,9 @@ const ClientPage = () => {
     }
   };
 
+  {
+    /* 노트 삭제 API */
+  }
   const deleteNote = async () => {
     if (!selectedNoteItem) return;
 
@@ -99,27 +81,150 @@ const ClientPage = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/interview/bookmark/${selectedNoteItem?.contentId}`,
+        `http://localhost:8080/interview/bookmark/${selectedNoteItem.contentId}`,
         {
           method: "DELETE",
           credentials: "include",
         }
       );
 
-      if (response.ok) {
-        setSelectedNoteItem(null);
-        alert("노트가 삭제되었습니다.");
-        window.location.reload();
-      } else {
+      if (!response.ok) {
         console.error("노트 삭제에 실패했습니다.");
       }
+
+      setSelectedNoteItem(null);
+      alert("노트가 삭제되었습니다.");
+      window.location.reload();
     } catch (error) {
       console.error("노트 삭제 중 오류가 발생했습니다.", error);
     }
   };
 
   {
-    /* 기술면접 API 연동 */
+    /* 메모 조회 API */
+  }
+  const fetchStudyMemo = async (category: string) => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/studyMemo?category=${category}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      const responseData: Memo[] = await response.json();
+
+      if (!responseData || responseData.length === 0) {
+        console.log("No memos available for this category.");
+      }
+
+      const updatedCategoryItems = responseData.reduce(
+        (acc: MemoData, memo: Memo) => {
+          const memoCategory = memo.firstCategory as string;
+          if (!acc[memoCategory]) acc[memoCategory] = [];
+          acc[memoCategory].push(memo);
+          return acc;
+        },
+        {}
+      );
+
+      setMemoData(updatedCategoryItems);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
+  {
+    /* 메모 수정 API */
+  }
+  const updateMemo = async () => {
+    if (!selectedMemoItem) return;
+
+    const isConfirmed = window.confirm("해당 메모를 수정하시겠습니까?");
+    if (!isConfirmed) return;
+
+    const updatedDto = {
+      memoContent: updatedMemo,
+      memoId: selectedMemoItem.memoId,
+    };
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/studyMemo/${selectedMemoItem.memoId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedDto),
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        console.error("메모 수정에 실패했습니다.");
+        return;
+      }
+
+      const updatedData = await response.json();
+      const memoCategory = selectedMemoItem.firstCategory as string;
+      setMemoData((prevData) => ({
+        ...prevData,
+        [memoCategory]: prevData[memoCategory].map((memo) =>
+          memo.memoId === selectedMemoItem.memoId
+            ? { ...memo, memoContent: updatedData.memoContent }
+            : memo
+        ),
+      }));
+
+      alert("메모가 수정되었습니다.");
+      window.location.reload();
+    } catch (error) {
+      console.error("메모 수정 중 오류가 발생했습니다.", error);
+    }
+  };
+
+  {
+    /* 메모 삭제 API */
+  }
+  const deleteMemo = async () => {
+    if (!selectedMemoItem) return;
+
+    const isConfirmed = window.confirm("해당 메모를 삭제하시겠습니까?");
+    if (!isConfirmed) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/v1/studyMemo/${selectedMemoItem.memoId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        console.error("메모 삭제에 실패했습니다.");
+        return;
+      }
+      const memoCategory = selectedMemoItem.firstCategory as string;
+      setMemoData((prevData) => ({
+        ...prevData,
+        [memoCategory]: prevData[memoCategory].filter(
+          (memo) => memo.memoId !== selectedMemoItem.memoId
+        ),
+      }));
+
+      setSelectedMemoItem(null);
+      alert("메모가 삭제되었습니다.");
+      window.location.reload();
+    } catch (error) {
+      console.error("메모 삭제 중 오류가 발생했습니다.", error);
+    }
+  };
+
+  {
+    /* 기술면접 조회 API */
   }
   const fetchInterviewComment = async (category: string) => {
     try {
@@ -131,30 +236,24 @@ const ClientPage = () => {
         }
       );
 
-      const responseData = await response.json();
+      const responseData: Comment[] = await response.json();
 
       if (!responseData || responseData.length === 0) {
         console.log("No comments available for this category.");
       }
 
-      const updatedCategoryItems = responseData.reduce(
-        (acc: InterviewData, comment: Comment) => {
-          const commentCategory = comment.category;
-          if (!acc[commentCategory]) {
-            acc[commentCategory] = [];
-          }
-          acc[commentCategory].push(comment);
-          return acc;
-        },
-        {}
-      );
-
-      setInterviewData(updatedCategoryItems);
+      setInterviewData((prevData) => ({
+        ...prevData,
+        [category]: responseData,
+      }));
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
   };
 
+  {
+    /* 기술면접 수정 API */
+  }
   const updateComment = async () => {
     if (!selectedCommentItem) return;
 
@@ -180,37 +279,37 @@ const ClientPage = () => {
         }
       );
 
-      if (response.ok) {
-        const updatedData = await response.json();
-
-        setInterviewData((prevData) => {
-          const updatedInterviewData = { ...prevData };
-          const updatedCategory = selectedCommentItem.category;
-
-          updatedInterviewData[updatedCategory] = updatedInterviewData[
-            updatedCategory
-          ].map((comment) =>
-            comment.commentId === selectedCommentItem.commentId
-              ? {
-                  ...comment,
-                  comment: updatedData.comment,
-                  public: updatedData.isPublic,
-                }
-              : comment
-          );
-          return updatedInterviewData;
-        });
-
-        alert("댓글이 수정되었습니다.");
-        window.location.reload();
-      } else {
+      if (!response.ok) {
         console.error("댓글 수정에 실패했습니다.");
+        return;
       }
+
+      const updatedData = await response.json();
+      const updatedCategory = selectedCommentItem.category as string;
+
+      setInterviewData((prevData) => ({
+        ...prevData,
+        [updatedCategory]: prevData[updatedCategory].map((comment) =>
+          comment.commentId === selectedCommentItem.commentId
+            ? {
+                ...comment,
+                comment: updatedData.comment,
+                public: updatedData.isPublic,
+              }
+            : comment
+        ),
+      }));
+
+      alert("댓글이 수정되었습니다.");
+      window.location.reload();
     } catch (error) {
       console.error("댓글 수정 중 오류가 발생했습니다.", error);
     }
   };
 
+  {
+    /* 기술면접 삭제 API */
+  }
   const deleteComment = async () => {
     if (!selectedCommentItem) return;
 
@@ -226,153 +325,24 @@ const ClientPage = () => {
         }
       );
 
-      if (response.ok) {
-        setInterviewData((prevData) => {
-          const updatedInterviewData = { ...prevData };
-          const updatedCategory = selectedCommentItem.category;
-          updatedInterviewData[updatedCategory] = updatedInterviewData[
-            updatedCategory
-          ].filter(
-            (comment) => comment.commentId !== selectedCommentItem.commentId
-          );
-          return updatedInterviewData;
-        });
-
-        setSelectedCommentItem(null);
-        alert("댓글이 삭제되었습니다.");
-        window.location.reload();
-      } else {
+      if (!response.ok) {
         console.error("댓글 삭제에 실패했습니다.");
+        return;
       }
+
+      const commentCategory = selectedCommentItem.category as string;
+      setInterviewData((prevData) => ({
+        ...prevData,
+        [commentCategory]: prevData[commentCategory].filter(
+          (comment) => comment.commentId !== selectedCommentItem.commentId
+        ),
+      }));
+
+      setSelectedCommentItem(null);
+      alert("댓글이 삭제되었습니다.");
+      window.location.reload();
     } catch (error) {
       console.error("댓글 삭제 중 오류가 발생했습니다.", error);
-    }
-  };
-
-  {
-    /* 메모 API 연동 */
-  }
-  const fetchStudyMemo = async (category: string) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/studyMemo?category=${category}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-
-      const responseData = await response.json();
-
-      if (!responseData || responseData.length === 0) {
-        console.log("No memos available for this category.");
-      }
-
-      const updatedCategoryItems = responseData.reduce(
-        (acc: MemoData, memo: Memo) => {
-          const memoCategory = memo.firstCategory;
-          if (!acc[memoCategory]) {
-            acc[memoCategory] = [];
-          }
-          acc[memoCategory].push(memo);
-          return acc;
-        },
-        {}
-      );
-
-      setMemoData(updatedCategoryItems);
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  };
-
-  const updateMemo = async () => {
-    if (!selectedMemoItem) return;
-
-    const isConfirmed = window.confirm("해당 메모를 수정하시겠습니까?");
-    if (!isConfirmed) return;
-
-    const updatedDto = {
-      memoContent: updatedMemo,
-      memoId: selectedMemoItem.memoId,
-    };
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/studyMemo/${selectedMemoItem.memoId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedDto),
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        const updatedData = await response.json();
-
-        setMemoData((prevData) => {
-          const updatedMemoData = { ...prevData };
-          const updatedCategory = selectedMemoItem.firstCategory;
-
-          updatedMemoData[updatedCategory] = updatedMemoData[
-            updatedCategory
-          ].map((memo) =>
-            memo.memoId === selectedMemoItem.memoId
-              ? {
-                  ...memo,
-                  memoContent: updatedData.memoContent,
-                }
-              : memo
-          );
-          return updatedMemoData;
-        });
-
-        alert("메모가 수정되었습니다.");
-        window.location.reload();
-      } else {
-        console.error("메모 수정에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("메모 수정 중 오류가 발생했습니다.", error);
-    }
-  };
-
-  const deleteMemo = async () => {
-    if (!selectedMemoItem) return;
-
-    const isConfirmed = window.confirm("해당 메모를 삭제하시겠습니까?");
-    if (!isConfirmed) return;
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/studyMemo/${selectedMemoItem.memoId}`,
-        {
-          method: "DELETE",
-          credentials: "include",
-        }
-      );
-
-      if (response.ok) {
-        setMemoData((prevData) => {
-          const updatedMemoData = { ...prevData };
-          const updatedCategory = selectedMemoItem.firstCategory;
-          updatedMemoData[updatedCategory] = updatedMemoData[
-            updatedCategory
-          ].filter((memo) => memo.memoId !== selectedMemoItem.memoId);
-          return updatedMemoData;
-        });
-
-        setSelectedMemoItem(null);
-        alert("메모가 삭제되었습니다.");
-        window.location.reload();
-      } else {
-        console.error("메모 삭제에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("메모 삭제 중 오류가 발생했습니다.", error);
     }
   };
 
@@ -388,18 +358,17 @@ const ClientPage = () => {
   const handleShowNoteList = () => {
     if (!showNoteList) {
       setShowNoteList(true);
-      setSelectedAnswerCategory("");
+      setSelectedCommentCategory("");
       setSelectedMemoCategory("");
+      setSelectedCommentItem(null);
+      setSelectedMemoItem(null);
     }
-  };
-
-  const handleDeleteNote = () => {
-    deleteNote();
   };
 
   const handleMemoCategorySelect = (category: string) => {
     setSelectedMemoCategory(category);
-    setSelectedAnswerCategory("");
+    setSelectedCommentCategory("");
+    setSelectedNoteItem(null);
     setSelectedCommentItem(null);
     setSelectedMemoItem(null);
     setShowNoteList(false);
@@ -407,8 +376,8 @@ const ClientPage = () => {
     fetchStudyMemo(category);
   };
 
-  const handleAnswerCategorySelect = (category: string) => {
-    setSelectedAnswerCategory(category);
+  const handleCommentCategorySelect = (category: string) => {
+    setSelectedCommentCategory(category);
     setSelectedMemoCategory("");
     setSelectedCommentItem(null);
     setSelectedMemoItem(null);
@@ -421,31 +390,15 @@ const ClientPage = () => {
     setSelectedNoteItem(null);
     setSelectedMemoItem(null);
     setSelectedCommentItem(comment);
-    setUpdatedComment(comment.comment);
-    setIsPublic(comment.public);
-  };
-
-  const handleUpdateComment = () => {
-    updateComment();
-  };
-
-  const handleDeleteComment = () => {
-    deleteComment();
+    setUpdatedComment(comment.comment!!);
+    setIsPublic(comment.public!!);
   };
 
   const handleMemoItemSelect = (memo: Memo) => {
     setSelectedNoteItem(null);
     setSelectedCommentItem(null);
     setSelectedMemoItem(memo);
-    setUpdatedMemo(memo.memoContent);
-  };
-
-  const handleUpdateMemo = () => {
-    updateMemo();
-  };
-
-  const handleDeleteMemo = () => {
-    deleteMemo();
+    setUpdatedMemo(memo.memoContent!!);
   };
 
   useEffect(() => {
@@ -503,9 +456,9 @@ const ClientPage = () => {
             {answerCategory.map((category, index) => (
               <li
                 key={index}
-                onClick={() => handleAnswerCategorySelect(category)}
+                onClick={() => handleCommentCategorySelect(category)}
                 className={`${styles.dropdownItem} ${
-                  selectedAnswerCategory === category ? styles.selected : ""
+                  selectedCommentCategory === category ? styles.selected : ""
                 }`}
               >
                 {category}
@@ -519,36 +472,25 @@ const ClientPage = () => {
         <ul>
           {/* 내 노트 목록 */}
           {showNoteList ? (
-            <ul>
-              {notes.map((note) => (
-                <li
-                  key={note.contentId}
-                  onClick={() => handleNoteItemSelect(note)}
-                  className={`${styles.listItem} ${
-                    selectedNoteItem?.contentId === note.contentId
-                      ? styles.selected
-                      : ""
-                  }`}
-                >
-                  {note.question}
-                </li>
-              ))}
-            </ul>
-          ) : /* 기술 면접 답변 목록 */
-          selectedAnswerCategory && interviewData[selectedAnswerCategory] ? (
-            interviewData[selectedAnswerCategory].map((comment) => (
-              <li
-                key={comment.commentId}
-                onClick={() => handleCommentItemSelect(comment)}
-                className={`${styles.listItem} ${
-                  selectedCommentItem?.commentId === comment.commentId
-                    ? styles.selected
-                    : ""
-                }`}
-              >
-                {comment.interviewContentTitle}
-              </li>
-            ))
+            notes.length > 0 ? (
+              <ul>
+                {notes.map((note) => (
+                  <li
+                    key={note.contentId}
+                    onClick={() => handleNoteItemSelect(note)}
+                    className={`${styles.listItem} ${
+                      selectedNoteItem?.contentId === note.contentId
+                        ? styles.selected
+                        : ""
+                    }`}
+                  >
+                    {note.question}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.noItems}>항목이 없습니다.</p>
+            )
           ) : /* 학습 메모 목록 */
           selectedMemoCategory && memoData[selectedMemoCategory] ? (
             memoData[selectedMemoCategory].map((memo) => (
@@ -564,6 +506,25 @@ const ClientPage = () => {
                 {memo.title}
               </li>
             ))
+          ) : /* 기술 면접 답변 목록 */
+          selectedCommentCategory && interviewData[selectedCommentCategory] ? (
+            interviewData[selectedCommentCategory].length > 0 ? (
+              interviewData[selectedCommentCategory].map((comment) => (
+                <li
+                  key={comment.commentId}
+                  onClick={() => handleCommentItemSelect(comment)}
+                  className={`${styles.listItem} ${
+                    selectedCommentItem?.commentId === comment.commentId
+                      ? styles.selected
+                      : ""
+                  }`}
+                >
+                  {comment.interviewContentTitle}
+                </li>
+              ))
+            ) : (
+              <p className={styles.noItems}>항목이 없습니다.</p>
+            )
           ) : (
             <p className={styles.noItems}>항목이 없습니다.</p>
           )}
@@ -575,15 +536,53 @@ const ClientPage = () => {
           <>
             <div className={styles.largeText}>
               <strong>{selectedNoteItem.question}</strong>
-              <button
-                className={styles.noteDeleteButton}
-                onClick={handleDeleteNote}
-              >
+              <button className={styles.noteDeleteButton} onClick={deleteNote}>
                 내 노트에서 삭제
               </button>
             </div>
             <br />
             <div className={styles.text}>{selectedNoteItem.answer}</div>
+          </>
+        ) : selectedMemoItem ? (
+          <>
+            <strong className={styles.largeText}>
+              {selectedMemoItem.title}
+            </strong>
+            <br />
+            <span className={styles.text}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {selectedMemoItem?.body?.replace(/<br\s*\/?>/gi, "")}
+              </ReactMarkdown>
+            </span>
+            <br />
+            <div className={styles.bottom}>
+              {selectedMemoItem && (
+                <div>
+                  <strong className={styles.text}>내 메모</strong>
+                  <span className={styles.actionButtons}>
+                    <button
+                      className={styles.updateButton}
+                      onClick={updateMemo}
+                    >
+                      수정
+                    </button>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={deleteMemo}
+                    >
+                      삭제
+                    </button>
+                  </span>
+                  <textarea
+                    value={updatedMemo}
+                    onChange={(e) => setUpdatedMemo(e.target.value)}
+                    rows={5}
+                    className={styles.textarea}
+                  />
+                </div>
+              )}
+            </div>
+            <br />
           </>
         ) : selectedCommentItem ? (
           <>
@@ -606,13 +605,13 @@ const ClientPage = () => {
                 <span className={styles.actionButtons}>
                   <button
                     className={styles.updateButton}
-                    onClick={handleUpdateComment}
+                    onClick={updateComment}
                   >
                     수정
                   </button>
                   <button
                     className={styles.deleteButton}
-                    onClick={handleDeleteComment}
+                    onClick={deleteComment}
                   >
                     삭제
                   </button>
@@ -627,49 +626,10 @@ const ClientPage = () => {
             </div>
             <br />
           </>
-        ) : selectedMemoItem ? (
-          <>
-            <strong className={styles.largeText}>
-              {selectedMemoItem.title}
-            </strong>
-            <br />
-            <span className={styles.text}>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {selectedMemoItem.body.replace(/<br\s*\/?>/gi, "")}
-              </ReactMarkdown>
-            </span>
-            <br />
-            <div className={styles.bottom}>
-              {selectedMemoItem && (
-                <div>
-                  <strong className={styles.text}>내 메모</strong>
-                  <span className={styles.actionButtons}>
-                    <button
-                      className={styles.updateButton}
-                      onClick={handleUpdateMemo}
-                    >
-                      수정
-                    </button>
-                    <button
-                      className={styles.deleteButton}
-                      onClick={handleDeleteMemo}
-                    >
-                      삭제
-                    </button>
-                  </span>
-                  <textarea
-                    value={updatedMemo}
-                    onChange={(e) => setUpdatedMemo(e.target.value)}
-                    rows={5}
-                    className={styles.textarea}
-                  />
-                </div>
-              )}
-            </div>
-            <br />
-          </>
-        ) : null}
-      </div>{" "}
+        ) : (
+          <p className={styles.noItems}>항목이 없습니다.</p>
+        )}
+      </div>
     </div>
   );
 };
