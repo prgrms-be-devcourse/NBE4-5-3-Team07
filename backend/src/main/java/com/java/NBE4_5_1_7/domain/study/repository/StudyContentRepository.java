@@ -18,6 +18,8 @@ public interface StudyContentRepository extends JpaRepository<StudyContent, Long
     @Query("SELECT DISTINCT s.secondCategory FROM StudyContent s WHERE s.firstCategory = :firstCategory")
     List<String> findDistinctBySecondCategory(FirstCategory firstCategory);
 
+    Page<StudyContent> findByFirstCategory(FirstCategory firstCategory, Pageable pageable);
+
     Page<StudyContent> findByFirstCategoryAndSecondCategory(
             FirstCategory firstCategory, String secondCategory, Pageable pageable);
 
