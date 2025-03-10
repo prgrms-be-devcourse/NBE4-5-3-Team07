@@ -58,6 +58,8 @@ public class Member extends BaseEntity{
 
         if(isAdmin()) {
             authorities.add("ROLE_ADMIN");
+        } else {
+            authorities.add("ROLE_USER");
         }
 
         return authorities;
