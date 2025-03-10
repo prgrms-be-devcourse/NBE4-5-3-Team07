@@ -2,11 +2,13 @@ package com.java.NBE4_5_1_7.domain.interview.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Getter
 @Data
 public class InterviewContent {
     @Id
@@ -37,4 +39,13 @@ public class InterviewContent {
 
     @OneToMany(mappedBy = "interviewContent", cascade = CascadeType.ALL)
     private List<InterviewContentBookmark> bookmarks = new ArrayList<>();
+
+    public Long getHeadId() {
+        return head_id;
+    }
+
+    public void disconnectTail() {
+        this.tail_id = null;
+        this.hasTail = false;
+    }
 }
