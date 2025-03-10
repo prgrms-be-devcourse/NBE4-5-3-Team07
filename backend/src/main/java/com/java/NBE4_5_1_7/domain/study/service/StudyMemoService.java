@@ -2,6 +2,7 @@ package com.java.NBE4_5_1_7.domain.study.service;
 
 import com.java.NBE4_5_1_7.domain.member.entity.Member;
 import com.java.NBE4_5_1_7.domain.member.service.MemberService;
+import com.java.NBE4_5_1_7.domain.study.dto.request.StudyMemoCreateRequestDto;
 import com.java.NBE4_5_1_7.domain.study.dto.request.StudyMemoRequestDto;
 import com.java.NBE4_5_1_7.domain.study.dto.response.StudyMemoResponseDto;
 import com.java.NBE4_5_1_7.domain.study.entity.FirstCategory;
@@ -22,11 +23,12 @@ import java.util.stream.Collectors;
 public class StudyMemoService {
     private final StudyMemoRepository studyMemoRepository;
     private final StudyContentRepository studyContentRepository;
+    private final StudyMemoLikeService studyMemoLikeService;
     private final MemberService memberService;
 
     // 멤버, 학습 컨텐츠 ID, 메모 내용 저장, 중복 작성 시 수정하게끔 변경
     @Transactional
-    public void createStudyMemo(String studyMemoContent, Long studyContentId) {
+    public void createStudyMemo(StudyMemoCreateRequestDto requestDto, Long studyContentId) {
         Member member = memberService.getMemberFromRq();
 
         StudyContent studyContent = studyContentRepository.findById(studyContentId)
@@ -35,19 +37,21 @@ public class StudyMemoService {
         StudyMemo studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContent);
 
         if (studyMemo == null) {
-            studyMemo = new StudyMemo(studyMemoContent, studyContent, member);
+            studyMemo = new StudyMemo(requestDto.getContent(), studyContent, member, requestDto.isPublished());
 
         } else {
 //            updateStudyMemo(studyMemo.getId(), new StudyMemoRequestDto(studyMemo), member);
-            studyMemo.setMemoContent(studyMemoContent);
+            studyMemo.setMemoContent(requestDto.getContent());
+            studyMemo.setPublished(requestDto.isPublished());
         }
         studyMemoRepository.save(studyMemo);
     }
 
     // 메모 단건 조회
-    public StudyMemoResponseDto getStudyMemoByStudyMemberAndContentId(Member member, StudyContent studyContentId) {
-        StudyMemo studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContentId);
-        return new StudyMemoResponseDto(studyMemo);
+    public StudyMemoResponseDto getStudyMemoByStudyMemberAndContentId(Member member, StudyContent studyContent) {
+        StudyMemo studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContent);
+        int likeCount = studyMemoLikeService.getLikeCount(studyContent.getStudy_content_id());
+        return new StudyMemoResponseDto(studyMemo, likeCount);
     }
 
     public List<StudyMemoResponseDto> getStudyMemosByMemberAndCategory(Member member, FirstCategory category) {
@@ -60,7 +64,8 @@ public class StudyMemoService {
                         memo.getStudyContent().getStudy_content_id(),
                         memo.getStudyContent().getFirstCategory().getCategory(),
                         memo.getStudyContent().getTitle(),
-                        memo.getStudyContent().getBody()
+                        memo.getStudyContent().getBody(),
+                        studyMemoLikeService.getLikeCount(memo.getStudyContent().getStudy_content_id())
                 ))
                 .collect(Collectors.toList());
     }
@@ -82,7 +87,8 @@ public class StudyMemoService {
                 updatedMemo.getStudyContent().getStudy_content_id(),
                 updatedMemo.getStudyContent().getFirstCategory().getCategory(),
                 updatedMemo.getStudyContent().getTitle(),
-                updatedMemo.getStudyContent().getBody()
+                updatedMemo.getStudyContent().getBody(),
+                studyMemoLikeService.getLikeCount(updatedMemo.getStudyContent().getStudy_content_id())
         );
     }
 
@@ -95,5 +101,14 @@ public class StudyMemoService {
         }
 
         studyMemoRepository.delete(studyMemo);
+    }
+
+    public List<StudyMemoResponseDto> getStudyMemoListByStudyContentId(Long studyContentId) {
+        StudyContent studyContent = studyContentRepository.findById(studyContentId).orElse(null);
+        List<StudyMemo> studyMemo = studyMemoRepository.findByStudyContent(studyContent);
+        int likeCount = studyMemoLikeService.getLikeCount(studyContentId);
+        return studyMemo.stream()
+                .map(memo -> new StudyMemoResponseDto(memo, likeCount))
+                .toList();
     }
 }
