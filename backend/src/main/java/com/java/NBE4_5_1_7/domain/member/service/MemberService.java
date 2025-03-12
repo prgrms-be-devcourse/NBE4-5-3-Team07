@@ -2,6 +2,7 @@ package com.java.NBE4_5_1_7.domain.member.service;
 
 import com.java.NBE4_5_1_7.domain.member.entity.Member;
 import com.java.NBE4_5_1_7.domain.member.entity.Role;
+import com.java.NBE4_5_1_7.domain.member.entity.SubscriptionPlan;
 import com.java.NBE4_5_1_7.domain.member.repository.MemberRepository;
 import com.java.NBE4_5_1_7.global.Rq;
 import jakarta.transaction.Transactional;
@@ -28,6 +29,7 @@ public class MemberService {
                 .nickname(nickname)
                 .profileImgUrl(profileImgUrl)
                 .role(Role.USER)
+                .subscriptionPlan(SubscriptionPlan.FREE)
                 .build();
 
         return memberRepository.save(member);
@@ -116,5 +118,9 @@ public class MemberService {
     public Boolean isAdmin(Long id) {
         Member member = memberRepository.findById(id).orElseThrow(() -> new RuntimeException("해당 멤버를 찾을 수 없습니다."));
         return member.isAdmin();
+    }
+
+    public void saveMember(Member member) {
+        memberRepository.save(member);
     }
 }
