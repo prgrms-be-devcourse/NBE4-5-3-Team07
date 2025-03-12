@@ -9,12 +9,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.java.NBE4_5_1_7.domain.chat.model.Message;
+import com.java.NBE4_5_1_7.domain.mail.service.EmailService;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ChatService {
 
 	private final Map<Long, List<Message>> messageStorage = new HashMap<>();
 	private final Map<Long, Long> messageTimestamp = new HashMap<>();
+	private final EmailService emailService;
 
 	/// 메시지 저장
 	public void saveMessage(Long roomId, String sender, String content, String timestamp) {
@@ -24,8 +29,7 @@ public class ChatService {
 		messageStorage.get(roomId).add(message);
 		messageTimestamp.put(roomId, System.currentTimeMillis());
 
-		System.out.println("메시지 저장 완료. 방 ID: " + roomId + ", 메시지: " + content);
-		System.out.println("현재 메시지 목록: " + messageStorage.get(roomId));
+		emailService.sendChatNotification(sender, content, timestamp);
 	}
 
 	/// 24시간이 지난 메시지 삭제
