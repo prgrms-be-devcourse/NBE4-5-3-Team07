@@ -9,8 +9,10 @@ import com.java.NBE4_5_1_7.domain.payment.entity.Order;
 import com.java.NBE4_5_1_7.domain.payment.repository.OrderRepository;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
+import com.siot.IamportRestClient.request.PrepareData;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
+import com.siot.IamportRestClient.response.Prepare;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +21,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PaymentService {
     private final OrderRepository orderRepository;
@@ -48,7 +52,7 @@ public class PaymentService {
         Member member = memberService.getMemberFromRq();
         try {
             String impUid = requestDto.getImp_uid();
-
+            IamportResponse<Prepare> prepareIamportResponse = iamportClient.postPrepare(new PrepareData(impUid, BigDecimal.valueOf(100)));
             IamportResponse<Payment> paymentResponse = iamportClient.paymentByImpUid(impUid);
 
             if (paymentResponse == null || paymentResponse.getResponse() == null) {
@@ -93,12 +97,16 @@ public class PaymentService {
             throw new RuntimeException("결제 정보 조회 실패");
         }
         updatePaymentStatus(paymentResponse.getResponse());
+        System.out.println("webhook 처리 완료");
     }
 
     // 결제 상태 업데이트
     public void updatePaymentStatus(Payment payment) {
         Optional<Order> orderOptional = orderRepository.findByImpUid(payment.getImpUid());
 
+        if (!orderOptional.isPresent()) {
+            System.out.println("order 은 null 입니다.");
+        }
         if (orderOptional.isPresent()) {
             Order orderEntity = orderOptional.get();
             Member member = orderEntity.getMember();
@@ -108,9 +116,11 @@ public class PaymentService {
             orderEntity.setAmount(payment.getAmount());
 
             // 결제 상품이 "PREMIUM"이면 Member의 구독 플랜 변경
+            System.out.println("상품 이름 : " + payment.getName());
             if ("PREMIUM".equals(payment.getName())) {
                 log.info("PREMIUM 상품 결제 확인됨. 회원 {} 의 구독 상태를 PREMIUM으로 변경합니다.", member.getUsername());
                 member.setSubscriptionPlan(SubscriptionPlan.PREMIUM);
+                member.setSubscribeEndDate(LocalDateTime.now().plusDays(30));
             }
 
             orderRepository.save(orderEntity);
