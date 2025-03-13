@@ -32,14 +32,20 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/swagger-ui/**",
+                                .requestMatchers(
+                                        "/swagger-ui/**",
                                         "/v3/api-docs/**",
                                         "/member/**",
                                         "/api/v1/study/**",
                                         "/ws/chat/**",
-                                        "/chat/messages/**",
+                                        "/ws/**",
+                                        "/chat/**",
+                                        "/app/**",
                                         "/api/v1/payments/webhook").permitAll()
-                                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                                .requestMatchers(
+                                        "/api/v1/admin/**",
+                                        "/app/chat/admin/**",
+                                        "/chat/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .cors(Customizer.withDefaults())
