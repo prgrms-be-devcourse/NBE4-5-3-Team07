@@ -6,7 +6,7 @@ import SockJS from "sockjs-client";
 
 export interface ChatMessage {
   roomId: number;
-  sender: string;   // "USER" | "GUEST" | "ADMIN" | "SYSTEM"
+  sender: string; // "USER" | "GUEST" | "ADMIN" | "SYSTEM"
   content: string;
   timestamp: string;
 }
@@ -19,10 +19,14 @@ const FloatingChat = () => {
   const [displayName, setDisplayName] = useState<string>("");
   const [isConnected, setIsConnected] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-
   const clientRef = useRef<Client | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const systemMessageSentRef = useRef(false);
+  const subscriptionRef = useRef<any>(null);
+  const [lastUserMessageTime, setLastUserMessageTime] = useState<Date | null>(
+    null
+  );
 
   // 1) 사용자 정보 조회 (회원/비회원/관리자 구분) – /chat/auth/user 호출
   const fetchUserInfo = async () => {
@@ -54,9 +58,12 @@ const FloatingChat = () => {
   // 1-1) 회원 전용 채팅룸 조회/생성 API 호출
   const fetchChatRoomByUser = async (userId: number) => {
     try {
-      const res = await fetch(`http://localhost:8080/chat/room/user/${userId}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `http://localhost:8080/chat/room/user/${userId}`,
+        {
+          credentials: "include",
+        }
+      );
       if (!res.ok) throw new Error("Failed to get chat room for user");
       const data = await res.json();
       setRoomId(data.roomId);
@@ -77,7 +84,6 @@ const FloatingChat = () => {
       setDisplayName(String(Math.abs(data.guestId)));
     } catch (err) {
       console.error("assignGuestRoomId error:", err);
-
     }
   };
 
@@ -89,6 +95,18 @@ const FloatingChat = () => {
   const toggleChat = () => {
     setIsOpen(!isOpen);
   };
+
+  // 3-1) textArea 높이 자동 증가
+  const resizeTextarea = () => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    resizeTextarea();
+  }, [message]);
 
   // 4) WebSocket 연결 (관리자 제외)
   useEffect(() => {
@@ -127,11 +145,22 @@ const FloatingChat = () => {
           systemMessageSentRef.current = true;
           sendSystemMessage("안녕하세요! 😊 무엇을 도와드릴까요?");
         }
+
+        setTimeout(() => {
+          if (!isConnected) {
+            sendSystemMessage(
+              "⚠️ 현재 상담원이 부재중입니다. 잠시만 기다려 주세요."
+            );
+          }
+        }, 60000);
       },
       onDisconnect: () => {
         console.log("WebSocket disconnected");
         setIsConnected(false);
         clientRef.current = null;
+        if (subscriptionRef.current) {
+          subscriptionRef.current.unsubscribe();
+        }
       },
       onStompError: (frame) => {
         console.error("STOMP error:", frame);
@@ -158,6 +187,13 @@ const FloatingChat = () => {
       })
       .then((data: ChatMessage[]) => {
         setMessages(data);
+
+        const lastMessageTime =
+          data?.length > 0
+            ? new Date(data[data.length - 1].timestamp)
+            : new Date();
+        console.log(lastMessageTime);
+        setLastUserMessageTime(lastMessageTime);
       })
       .catch((err) => console.error("Load messages error:", err));
   }, [isOpen, roomId, isAdmin]);
@@ -186,7 +222,8 @@ const FloatingChat = () => {
 
   // 7) 시스템 메시지 전송
   const sendSystemMessage = (content: string) => {
-    if (!clientRef.current || roomId === null || !clientRef.current.connected) return;
+    if (!clientRef.current || roomId === null || !clientRef.current.connected)
+      return;
     const sysMsg: ChatMessage = {
       roomId,
       sender: "SYSTEM",
@@ -202,6 +239,33 @@ const FloatingChat = () => {
       console.error("Fail to send system message:", err);
     }
   };
+
+  //
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (lastUserMessageTime) {
+        const now = new Date();
+        const diff = (now.getTime() - lastUserMessageTime.getTime()) / 1000;
+
+        // 3분 후 대화 종료 예정 메시지 전송
+        if (diff > 180) {
+          sendSystemMessage(
+            "⏳ 대화가 종료될 예정입니다. 계속 상담을 원하시면 메시지를 입력해주세요."
+          );
+
+          setTimeout(() => {
+            sendSystemMessage(
+              "🔴 상담이 종료되었습니다. 상담을 원하시면 다시 입력해 주세요."
+            );
+          }, 30000); // 30초 후 종료 메시지 전송
+
+          setLastUserMessageTime(null);
+        }
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [lastUserMessageTime]);
 
   // 9) 자동 스크롤
   useEffect(() => {
@@ -226,7 +290,9 @@ const FloatingChat = () => {
           <div className="flex items-center justify-between p-3 bg-blue-500 text-white rounded-t-lg">
             <h1 className="text-lg font-bold">
               고객센터{" "}
-              {roomId > 0 ? `(회원 ${displayName})` : `(게스트 ${Math.abs(roomId)})`}
+              {roomId > 0
+                ? `(회원 ${displayName})`
+                : `(게스트 ${Math.abs(roomId)})`}
             </h1>
             {/* 일반 사용자(회원, 게스트)는 채팅 삭제 버튼(나가기) 미노출 */}
           </div>
@@ -236,14 +302,20 @@ const FloatingChat = () => {
             {messages.map((msg, index) => {
               const isMine = msg.sender === "USER" || msg.sender === "GUEST";
               return (
-                <div key={index} className={`mb-2 flex ${isMine ? "justify-end" : "justify-start"}`}>
+                <div
+                  key={index}
+                  className={`mb-2 flex ${
+                    isMine ? "justify-end" : "justify-start"
+                  }`}
+                >
                   <div
-                    className={`px-3 py-2 max-w-[70%] rounded-md ${isMine
-                      ? "bg-blue-500 text-white"
-                      : msg.sender === "SYSTEM"
+                    className={`px-3 py-2 max-w-[70%] rounded-md ${
+                      isMine
+                        ? "bg-blue-500 text-white"
+                        : msg.sender === "SYSTEM"
                         ? "bg-gray-300 text-black"
                         : "bg-green-500 text-white"
-                      }`}
+                    }`}
                   >
                     {msg.content}
                   </div>
@@ -262,14 +334,16 @@ const FloatingChat = () => {
                 placeholder="메시지를 입력하세요."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
+                style={{ overflow: "hidden", resize: "none" }}
               />
               <button
                 onClick={sendMessage}
                 disabled={!isConnected || message.trim() === ""}
-                className={`ml-2 px-4 py-2 rounded-md ${isConnected && message.trim() !== ""
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-300 text-gray-500"
-                  }`}
+                className={`ml-2 px-4 py-2 rounded-md ${
+                  isConnected && message.trim() !== ""
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-300 text-gray-500"
+                }`}
               >
                 전송
               </button>
