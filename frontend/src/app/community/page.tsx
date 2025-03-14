@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 interface PostListResponseDto {
@@ -32,6 +33,34 @@ const CommunityListPage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const size = 10;
+  const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
+
+  // 로그인 상태 확인 함수
+  const checkAuth = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/member/me", {
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("Unauthorized");
+      }
+      const data = await response.json();
+      if (!data.data || !data.data.id) {
+        throw new Error("Unauthorized");
+      }
+
+      setUserId(data.data.id);
+      setIsAdmin(data.data.role === "ADMIN"); // 관리자 여부 확인
+    } catch (error) {
+      router.push("/login");
+    }
+  };
+
+  useEffect(() => {
+    checkAuth(); // 페이지 로드 시 로그인 상태 확인
+  }, []);
 
   const fetchPosts = async () => {
     setLoading(true);
@@ -259,11 +288,10 @@ const CommunityListPage: React.FC = () => {
 
           <div className="flex justify-between mt-6">
             <button
-              className={`px-5 py-2 flex items-center rounded-full border transition-colors duration-200 ${
-                page > 0
-                  ? "border-indigo-600 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700"
-                  : "border-gray-300 text-gray-400 cursor-not-allowed"
-              }`}
+              className={`px-5 py-2 flex items-center rounded-full border transition-colors duration-200 ${page > 0
+                ? "border-indigo-600 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700"
+                : "border-gray-300 text-gray-400 cursor-not-allowed"
+                }`}
               onClick={() => setPage(page - 1)}
               disabled={page === 0}
             >
