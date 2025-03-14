@@ -59,18 +59,19 @@ public class NewsService {
         return newsResponse;
     }
 
-    public JobResponseDto getJobList(String ncsCdLst) {
+    public JobResponseDto getJobList(String ncsCdLst, int page) {
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper objectMapper = new ObjectMapper();
         JobResponseDto jobResponseDto = new JobResponseDto();
+        int size = 5;
 
         String url = "https://apis.data.go.kr/1051000/recruitment/list" +
                 "?serviceKey=" + public_data_key +
                 "&acbgCondLst=R7010" +
                 "&ncsCdLst=" + ncsCdLst +
-                "&numOfRows=5" +
+                "&numOfRows=" + size +
                 "&ongoingYn=Y" +
-                "&pageNo=1" +
+                "&pageNo=" + page +
                 "&pbancBgngYmd=2025-01-01" +
                 "&recrutSe=R2030" +
                 "&resultType=json";
@@ -93,6 +94,7 @@ public class NewsService {
         }
     }
 
+
     public JobsDetailDto getJobDetail(String recrutPblntSn) {
         RestTemplate restTemplate = new RestTemplate();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -110,7 +112,6 @@ public class NewsService {
 
             JsonNode filesNode = resultNode.get("files");
             if (filesNode != null && filesNode.isArray()) {
-                // JsonNode를 List로 변환하기 전에 JSON을 다시 String으로 변환
                 List<JobsDetailDto.Files> files = objectMapper.readValue(filesNode.toString(), new TypeReference<List<JobsDetailDto.Files>>() {});
                 jobsDetailDto.setFiles(files);
             }
@@ -119,7 +120,7 @@ public class NewsService {
 
         } catch (Exception e) {
             e.printStackTrace();
-            return null;  // 또는 사용자 정의 에러 응답을 반환할 수도 있음
+            return null;
         }
     }
 }
