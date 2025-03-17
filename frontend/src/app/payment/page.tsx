@@ -4,19 +4,15 @@ import { useEffect, useState } from "react";
 import { usePaymentStore } from "./store/paymentStroe";
 import { useRouter } from "next/navigation";
 
+interface MemberDto {
+  id: number;
+  nickname: string;
+  profileImgUrl: string;
+  subscriptPlan: string;
+  subscribeEndDate: string;
+}
+
 const SubscriptionPayment = () => {
-  const router = useRouter();
-  const setPaymentData = usePaymentStore().setPaymentData;
-
-  // 아임포트 스크립트 로드
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://cdn.iamport.kr/v1/iamport.js";
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
-
-  // 구독 플랜 Enum과 동일하게 설정
   const plans = [
     {
       name: "FREE",
@@ -40,11 +36,44 @@ const SubscriptionPayment = () => {
       mostPopular: true,
     },
   ];
-
+  const router = useRouter();
+  const setPaymentData = usePaymentStore().setPaymentData;
+  const [member, setMember] = useState<MemberDto | null>(null);
   const [selectedPlan, setSelectedPlan] = useState(plans[1]); // 기본값: PREMIUM
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showCancelSuccessModal, setShowCancelSuccessModal] = useState(false);
+
+  // 아임포트 스크립트 로드
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://cdn.iamport.kr/v1/iamport.js";
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
+  useEffect(() => {
+    const fetchMemberInfo = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/member/me", {
+          method: "GET", // GET 요청으로 변경
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (!response.ok) {
+          throw new Error(`서버 오류: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setMember(data.data);
+      } catch (error) {
+        console.error("내 정보 조회 실패:", error);
+      }
+    };
+
+    fetchMemberInfo();
+  }, []);
 
   // 결제 요청 함수: 선택한 pg 값을 인자로 받음
   const requestPay = (pgValue: string) => {
@@ -146,6 +175,19 @@ const SubscriptionPayment = () => {
           취업 역량 강화와 학습 효율을 높이는 최적의 구독 플랜을 선택하세요.
           언제든지 플랜을 변경하거나 취소할 수 있습니다.
         </p>
+        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-center
+        bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-400 dark:to-gray-600
+        text-transparent bg-clip-text
+        tracking-wide p-3 mb-4">
+          {member?.nickname} 님의 구독 현황 : {member?.subscriptPlan}
+          {member?.subscriptPlan === "PREMIUM" && (
+              <p className="text-gray-600 dark:text-gray-300 text-sm mt-2">
+                구독 종료일: <span className="font-medium">{member?.subscribeEndDate}</span>
+              </p>
+          )}
+        </p>
+
+
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {plans.map((plan) => (
@@ -206,41 +248,22 @@ const SubscriptionPayment = () => {
                     ))}
                   </ul>
                 </div>
-
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (plan.price === 0) {
-                      alert("무료 플랜은 결제가 필요하지 않습니다.");
-                      return;
-                    }
-                    // 백엔드에 회원 정보 요청
-                    fetch("http://localhost:8080/member/me", {
-                      method: "GET",
-                      credentials: "include",
-                      headers: { "Content-Type": "application/json" },
-                    })
-                      .then((res) => res.json())
-                      .then((result) => {
-                        // 응답 결과에서 RsData 내부의 MemberDto 추출 (예: result.data)
-                        if (
-                          result.data &&
-                          result.data.subscriptPlan === "PREMIUM"
-                        ) {
-                          alert("이미 프리미엄 구독 중 입니다");
-                        } else {
-                          setShowPaymentModal(true);
-                        }
-                      })
-                      .catch((error) => {
-                        console.error("회원 정보 요청 실패:", error);
-                      });
-                  }}
-                  className={`w-full rounded-full py-3 px-6 font-medium transition-all shadow-lg ${
-                    plan.price === 0
-                      ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                      : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"
-                  }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (member?.subscriptPlan !== "PREMIUM") {
+                        setShowPaymentModal(true);
+                      }
+                    }}
+                    disabled={member?.subscriptPlan === "PREMIUM"}
+                    className={`w-full rounded-full py-3 px-6 font-medium transition-all shadow-lg
+    ${
+                        plan.price === 0
+                            ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                            : member?.subscriptPlan === "PREMIUM"
+                                ? "bg-gray-400 text-gray-700 opacity-50 cursor-not-allowed" // 비활성화된 상태
+                                : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"
+                    }`}
                 >
                   {plan.price === 0 ? "무료 이용하기" : "구독하기"}
                 </button>
@@ -252,24 +275,11 @@ const SubscriptionPayment = () => {
         <div className="text-center mt-6">
           <button
             onClick={(e) => {
-              // 백엔드에 회원 정보 요청
-              fetch("http://localhost:8080/member/me", {
-                method: "GET",
-                credentials: "include",
-                headers: { "Content-Type": "application/json" },
-              })
-                .then((res) => res.json())
-                .then((result) => {
-                  // 응답 결과에서 RsData 내부의 MemberDto 추출 (예: result.data)
-                  if (result.data && result.data.subscriptPlan === "FREE") {
-                    alert("프리미엄 플랜 구독자가 아닙니다.");
-                  } else {
-                    setShowCancelModal(true);
-                  }
-                })
-                .catch((error) => {
-                  console.error("회원 정보 요청 실패:", error);
-                });
+              if (member && member.subscriptPlan === "FREE") {
+                alert("프리미엄 플랜 구독자가 아닙니다.");
+              } else {
+                setShowCancelModal(true);
+              }
             }}
             className="py-3 px-6 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 font-medium transition-colors border border-red-200 dark:border-red-800 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20"
           >
@@ -433,7 +443,10 @@ const SubscriptionPayment = () => {
 
               <div className="flex justify-center">
                 <button
-                  onClick={() => setShowCancelSuccessModal(false)}
+                    onClick={() => {
+                      setShowCancelSuccessModal(false);
+                      window.location.reload(); // 페이지 새로고침
+                    }}
                   className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-full shadow-lg transition-colors"
                 >
                   확인
