@@ -52,8 +52,8 @@
 
 ### ⚙ 프레임워크 및 라이브러리
 
-![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
-![Next JS](https://img.shields.io/badge/Next-black?style=for-the-badge&logo=next.js&logoColor=white)
+![SpringBoot](https://img.shields.io/badge/springboot-%236DB33F.svg?style=for-the-badge&logo=springboot&logoColor=white)
+![Next JS](https://img.shields.io/badge/NextJS-black?style=for-the-badge&logo=nextJS.js&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
 ### 🗄 데이터베이스
@@ -83,18 +83,15 @@
 ### 🔗 ERD
 <img src="https://github.com/user-attachments/assets/40cd2649-b774-425d-8aad-ae0f753dd067" width="600">
 
-### 🔗 프로젝트 기획
+### 📜 프로젝트 기획
 
-📜 [프로젝트 기획](https://www.notion.so/1a73550b7b5580e79941dee541e21e8a)
+- [Notion-Link](https://www.notion.so/1a73550b7b5580e79941dee541e21e8a)
 
-### 🔗 API 명세서
+### 📌 API 명세서
+- [Notion-Link](https://www.notion.so/API-1b93550b7b558053892acd78b6678dcb?pvs=4)
 
-📌 api명세서
-
-### 🔗 컨벤션
-
-🛠 [Code Convention](https://github.com/prgrms-be-devcourse/NBE4-5-2-Team07.wiki.git)
+### 🛠 Git 컨벤션
+- [Wiki](https://github.com/prgrms-be-devcourse/NBE4-5-2-Team07.wiki.git)
 
 ### 🌍 배포된 서비스
-
-🔗 ⚠[서비스 URL](https://chilldevprep.vercel.app/) - 배포 중단
+- ⚠[서비스 URL](https://chilldevprep.vercel.app/) - 배포 중단
