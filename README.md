@@ -12,9 +12,8 @@
 
 ---
 
-### 1. 프로젝트 명
-
-개발자 학습 플랫폼 **DevPrep**
+### 1. 프로젝트 - DevPrep  
+<img src="https://github.com/user-attachments/assets/e8527c12-1a3b-44c1-aa6a-3faeae4a0b2f" width="1000">
 
 ---
 
@@ -43,8 +42,6 @@
 
 - **본인의 면접 경험을 공유하는 공간** - 좋아요, 댓글 기능
 - **최신 IT뉴스와 채용공고**
-
----
 
 ## 🛠 기술 스택
 
@@ -84,7 +81,7 @@
 ## 📌 추가 문서
 
 ### 🔗 ERD
-<img src="https://github.com/user-attachments/assets/40cd2649-b774-425d-8aad-ae0f753dd067" width="600" height="500">
+<img src="https://github.com/user-attachments/assets/40cd2649-b774-425d-8aad-ae0f753dd067" width="600">
 
 ### 🔗 프로젝트 기획
 
@@ -92,7 +89,7 @@
 
 ### 🔗 API 명세서
 
-📌 [API 명세서](https://www.notion.so/API-1aa3550b7b5580569632f44bf8c681d1)
+📌 api명세서
 
 ### 🔗 컨벤션
 
