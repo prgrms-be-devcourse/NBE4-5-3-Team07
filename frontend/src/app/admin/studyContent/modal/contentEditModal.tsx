@@ -117,11 +117,11 @@ export default function ContentEditModal({
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-lg z-50 flex items-center justify-center">
       <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
-        <div className="absolute top-0 right-0 -mr-4 -mt-4 w-32 h-32 rounded-full bg-yellow-300 dark:bg-yellow-800 opacity-20 blur-xl"></div>
+        <div className="absolute top-0 right-0 -mr-4 -mt-4 w-32 h-32 rounded-full bg-green-300 dark:bg-green-800 opacity-20 blur-xl"></div>
         <div className="absolute bottom-0 left-0 -ml-4 -mb-4 w-32 h-32 rounded-full bg-green-300 dark:bg-green-800 opacity-20 blur-xl"></div>
 
         <div className="relative p-6">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-green-600 dark:from-yellow-400 dark:to-green-400 text-transparent bg-clip-text mb-6 text-center">학습 콘텐츠 수정</h2>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-600 dark:from-green-400 dark:to-green-400 text-transparent bg-clip-text mb-6 text-center">학습 콘텐츠 수정</h2>
 
           {error && (
             <div className="mb-5 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded">
@@ -137,7 +137,7 @@ export default function ContentEditModal({
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white"
               />
             </div>
 
@@ -148,7 +148,7 @@ export default function ContentEditModal({
               <select
                 value={firstCategory}
                 onChange={(e) => setFirstCategory(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:bg-gray-700 dark:text-white appearance-none bg-no-repeat bg-right"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white appearance-none bg-no-repeat bg-right"
                 style={{
                   backgroundImage:
                     "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e\")",
@@ -177,7 +177,7 @@ export default function ContentEditModal({
                 value={secondCategory}
                 onChange={(e) => setSecondCategory(e.target.value)}
                 placeholder="새로운 카테고리를 입력하세요"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:bg-gray-700 dark:text-white"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white"
               />
             </div>
 
@@ -189,7 +189,7 @@ export default function ContentEditModal({
                 value={updateContent}
                 onChange={(e) => setUpdateContent(e.target.value)}
                 rows={5}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:bg-gray-700 dark:text-white resize-none min-h-[150px]"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-700 dark:text-white resize-none min-h-[150px]"
                 placeholder="내용을 입력하세요"
               />
             </div>
@@ -199,7 +199,7 @@ export default function ContentEditModal({
             <button
               onClick={handleSave}
               disabled={loading}
-              className={`rounded-full bg-yellow-600 hover:bg-yellow-700 dark:bg-yellow-500 dark:hover:bg-yellow-600 text-white py-2 px-6 font-medium transition-all flex-1 shadow-lg shadow-yellow-500/20 ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+              className={`rounded-full bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white py-2 px-6 font-medium transition-all flex-1 shadow-lg shadow-green-500/20 ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
             >
               {loading ? "저장 중..." : "저장"}
             </button>
