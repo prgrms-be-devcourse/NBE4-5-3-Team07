@@ -1,37 +1,37 @@
-package com.java.NBE4_5_3_7.domain.payment.controller;
+package com.java.NBE4_5_3_7.domain.payment.controller
 
-import com.java.NBE4_5_3_7.domain.payment.dto.reqestDto.PaymentRequestDto;
-import com.java.NBE4_5_3_7.domain.payment.dto.responseDto.PaymentResponseDto;
-import com.java.NBE4_5_3_7.domain.payment.service.PaymentService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.java.NBE4_5_3_7.domain.payment.dto.reqestDto.PaymentRequestDto
+import com.java.NBE4_5_3_7.domain.payment.dto.responseDto.PaymentResponseDto
+import com.java.NBE4_5_3_7.domain.payment.service.PaymentService
 
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/payments")
-@RequiredArgsConstructor
-public class PaymentController {
-    private final PaymentService paymentService;
+class PaymentController {
+    private val paymentService: PaymentService? = null
 
     @PostMapping("/verify")
-    public ResponseEntity<PaymentResponseDto> verifyPayment(@RequestBody PaymentRequestDto requestDto) {
-        return ResponseEntity.ok(paymentService.verifyPayment(requestDto));
+    fun verifyPayment(@RequestBody requestDto: PaymentRequestDto): ResponseEntity<PaymentResponseDto> {
+        return ResponseEntity.ok(paymentService!!.verifyPayment(requestDto))
     }
 
     @PostMapping("/webhook")
-    public ResponseEntity<String> handleWebhook(@RequestBody Map<String, Object> payload) throws InterruptedException {
-        paymentService.handleWebhook(payload);
-        return ResponseEntity.ok("웹훅 조회 성공");
+    @Throws(InterruptedException::class)
+    fun handleWebhook(@RequestBody payload: Map<String?, Any?>): ResponseEntity<String> {
+        paymentService!!.handleWebhook(payload)
+        return ResponseEntity.ok("웹훅 조회 성공")
     }
 
     @PostMapping("/cancel")
-    public ResponseEntity<Map<String, String>> cancelledPayments() {
-        paymentService.cancelSubscription();
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "구독 취소 성공");
-        return ResponseEntity.ok(response);
+    fun cancelledPayments(): ResponseEntity<Map<String, String>> {
+        paymentService!!.cancelSubscription()
+        val response: MutableMap<String, String> = HashMap()
+        response["message"] = "구독 취소 성공"
+        return ResponseEntity.ok(response)
     }
 }

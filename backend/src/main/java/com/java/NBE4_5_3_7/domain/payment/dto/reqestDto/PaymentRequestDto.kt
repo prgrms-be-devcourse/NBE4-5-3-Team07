@@ -1,10 +1,9 @@
-package com.java.NBE4_5_3_7.domain.payment.dto.reqestDto;
+package com.java.NBE4_5_3_7.domain.payment.dto.reqestDto
 
-import lombok.Getter;
-import lombok.Setter;
+class PaymentRequestDto {
+    private val imp_uid: String? = null
 
-@Getter
-@Setter
-public class PaymentRequestDto {
-    private String imp_uid;
+    fun getImpUid(): String? {
+        return imp_uid
+    }
 }

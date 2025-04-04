@@ -1,13 +1,12 @@
-package com.java.NBE4_5_3_7.domain.payment.repository;
+package com.java.NBE4_5_3_7.domain.payment.repository
 
-import com.java.NBE4_5_3_7.domain.member.entity.Member;
-import com.java.NBE4_5_3_7.domain.payment.entity.Order;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.java.NBE4_5_3_7.domain.member.entity.Member
+import com.java.NBE4_5_3_7.domain.payment.entity.Order
+import org.springframework.data.jpa.repository.JpaRepository
+import java.util.*
 
-import java.util.Optional;
+interface OrderRepository : JpaRepository<Order, Long> {
+    fun findByImpUid(impUid: String?): Optional<Order>
 
-public interface OrderRepository extends JpaRepository<Order, Long> {
-    Optional<Order> findByImpUid(String impUid);
-
-    Optional<Order> findByMemberAndStatus(Member member, String cancelled);
+    fun findByMemberAndStatus(member: Member?, cancelled: String?): Optional<Order>
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.JobResponseDto
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.JobsDetailDto
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.NewResponseDto
-import lombok.RequiredArgsConstructor
+
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -13,8 +13,6 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
-@Service
-@RequiredArgsConstructor
 class NewsService {
     @Value("\${naver.key}")
     private val client_key: String? = null

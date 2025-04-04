@@ -1,17 +1,12 @@
 package com.java.NBE4_5_3_7.domain.news.dto.responseDto
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import lombok.Data
-import lombok.Getter
 
-@Data
-@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 class JobResponseDto {
     var totalCount = 0
     var result: List<Job>? = null
 
-    @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     class Job {
         private val recrutPblntSn: Long? = null

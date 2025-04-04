@@ -4,15 +4,11 @@ import com.java.NBE4_5_3_7.domain.news.dto.responseDto.JobResponseDto
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.JobsDetailDto
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.NewResponseDto
 import com.java.NBE4_5_3_7.domain.news.service.NewsService
-import lombok.RequiredArgsConstructor
-import lombok.extern.slf4j.Slf4j
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/news")
-@RequiredArgsConstructor
 class NewsController(private val newsService: NewsService) {
 
     @GetMapping

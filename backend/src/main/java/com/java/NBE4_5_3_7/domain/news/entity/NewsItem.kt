@@ -1,14 +1,7 @@
 package com.java.NBE4_5_3_7.domain.news.entity
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import lombok.*
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Getter
-@Setter
 class NewsItem {
     @JsonProperty("title")
     private var title: String? = null

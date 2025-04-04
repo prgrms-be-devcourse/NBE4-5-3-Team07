@@ -1,11 +1,7 @@
 package com.java.NBE4_5_3_7.domain.news.dto.responseDto
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import lombok.Data
-import lombok.Getter
 
-@Data
-@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 class JobsDetailDto {
     var recrutPblntSn: String? = null
@@ -39,8 +35,6 @@ class JobsDetailDto {
     var files: List<Files>? = null
     var steps: List<Steps>? = null
 
-
-    @Data
     @JsonIgnoreProperties(ignoreUnknown = true) // 여기에도 추가
     class Files {
         private val recrutAtchFileNo = 0 // 필드 추가
@@ -50,7 +44,6 @@ class JobsDetailDto {
         private val url: String? = null
     }
 
-    @Data
     @JsonIgnoreProperties(ignoreUnknown = true) // 여기에도 추가
     class Steps {
         private val recrutStepSn = 0
