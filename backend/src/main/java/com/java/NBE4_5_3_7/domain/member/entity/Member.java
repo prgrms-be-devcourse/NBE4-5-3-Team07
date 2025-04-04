@@ -38,7 +38,12 @@ public class Member extends BaseEntity{
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    private SubscriptionPlan subscriptionPlan;
+    private SubscriptionPlan subscriptionPlan; // 유지
+
+    public SubscriptionPlan getSubscriptionPlan() {
+        return subscriptionPlan;
+    }
+
 
 
     private LocalDateTime subscribeEndDate;
