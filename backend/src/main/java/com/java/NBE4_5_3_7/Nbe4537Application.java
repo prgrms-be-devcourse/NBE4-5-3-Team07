@@ -8,10 +8,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableScheduling
-public class Nbe4517Application {
+public class Nbe4537Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(Nbe4517Application.class, args);
+		SpringApplication.run(Nbe4537Application.class, args);
 	}
 
 }
