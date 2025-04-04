@@ -1,25 +1,27 @@
-package com.java.NBE4_5_3_7.domain.news.dto.responseDto;
+package com.java.NBE4_5_3_7.domain.news.dto.responseDto
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.java.NBE4_5_3_7.domain.news.entity.NewsItem;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.java.NBE4_5_3_7.domain.news.entity.NewsItem
+import lombok.Data
+import lombok.Getter
+import lombok.Setter
 
 @Data
 @Getter
 @Setter
-public class NewResponseDto {
+class NewResponseDto {
     @JsonProperty("lastBuildDate")
-    private String lastBuildDate;
+    private val lastBuildDate: String? = null
+
     @JsonProperty("total")
-    private int total;
+    private val total = 0
+
     @JsonProperty("start")
-    private int start;
+    private val start = 0
+
     @JsonProperty("display")
-    private int display;
+    private val display = 0
+
     @JsonProperty("items")
-    private List<NewsItem> items;
+    private val items: List<NewsItem>? = null
 }

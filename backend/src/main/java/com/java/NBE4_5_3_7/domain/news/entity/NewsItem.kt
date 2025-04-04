@@ -1,7 +1,7 @@
-package com.java.NBE4_5_3_7.domain.news.entity;
+package com.java.NBE4_5_3_7.domain.news.entity
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonProperty
+import lombok.*
 
 @Data
 @NoArgsConstructor
@@ -9,15 +9,19 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-public class NewsItem {
+class NewsItem {
     @JsonProperty("title")
-    private String title;
+    private var title: String? = null
+
     @JsonProperty("originallink")
-    private String originallink;
+    private var originallink: String? = null
+
     @JsonProperty("link")
-    private String link;
+    private var link: String? = null
+
     @JsonProperty("description")
-    private String description;
+    private var description: String? = null
+
     @JsonProperty("pubDate")
-    private String pubDate;
+    private var pubDate: String? = null
 }
