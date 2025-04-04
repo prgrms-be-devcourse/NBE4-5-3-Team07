@@ -12,7 +12,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 @Service
 class EmailService(
