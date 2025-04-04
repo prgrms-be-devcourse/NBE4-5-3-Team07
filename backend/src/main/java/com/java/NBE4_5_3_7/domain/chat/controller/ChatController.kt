@@ -20,51 +20,51 @@ class ChatController(
     /** 채팅방 정보 조회 */
     @GetMapping("/chat/room/info")
     fun chatRoomInfo(): ResponseEntity<ChatRoom> {
-        return ResponseEntity.ok(chatService.chatRoomInfo)
+        return ResponseEntity.ok(chatService.chatRoomInfo())
     }
 
     /** 유저 or 게스트 메시지 전송 */
     @MessageMapping("/chat/user/{roomId}")
     fun sendUserMessage(@DestinationVariable roomId: Long, message: Message) {
-        chatService.saveMessage(roomId, message.sender, message.content, message.timestamp)
+        chatService.saveMessage(roomId, message.sender!!, message.content!!, message.timestamp!!)
         messagingTemplate.convertAndSend("/topic/chat/$roomId", message)
     }
 
     /** 관리자 메시지 전송 */
     @MessageMapping("/chat/admin/{roomId}")
     fun sendAdminMessage(@DestinationVariable roomId: Long, message: Message) {
-        chatService.saveMessage(roomId, "ADMIN", message.content, message.timestamp)
+        chatService.saveMessage(roomId, "ADMIN", message.content!!, message.timestamp!!)
         messagingTemplate.convertAndSend("/topic/chat/$roomId", message)
     }
 
     /** 시스템 메시지 전송 */
     @MessageMapping("/chat/system/{roomId}")
     fun sendSystemMessage(@DestinationVariable roomId: Long, message: Message) {
-        chatService.saveMessage(roomId, "SYSTEM", message.content, message.timestamp)
+        chatService.saveMessage(roomId, "SYSTEM", message.content!!, message.timestamp!!)
         messagingTemplate.convertAndSend("/topic/chat/$roomId", message)
     }
 
     /** 모든 메시지 조회 (관리자) */
     @GetMapping("/chat/messages/all")
     fun allMessages(): List<Message> {
-        return chatService.allMessages
+        return chatService.allMessages()
     }
 
     /**  메시지 조회 */
     @GetMapping("/chat/messages/{roomId}")
-    fun getMessage(@PathVariable roomId: Long?): List<Message> {
+    fun getMessage(@PathVariable roomId: Long): List<Message> {
         return chatService.getMessage(roomId)
     }
 
     /** 채팅방 목록 조회 (관리자) */
     @GetMapping("/chat/rooms")
     fun chatRooms(): List<Long> {
-        return chatService.chatRooms
+        return chatService.chatRooms()
     }
 
     /** 채팅방 삭제 */
     @DeleteMapping("/chat/messages/{roomId}")
-    fun deleteChatRoomMessages(@PathVariable roomId: Long?) {
+    fun deleteChatRoomMessages(@PathVariable roomId: Long) {
         chatService.deleteChatRoomMessages(roomId)
     }
 }

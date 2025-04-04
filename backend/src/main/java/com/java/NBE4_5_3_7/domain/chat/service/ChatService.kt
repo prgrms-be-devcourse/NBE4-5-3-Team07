@@ -30,7 +30,7 @@ class ChatService(
 
     /** 메시지 저장 */
     @Transactional
-    fun saveMessage(roomId: Long, sender: String, content: String?, timestamp: String) {
+    fun saveMessage(roomId: Long, sender: String, content: String, timestamp: String) {
         val message = Message(roomId, sender, content, timestamp)
         redisTemplate.opsForList().rightPush("chat:$roomId", message)
 

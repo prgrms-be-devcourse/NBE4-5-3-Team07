@@ -74,7 +74,7 @@ dependencies {
 	implementation(kotlin("stdlib"))
 
 	// 테스트
-	testImplementation("org.mockito.kotlin:mockito-kotlin:5.2.1")
+	testImplementation(kotlin("test"))
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 }
