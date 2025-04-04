@@ -763,30 +763,14 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/chat/room/user/{userId}": {
+    "/chat/room/info": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get: operations["getOrCreateChatRoomForUser"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/chat/room/guest": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["getGuestRoomId"];
+        get: operations["getChatRoomInfo"];
         put?: never;
         post?: never;
         delete?: never;
@@ -819,22 +803,6 @@ export interface paths {
             cookie?: never;
         };
         get: operations["getAllMessages"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/chat/auth/user": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["getAuthUser"];
         put?: never;
         post?: never;
         delete?: never;
@@ -987,7 +955,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/news/jobs/{recrutPblntSn}": {
+    "/api/v1/news/jobs/detail/{recrutPblntSn}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1471,6 +1439,7 @@ export interface components {
             nickname: string;
             profileImgUrl: string;
             subscriptPlan: string;
+            subscribeEndDate: string;
         };
         RsDataMemberDto: {
             code: string;
@@ -1503,6 +1472,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PostListResponseDto"][];
@@ -1512,20 +1483,18 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -1535,24 +1504,16 @@ export interface components {
         ChatRoom: {
             /** Format: int64 */
             roomId?: number;
-            /** Format: int64 */
-            userIdentifier?: number;
-            userType?: string;
-            /** Format: date-time */
-            lastActivityTime?: string;
-            lastMessage?: string;
-            /** Format: date-time */
-            lastMessageTime?: string;
-        };
-        GuestIdResponse: {
-            /** Format: int64 */
-            guestId?: number;
+            nickname?: string;
+            role?: string;
         };
         PageStudyContentDetailDto: {
             /** Format: int32 */
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["StudyContentDetailDto"][];
@@ -1562,8 +1523,6 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         NewResponseDto: {
@@ -1694,6 +1653,8 @@ export interface components {
             totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            first?: boolean;
+            last?: boolean;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["InterviewContentAdminResponseDto"][];
@@ -1703,8 +1664,6 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
             empty?: boolean;
         };
         Empty: Record<string, never>;
@@ -3402,7 +3361,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["ChatRoom"][];
+                    "*/*": number[];
                 };
             };
             /** @description Internal Server Error */
@@ -3416,38 +3375,7 @@ export interface operations {
             };
         };
     };
-    getOrCreateChatRoomForUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["ChatRoom"];
-                };
-            };
-            /** @description Internal Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["RsDataVoid"];
-                };
-            };
-        };
-    };
-    getGuestRoomId: {
+    getChatRoomInfo: {
         parameters: {
             query?: never;
             header?: never;
@@ -3462,7 +3390,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["GuestIdResponse"];
+                    "*/*": components["schemas"]["ChatRoom"];
                 };
             };
             /** @description Internal Server Error */
@@ -3552,37 +3480,6 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["Message"][];
-                };
-            };
-            /** @description Internal Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["RsDataVoid"];
-                };
-            };
-        };
-    };
-    getAuthUser: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": {
-                        [key: string]: Record<string, never>;
-                    };
                 };
             };
             /** @description Internal Server Error */
@@ -3851,6 +3748,7 @@ export interface operations {
         parameters: {
             query: {
                 ncsCdLst: string;
+                page?: number;
             };
             header?: never;
             path?: never;
