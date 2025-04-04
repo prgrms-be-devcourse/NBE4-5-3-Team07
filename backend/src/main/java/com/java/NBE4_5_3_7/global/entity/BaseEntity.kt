@@ -1,24 +1,25 @@
-package com.java.NBE4_5_3_7.global.entity;
+package com.java.NBE4_5_3_7.global.entity
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.MappedSuperclass
+import lombok.AllArgsConstructor
+import lombok.EqualsAndHashCode
+import lombok.NoArgsConstructor
+import lombok.experimental.SuperBuilder
 
 @MappedSuperclass
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class BaseEntity {
+open class BaseEntity {
 
-    @Id // PRIMARY KEY
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // AUTO_INCREMENT
-    @Setter(AccessLevel.PRIVATE)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private Long id; // long -> null X, Long -> null O
+    protected var id: Long? = null
 
+    fun getId(): Long? = id
 }

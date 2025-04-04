@@ -3,6 +3,7 @@ package com.java.NBE4_5_3_7.domain.chat.service
 import com.java.NBE4_5_3_7.domain.chat.model.ChatRoom
 import com.java.NBE4_5_3_7.domain.chat.model.Message
 import com.java.NBE4_5_3_7.domain.mail.EmailService
+import com.java.NBE4_5_3_7.domain.member.entity.Member
 import com.java.NBE4_5_3_7.domain.member.service.MemberService
 import com.java.NBE4_5_3_7.global.Rq
 import org.springframework.beans.factory.annotation.Autowired
@@ -111,18 +112,18 @@ class ChatService(
     @Transactional(readOnly = true)
     fun chatRoomInfo(): ChatRoom {
         try {
-            val actor = rq.actor
-            val realActor = rq.getRealActor(actor)
+            val actor: Member = rq.actor
+            val realActor: Member = rq.getRealActor(actor)
 
-            val isAdmin = memberService.isAdmin(realActor.id)
+            val isAdmin = memberService.isAdmin(realActor.getId())
             if (isAdmin) {
                 return ChatRoom(null, null, "ADMIN")
             }
 
-            val roomId = realActor.id
-            val nickname = realActor.nickname
+            val roomId: Long? = realActor.getId()
+            val nickname: String = realActor.nickname
             return ChatRoom(roomId, nickname, "USER")
-        } catch (e: Exception) {
+        } catch (e: java.lang.Exception) {
             val guestId = generateUniqueGuestId()
             return ChatRoom(guestId, "게스트 " + (-guestId), "GUEST")
         }

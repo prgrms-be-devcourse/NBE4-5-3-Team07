@@ -9,7 +9,6 @@ import com.java.NBE4_5_3_7.domain.community.like.repository.PostLikeRepository
 import com.java.NBE4_5_3_7.domain.community.post.dto.*
 import com.java.NBE4_5_3_7.domain.community.post.entity.Post
 import com.java.NBE4_5_3_7.domain.community.post.repository.PostRepository
-import com.java.NBE4_5_3_7.domain.member.entity.Member
 import com.java.NBE4_5_3_7.domain.member.repository.MemberRepository
 import jakarta.transaction.Transactional
 import org.redisson.api.RedissonClient
