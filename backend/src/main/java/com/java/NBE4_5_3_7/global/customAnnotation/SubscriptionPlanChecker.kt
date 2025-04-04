@@ -12,7 +12,7 @@ class SubscriptionPlanChecker(private val memberService: MemberService) {
     fun hasPremiumAccess(): Boolean {
         val member: Member = memberService.getMemberFromRq()
 
-        require(member.getSubscriptionPlan() == SubscriptionPlan.PREMIUM) {
+        require(member.subscriptionPlan == SubscriptionPlan.PREMIUM) {
             throw AccessDeniedException("FREE 사용자는 접근할 수 없습니다.")
         }
 

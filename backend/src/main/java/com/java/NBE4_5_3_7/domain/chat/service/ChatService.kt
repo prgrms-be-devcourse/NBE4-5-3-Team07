@@ -3,9 +3,10 @@ package com.java.NBE4_5_3_7.domain.chat.service
 import com.java.NBE4_5_3_7.domain.chat.model.ChatRoom
 import com.java.NBE4_5_3_7.domain.chat.model.Message
 import com.java.NBE4_5_3_7.domain.mail.EmailService
+import com.java.NBE4_5_3_7.domain.member.entity.Member
 import com.java.NBE4_5_3_7.domain.member.service.MemberService
 import com.java.NBE4_5_3_7.global.Rq
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -22,11 +23,10 @@ class ChatService(
     private val redisTemplate: RedisTemplate<String, Message>,
     private val emailService: EmailService,
     private val memberService: MemberService,
-    private val rq: Rq
+    private val rq: Rq,
+    private val applicationContext: ApplicationContext
 ) {
-
-    @Autowired
-    lateinit var self: ChatService
+    private val self by lazy { applicationContext.getBean(ChatService::class.java) }
 
     /** 메시지 저장 */
     @Transactional
@@ -45,8 +45,8 @@ class ChatService(
     fun getMessage(roomId: Long): List<Message> {
         val messages = redisTemplate
             .opsForList().range(
-            "chat:$roomId", 0, -1
-        )
+                "chat:$roomId", 0, -1
+            )
         return messages ?: emptyList()
     }
 
@@ -111,18 +111,18 @@ class ChatService(
     @Transactional(readOnly = true)
     fun chatRoomInfo(): ChatRoom {
         try {
-            val actor = rq.actor
-            val realActor = rq.getRealActor(actor)
+            val actor: Member = rq.actor
+            val realActor: Member = rq.getRealActor(actor)
 
             val isAdmin = memberService.isAdmin(realActor.id)
             if (isAdmin) {
                 return ChatRoom(null, null, "ADMIN")
             }
 
-            val roomId = realActor.id
-            val nickname = realActor.nickname
+            val roomId: Long? = realActor.id
+            val nickname: String? = realActor.nickname
             return ChatRoom(roomId, nickname, "USER")
-        } catch (e: Exception) {
+        } catch (e: java.lang.Exception) {
             val guestId = generateUniqueGuestId()
             return ChatRoom(guestId, "게스트 " + (-guestId), "GUEST")
         }
