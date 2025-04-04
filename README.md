@@ -91,7 +91,7 @@
 - [Notion-Link](https://www.notion.so/API-1b93550b7b558053892acd78b6678dcb?pvs=4)
 
 ### 🛠 Git 컨벤션
-- [Wiki]([https://github.com/prgrms-be-devcourse/NBE4-5-2-Team07.wiki.git](https://github.com/prgrms-be-devcourse/NBE4-5-3-Team07/wiki/Git-Convention))
+- [Wiki](https://github.com/prgrms-be-devcourse/NBE4-5-3-Team07/wiki/Git-Convention)
 
 ### 🌍 배포된 서비스
 - ⚠[서비스 URL](https://chilldevprep.vercel.app/) - 배포 중단
