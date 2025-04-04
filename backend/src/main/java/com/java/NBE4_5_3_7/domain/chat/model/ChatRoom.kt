@@ -1,12 +1,7 @@
-package com.java.NBE4_5_3_7.domain.chat.model;
+package com.java.NBE4_5_3_7.domain.chat.model
 
-import lombok.*;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ChatRoom {
-    private Long roomId;
-    private String nickname;
-    private String role;
-}
+data class ChatRoom (
+    var roomId: Long? = null,
+    var nickname: String? = null,
+    var role: String? = null
+)
