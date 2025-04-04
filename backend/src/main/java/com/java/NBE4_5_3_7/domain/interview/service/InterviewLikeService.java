@@ -6,20 +6,27 @@ import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentLikeRepos
 import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentRepository;
 import com.java.NBE4_5_3_7.domain.member.entity.Member;
 import com.java.NBE4_5_3_7.domain.member.repository.MemberRepository;
-import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@RequiredArgsConstructor
 public class InterviewLikeService {
+
     private final InterviewContentLikeRepository likeRepository;
     private final InterviewContentRepository interviewRepository;
     private final MemberRepository memberRepository;
     private final RedissonClient redissonClient;
+
+    public InterviewLikeService(InterviewContentLikeRepository likeRepository, InterviewContentRepository interviewRepository, MemberRepository memberRepository, RedissonClient redissonClient) {
+        this.likeRepository = likeRepository;
+        this.interviewRepository = interviewRepository;
+        this.memberRepository = memberRepository;
+        this.redissonClient = redissonClient;
+    }
 
     public String interviewLike(Long memberId, Long interviewId) {
         InterviewContent interviewContent = interviewRepository.findById(interviewId).orElseThrow(() -> new RuntimeException("해당 컨텐츠를 찾을 수 없습니다."));
@@ -44,10 +51,7 @@ public class InterviewLikeService {
                 return "좋아요 취소";
             } else {
                 // 좋아요가 없다면 추가
-                InterviewContentLike newLike = InterviewContentLike.builder()
-                        .interviewContent(interviewContent)
-                        .member(member)
-                        .build();
+                InterviewContentLike newLike = InterviewContentLike.builder().interviewContent(interviewContent).member(member).build();
                 likeRepository.save(newLike);
                 return "좋아요 추가";
             }

@@ -7,7 +7,6 @@ import com.java.NBE4_5_3_7.domain.interview.entity.dto.response.InterviewContent
 import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentAdminRepository;
 import com.java.NBE4_5_3_7.global.exception.ServiceException;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,10 +18,13 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class InterviewAdminService {
 
     private final InterviewContentAdminRepository interviewContentAdminRepository;
+
+    public InterviewAdminService(InterviewContentAdminRepository interviewContentAdminRepository) {
+        this.interviewContentAdminRepository = interviewContentAdminRepository;
+    }
 
     // 카테고리별 키워드 목록 조회
     public Map<String, List<String>> getCategoryKeywords() {
@@ -74,8 +76,7 @@ public class InterviewAdminService {
 
     // 특정 면접 질문 ID 조회
     public InterviewContentAdminResponseDto getInterviewContentById(Long interviewContentId) {
-        InterviewContent content = interviewContentAdminRepository.findById(interviewContentId)
-                .orElseThrow(() -> new ServiceException("404", "해당 ID의 면접 질문을 찾을 수 없습니다."));
+        InterviewContent content = interviewContentAdminRepository.findById(interviewContentId).orElseThrow(() -> new ServiceException("404", "해당 ID의 면접 질문을 찾을 수 없습니다."));
         Long likeCount = interviewContentAdminRepository.countLikesByInterviewContentId(content.getInterview_content_id());
         return new InterviewContentAdminResponseDto(content, likeCount);
     }
@@ -83,8 +84,7 @@ public class InterviewAdminService {
     // 주어진 interviewContentId에 해당하는 면접 질문을 조회하고, 관련된 모든 꼬리 질문을 포함하여 반환
     @Transactional
     public List<InterviewContentAdminResponseDto> getInterviewContentWithAllTails(Long interviewContentId) {
-        InterviewContent content = interviewContentAdminRepository.findById(interviewContentId)
-                .orElseThrow(() -> new ServiceException("404", "해당 ID의 면접 질문을 찾을 수 없습니다."));
+        InterviewContent content = interviewContentAdminRepository.findById(interviewContentId).orElseThrow(() -> new ServiceException("404", "해당 ID의 면접 질문을 찾을 수 없습니다."));
         Long likeCount = interviewContentAdminRepository.countLikesByInterviewContentId(content.getInterview_content_id());
 
         List<InterviewContentAdminResponseDto> relatedQuestions = getTailQuestions(content.getInterview_content_id());
@@ -114,8 +114,7 @@ public class InterviewAdminService {
     // 면접 질문 ID를 기준으로 카테고리, 키워드, 질문, 모범 답안을 수정
     @Transactional
     public InterviewContentAdminResponseDto updateInterviewContent(Long interviewContentId, InterviewContentAdminRequestDto requestDto) {
-        InterviewContent content = interviewContentAdminRepository.findById(interviewContentId)
-                .orElseThrow(() -> new ServiceException("404", "해당 ID의 면접 질문을 찾을 수 없습니다."));
+        InterviewContent content = interviewContentAdminRepository.findById(interviewContentId).orElseThrow(() -> new ServiceException("404", "해당 ID의 면접 질문을 찾을 수 없습니다."));
 
         content.setCategory(requestDto.getCategory());
         content.setKeyword(requestDto.getKeyword());
@@ -131,8 +130,7 @@ public class InterviewAdminService {
     // 특정 면접 질문과 모든 꼬리 질문을 삭제
     @Transactional
     public void deleteInterviewContentWithAllTails(Long interviewContentId) {
-        InterviewContent content = interviewContentAdminRepository.findById(interviewContentId)
-                .orElseThrow(() -> new ServiceException("404", "해당 ID의 면접 질문을 찾을 수 없습니다."));
+        InterviewContent content = interviewContentAdminRepository.findById(interviewContentId).orElseThrow(() -> new ServiceException("404", "해당 ID의 면접 질문을 찾을 수 없습니다."));
 
         Long headId = content.getHeadId();
         List<InterviewContent> relatedQuestions = getTailContents(content.getInterview_content_id());
@@ -166,20 +164,14 @@ public class InterviewAdminService {
     public InterviewContentAdminResponseDto createInterviewContent(InterviewContentAdminRequestDto requestDto) {
         // 머리 질문인지 확인
         if (requestDto.getHeadId() == null) {
-            InterviewContent newHeadContent = InterviewContent.createNewHead(
-                    requestDto.getQuestion(),
-                    requestDto.getModelAnswer(),
-                    requestDto.getCategory(),
-                    requestDto.getKeyword()
-            );
+            InterviewContent newHeadContent = InterviewContent.createNewHead(requestDto.getQuestion(), requestDto.getModelAnswer(), requestDto.getCategory(), requestDto.getKeyword());
 
             interviewContentAdminRepository.save(newHeadContent);
             return new InterviewContentAdminResponseDto(newHeadContent, 0L);
         }
 
         // 꼬리 질문을 붙힐 머리 질문 정보 가져오기
-        InterviewContent headContent = interviewContentAdminRepository.findById(requestDto.getHeadId())
-                .orElseThrow(() -> new ServiceException("404", "해당 ID의 면접 질문을 찾을 수 없습니다."));
+        InterviewContent headContent = interviewContentAdminRepository.findById(requestDto.getHeadId()).orElseThrow(() -> new ServiceException("404", "해당 ID의 면접 질문을 찾을 수 없습니다."));
 
         // 머리 질문이 중간 질문인지 확인 (중간 질문에는 추가 불가능)
         if (headContent.isHasTail()) {

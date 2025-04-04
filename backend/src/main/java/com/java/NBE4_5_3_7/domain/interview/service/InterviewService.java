@@ -1,13 +1,5 @@
 package com.java.NBE4_5_3_7.domain.interview.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
-import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentLikeRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.java.NBE4_5_3_7.domain.interview.entity.InterviewCategory;
 import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent;
 import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContentBookmark;
@@ -17,34 +9,44 @@ import com.java.NBE4_5_3_7.domain.interview.entity.dto.response.BookmarkResponse
 import com.java.NBE4_5_3_7.domain.interview.entity.dto.response.InterviewResponseDto;
 import com.java.NBE4_5_3_7.domain.interview.entity.dto.response.RandomResponseDto;
 import com.java.NBE4_5_3_7.domain.interview.repository.BookmarkRepository;
+import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentLikeRepository;
 import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentRepository;
 import com.java.NBE4_5_3_7.domain.member.entity.Member;
 import com.java.NBE4_5_3_7.domain.member.repository.MemberRepository;
 import com.java.NBE4_5_3_7.global.exception.ServiceException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class InterviewService {
+
     private final InterviewContentRepository interviewRepository;
     private final MemberRepository memberRepository;
     private final BookmarkRepository bookmarkRepository;
     private final InterviewContentLikeRepository likeRepository;
 
+    public InterviewService(InterviewContentRepository interviewRepository, MemberRepository memberRepository, BookmarkRepository bookmarkRepository, InterviewContentLikeRepository likeRepository) {
+        this.interviewRepository = interviewRepository;
+        this.memberRepository = memberRepository;
+        this.bookmarkRepository = bookmarkRepository;
+        this.likeRepository = likeRepository;
+    }
+
     // 1. 면접 컨텐츠 ID -> 면접 컨텐츠 DTO
     public InterviewResponseDto showOneInterviewContent(Long id, Long memberId) {
         InterviewContent interview = interviewRepository.findById(id).orElseThrow(() -> new RuntimeException("해당 면접 컨텐츠를 찾을 수 없습니다."));
 
-        InterviewContent interviewContent = interviewRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 컨텐츠를 찾을 수 없습니다."));
+        InterviewContent interviewContent = interviewRepository.findById(id).orElseThrow(() -> new RuntimeException("해당 컨텐츠를 찾을 수 없습니다."));
 
         Long likeCount = likeRepository.countByInterviewContent(interviewContent);
 
         // 해당 사용자가 좋아요를 눌렀는지 여부 확인
-        boolean likedByUser = likeRepository.findByInterviewContentAndMember(interviewContent, memberRepository.findById(memberId)
-                .orElseThrow(() -> new RuntimeException("해당 멤버를 찾을 수 없습니다."))).isPresent();
+        boolean likedByUser = likeRepository.findByInterviewContentAndMember(interviewContent, memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("해당 멤버를 찾을 수 없습니다."))).isPresent();
 
 
         Long nextId;
@@ -61,18 +63,7 @@ public class InterviewService {
         } catch (RuntimeException e) {
             nextId = null;
         }
-        return new InterviewResponseDto(
-                interview.getInterview_content_id(),
-                interview.getHead_id(),
-                interview.getTail_id(),
-                interview.getQuestion(),
-                interview.getModelAnswer(),
-                interview.getCategory().toString(),
-                interview.getKeyword(),
-                nextId,
-                likeCount,
-                likedByUser
-        );
+        return new InterviewResponseDto(interview.getInterview_content_id(), interview.getHead_id(), interview.getTail_id(), interview.getQuestion(), interview.getModelAnswer(), interview.getCategory().toString(), interview.getKeyword(), nextId, likeCount, likedByUser);
     }
 
     // 2. 머리질문 순서대로 머리질문의 id 값 list 를 반환.
@@ -98,20 +89,7 @@ public class InterviewService {
         Long likeCount = likeRepository.countByInterviewContent(interview);
         boolean likedByUser = likeRepository.findByInterviewContentAndMember(interview, memberRepository.findById(memberId).orElseThrow(() -> new RuntimeException("해당 멤버를 찾을 수 없습니다."))).isPresent();
 
-        return new RandomResponseDto(
-                headList,
-                new InterviewResponseDto(
-                        interview.getInterview_content_id(),
-                        interview.getHead_id(),
-                        interview.getTail_id(),
-                        interview.getQuestion(),
-                        interview.getModelAnswer(),
-                        interview.getCategory().toString(),
-                        interview.getKeyword(),
-                        randomValue,
-                        likeCount,
-                        likedByUser
-                ));
+        return new RandomResponseDto(headList, new InterviewResponseDto(interview.getInterview_content_id(), interview.getHead_id(), interview.getTail_id(), interview.getQuestion(), interview.getModelAnswer(), interview.getCategory().toString(), interview.getKeyword(), randomValue, likeCount, likedByUser));
     }
 
     // 4-1. 특정 카테고리 머리질문 순서대로 머리질문의 id 값 list 를 반환.
@@ -173,10 +151,7 @@ public class InterviewService {
             return "내 노트에서 삭제하였습니다.";
         }
 
-        InterviewContentBookmark bookmark = InterviewContentBookmark.builder()
-                .member(member)
-                .interviewContent(interviewContent)
-                .build();
+        InterviewContentBookmark bookmark = InterviewContentBookmark.builder().member(member).interviewContent(interviewContent).build();
 
         bookmarkRepository.save(bookmark);
 
@@ -200,8 +175,7 @@ public class InterviewService {
     }
 
     public void deleteNote(Long noteId, Member member) {
-        InterviewContentBookmark bookmark = bookmarkRepository.findById(noteId)
-            .orElseThrow(() -> new ServiceException("404", "북마크를 찾을 수 없습니다."));
+        InterviewContentBookmark bookmark = bookmarkRepository.findById(noteId).orElseThrow(() -> new ServiceException("404", "북마크를 찾을 수 없습니다."));
 
         if (!bookmark.getMember().equals(member)) {
             throw new ServiceException("403", "본인이 추가한 북마크만 삭제할 수 있습니다.");

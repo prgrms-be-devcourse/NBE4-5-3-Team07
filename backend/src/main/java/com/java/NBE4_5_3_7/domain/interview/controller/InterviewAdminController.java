@@ -7,7 +7,6 @@ import com.java.NBE4_5_3_7.domain.interview.service.InterviewAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,11 +18,14 @@ import java.util.Map;
 @Tag(name = "면접 질문 관리", description = "관리자용 API")
 @RestController
 @RequestMapping("/api/v1/admin/interview")
-@RequiredArgsConstructor
 @PreAuthorize("hasAuthority('ROLE_ADMIN')")
 public class InterviewAdminController {
 
     private final InterviewAdminService interviewAdminService;
+
+    public InterviewAdminController(InterviewAdminService interviewAdminService) {
+        this.interviewAdminService = interviewAdminService;
+    }
 
     @Operation(summary = "카테고리별 키워드 조회", description = "각 카테고리 내 키워드 목록을 조회합니다.")
     @GetMapping("/all")

@@ -16,14 +16,16 @@ import com.java.NBE4_5_3_7.domain.interview.service.InterviewService;
 import com.java.NBE4_5_3_7.domain.member.entity.Member;
 import com.java.NBE4_5_3_7.domain.member.service.MemberService;
 
-import lombok.RequiredArgsConstructor;
-
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/interview/bookmark")
 public class InterviewBookmarkController {
     private final InterviewService interviewService;
     private final MemberService memberService;
+
+    public InterviewBookmarkController(InterviewService interviewService, MemberService memberService) {
+        this.interviewService = interviewService;
+        this.memberService = memberService;
+    }
 
     @PostMapping
     public ResponseEntity<String> bookmarkAdd(@RequestParam("id") Long contentId) {

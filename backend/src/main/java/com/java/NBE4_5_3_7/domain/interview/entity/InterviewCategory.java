@@ -1,8 +1,5 @@
 package com.java.NBE4_5_3_7.domain.interview.entity;
 
-import lombok.Getter;
-
-@Getter
 public enum InterviewCategory {
     DATABASE("데이터베이스"),
     NETWORK("네트워크"),
@@ -13,6 +10,10 @@ public enum InterviewCategory {
 
     InterviewCategory(String category) {
         this.category = category;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public static InterviewCategory fromString(String category) {
