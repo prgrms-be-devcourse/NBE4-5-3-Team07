@@ -20,22 +20,22 @@ class CommunityController // RequiredArgsConstructor 대신 명시적 생성자
     (private val postService: PostService, private val memberService: MemberService) {
     @PostMapping("/article/post")
     fun articlePost(@RequestBody postRequestDto: AddPostRequestDto): ResponseEntity<PostResponseDto> {
-        return ResponseEntity.ok(postService.addPost(memberService.idFromRq, postRequestDto))
+        return ResponseEntity.ok(postService.addPost(memberService.getIdFromRq(), postRequestDto))
     }
 
     @PostMapping("/article/edit")
     fun articleEdit(@RequestBody editRequestDto: EditPostRequestDto): ResponseEntity<PostResponseDto> {
-        return ResponseEntity.ok(postService.editPost(memberService.idFromRq, editRequestDto))
+        return ResponseEntity.ok(postService.editPost(memberService.getIdFromRq(), editRequestDto))
     }
 
     @PostMapping("/article/delete")
     fun articleDelete(postId: Long): ResponseEntity<Long> {
-        return ResponseEntity.ok(postService.deletePost(memberService.idFromRq, postId))
+        return ResponseEntity.ok(postService.deletePost(memberService.getIdFromRq(), postId))
     }
 
     @GetMapping("/article")
     fun showPost(@RequestParam("id") id: Long): ResponseEntity<PostResponseDto> {
-        return ResponseEntity.ok(postService.showPost(id, memberService.idFromRq))
+        return ResponseEntity.ok(postService.showPost(id, memberService.getIdFromRq()))
     }
 
     @GetMapping("/article/list/title")
@@ -88,33 +88,33 @@ class CommunityController // RequiredArgsConstructor 대신 명시적 생성자
 
     @PostMapping("/comment/add")
     fun addComment(@RequestBody dto: AddCommentRequestDto): ResponseEntity<CommentResponseDto> {
-        val memberId = memberService.idFromRq
+        val memberId = memberService.getIdFromRq()
         val response = postService.addComment(memberId, dto)
         return ResponseEntity.ok(response)
     }
 
     @PostMapping("/comment/edit")
     fun editComment(@RequestBody dto: EditCommentRequestDto): ResponseEntity<CommentResponseDto> {
-        val memberId = memberService.idFromRq
+        val memberId = memberService.getIdFromRq()
         val response = postService.editComment(memberId, dto)
         return ResponseEntity.ok(response)
     }
 
     @PostMapping("/comment/delete")
     fun deleteComment(@RequestParam commentId: Long): ResponseEntity<Void> {
-        val memberId = memberService.idFromRq
+        val memberId = memberService.getIdFromRq()
         postService.deleteComment(memberId, commentId)
         return ResponseEntity.ok().build()
     }
 
     @GetMapping("/comment/re")
     fun showReComments(@RequestParam commentId: Long): ResponseEntity<List<CommentResponseDto>> {
-        return ResponseEntity.ok(postService.showReComments(commentId, memberService.idFromRq))
+        return ResponseEntity.ok(postService.showReComments(commentId, memberService.getIdFromRq()))
     }
 
     @GetMapping("/post/like")
     fun postLike(@RequestParam postId: Long): ResponseEntity<LikeResponseDto> {
-        return ResponseEntity.ok(postService.postLike(memberService.idFromRq, postId))
+        return ResponseEntity.ok(postService.postLike(memberService.getIdFromRq(), postId))
     }
 
     @GetMapping("/post/my")
@@ -122,6 +122,6 @@ class CommunityController // RequiredArgsConstructor 대신 명시적 생성자
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "10") size: Int
     ): ResponseEntity<List<PostListResponseDto>> {
-        return ResponseEntity.ok(postService.myPost(memberService.idFromRq, page, size))
+        return ResponseEntity.ok(postService.myPost(memberService.getIdFromRq(), page, size))
     }
 }
