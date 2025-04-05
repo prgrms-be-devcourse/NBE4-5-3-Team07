@@ -15,6 +15,13 @@ public class InterviewContentAdminRequestDto {
     public InterviewContentAdminRequestDto() {
     }
 
+    public InterviewContentAdminRequestDto(InterviewCategory interviewCategory, String newKeyword, String newQ, String newA, Object o) {
+        this.category = interviewCategory;
+        this.keyword = newKeyword;
+        this.question = newQ;
+        this.modelAnswer = newA;
+    }
+
     public Long getHeadId() {
         return headId;
     }

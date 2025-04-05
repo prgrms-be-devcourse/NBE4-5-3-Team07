@@ -41,79 +41,6 @@ public class InterviewContent {
     public InterviewContent() {
     }
 
-    public Long getInterview_content_id() {
-        return interview_content_id;
-    }
-
-    public Long getHead_id() {
-        return head_id;
-    }
-
-    public Long getTail_id() {
-        return tail_id;
-    }
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public String getModelAnswer() {
-        return modelAnswer;
-    }
-
-    public InterviewCategory getCategory() {
-        return category;
-    }
-
-    public String getKeyword() {
-        return keyword;
-    }
-
-    public boolean isHead() {
-        return head;
-    }
-
-    public boolean isHasTail() {
-        return hasTail;
-    }
-
-    public List<InterviewContentBookmark> getBookmarks() {
-        return bookmarks;
-    }
-
-    public void setCategory(InterviewCategory category) {
-        this.category = category;
-    }
-
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
-    public void setModelAnswer(String modelAnswer) {
-        this.modelAnswer = modelAnswer;
-    }
-
-
-    public void setHead_id(Long head_id) {
-        this.head_id = head_id;
-    }
-
-    public void setHead(boolean head) {
-        this.head = head;
-    }
-
-    public void setHasTail(boolean hasTail) {
-        this.hasTail = hasTail;
-    }
-
-    public void setTail_id(Long tail_id) {
-        this.tail_id = tail_id;
-    }
-
     public static InterviewContent createNewHead(String question, String modelAnswer, InterviewCategory category, String keyword) {
         InterviewContent newContent = new InterviewContent();
         newContent.question = question;
@@ -145,8 +72,94 @@ public class InterviewContent {
         return newContent;
     }
 
+    public Long getInterview_content_id() {
+        return interview_content_id;
+    }
+
+    public void setInterview_content_id(Long interview_content_id) {
+        this.interview_content_id = interview_content_id;
+    }
+
+    public Long getHead_id() {
+        return head_id;
+    }
+
+    public void setHead_id(Long head_id) {
+        this.head_id = head_id;
+    }
+
+    public Long getTail_id() {
+        return tail_id;
+    }
+
+    public void setTail_id(Long tail_id) {
+        this.tail_id = tail_id;
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    public String getModelAnswer() {
+        return modelAnswer;
+    }
+
+    public void setModelAnswer(String modelAnswer) {
+        this.modelAnswer = modelAnswer;
+    }
+
+    public InterviewCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(InterviewCategory category) {
+        this.category = category;
+    }
+
+    public String getKeyword() {
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public boolean isHead() {
+        return head;
+    }
+
+    public void setHead(boolean head) {
+        this.head = head;
+    }
+
+    public boolean isHasTail() {
+        return hasTail;
+    }
+
+    public void setHasTail(boolean hasTail) {
+        this.hasTail = hasTail;
+    }
+
+    public List<InterviewContentBookmark> getBookmarks() {
+        return bookmarks;
+    }
+
     public Long getHeadId() {
         return head_id;
+    }
+
+    public void setHeadId(Object o) {
+        if (o == null) {
+            this.head_id = null;
+        } else if (o instanceof Long) {
+            this.head_id = (Long) o;
+        } else {
+            throw new IllegalArgumentException("head_id는 Long 타입이어야 합니다.");
+        }
     }
 
     public void removeTail() {

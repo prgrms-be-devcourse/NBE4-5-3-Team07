@@ -5,7 +5,7 @@ import java.util.List;
 public class RandomRequestDto {
     private List<Long> indexList;
 
-    public RandomRequestDto(List<Long> indexList) {
+    public RandomRequestDto() {
         this.indexList = indexList;
     }
 

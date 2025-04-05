@@ -5,11 +5,15 @@ import java.util.List;
 public class KeywordContentRequestDto {
     private List<String> keywordList;
 
-    public KeywordContentRequestDto(List<String> keywordList) {
+    public KeywordContentRequestDto() {
         this.keywordList = keywordList;
     }
 
     public List<String> getKeywordList() {
         return keywordList;
+    }
+
+    public void setKeywordList(List<String> keywordList) {
+        this.keywordList = keywordList;
     }
 }

@@ -12,10 +12,6 @@ public enum InterviewCategory {
         this.category = category;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
     public static InterviewCategory fromString(String category) {
         for (InterviewCategory c : InterviewCategory.values()) {
             if (c.category.equals(category)) {
@@ -23,5 +19,9 @@ public enum InterviewCategory {
             }
         }
         throw new IllegalArgumentException("Unknown category: " + category);
+    }
+
+    public String getCategory() {
+        return category;
     }
 }

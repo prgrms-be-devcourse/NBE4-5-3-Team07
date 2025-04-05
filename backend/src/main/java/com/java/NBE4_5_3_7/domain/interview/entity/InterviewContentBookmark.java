@@ -32,6 +32,30 @@ public class InterviewContentBookmark {
         return new Builder();
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public InterviewContent getInterviewContent() {
+        return interviewContent;
+    }
+
+    public void setInterviewContent(InterviewContent interviewContent) {
+        this.interviewContent = interviewContent;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public void setMember(Member member) {
+        this.member = member;
+    }
+
     public static class Builder {
         private Long id;
         private InterviewContent interviewContent;
@@ -55,29 +79,5 @@ public class InterviewContentBookmark {
         public InterviewContentBookmark build() {
             return new InterviewContentBookmark(id, interviewContent, member);
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public InterviewContent getInterviewContent() {
-        return interviewContent;
-    }
-
-    public void setInterviewContent(InterviewContent interviewContent) {
-        this.interviewContent = interviewContent;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
     }
 }

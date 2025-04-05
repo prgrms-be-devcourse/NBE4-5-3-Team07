@@ -15,6 +15,9 @@ public class InterviewContentAdminResponseDto {
     private String modelAnswer;
     private Long likeCount;
 
+    public InterviewContentAdminResponseDto() {
+    }
+
     public InterviewContentAdminResponseDto(InterviewContent content, Long likeCount) {
         this.id = content.getInterview_content_id();
         this.headId = content.getHead_id();
