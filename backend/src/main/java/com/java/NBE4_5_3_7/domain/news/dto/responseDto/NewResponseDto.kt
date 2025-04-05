@@ -5,17 +5,17 @@ import com.java.NBE4_5_3_7.domain.news.entity.NewsItem
 
 class NewResponseDto {
     @JsonProperty("lastBuildDate")
-    private val lastBuildDate: String? = null
+    var lastBuildDate: String? = null
 
     @JsonProperty("total")
-    private val total = 0
+    var total = 0
 
     @JsonProperty("start")
-    private val start = 0
+    var start = 0
 
     @JsonProperty("display")
-    private val display = 0
+    var display = 0
 
     @JsonProperty("items")
-    private val items: List<NewsItem>? = null
+    var items: List<NewsItem>? = null
 }

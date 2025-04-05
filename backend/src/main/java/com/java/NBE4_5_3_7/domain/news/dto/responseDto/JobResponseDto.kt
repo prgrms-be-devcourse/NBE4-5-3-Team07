@@ -9,33 +9,34 @@ class JobResponseDto {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     class Job {
-        private val recrutPblntSn: Long? = null
-        private val pblntInstCd: String? = null
-        private val pbadmsStdInstCd: String? = null
-        private val instNm: String? = null
-        private val ncsCdLst: String? = null
-        private val ncsCdNmLst: String? = null
-        private val hireTypeLst: String? = null
-        private val hireTypeNmLst: String? = null
-        private val workRgnLst: String? = null
-        private val workRgnNmLst: String? = null
-        private val recrutSe: String? = null
-        private val recrutSeNm: String? = null
-        private val prefCondCn: String? = null
-        private val recrutNope: Int? = null
-        private val pbancBgngYmd: String? = null
-        private val pbancEndYmd: String? = null
-        private val recrutPbancTtl: String? = null
-        private val srcUrl: String? = null
-        private val replmprYn: String? = null
-        private val aplyQlfcCn: String? = null
-        private val disqlfcRsn: String? = null
-        private val scrnprcdrMthdExpln: String? = null
-        private val prefCn: String? = null
-        private val acbgCondLst: String? = null
-        private val acbgCondNmLst: String? = null
-        private val nonatchRsn: String? = null
-        private val ongoingYn: String? = null
-        private val decimalDay: Int? = null
+        var recrutPblntSn: Long? = null
+        var pblntInstCd: String? = null
+        var pbadmsStdInstCd: String? = null
+        var instNm: String? = null
+        var ncsCdLst: String? = null
+        var ncsCdNmLst: String? = null
+        var hireTypeLst: String? = null
+        var hireTypeNmLst: String? = null
+        var workRgnLst: String? = null
+        var workRgnNmLst: String? = null
+        var recrutSe: String? = null
+        var recrutSeNm: String? = null
+        var prefCondCn: String? = null
+        var recrutNope: Int? = null
+        var pbancBgngYmd: String? = null
+        var pbancEndYmd: String? = null
+        var recrutPbancTtl: String? = null
+        var srcUrl: String? = null
+        var replmprYn: String? = null
+        var aplyQlfcCn: String? = null
+        var disqlfcRsn: String? = null
+        var scrnprcdrMthdExpln: String? = null
+        var prefCn: String? = null
+        var acbgCondLst: String? = null
+        var acbgCondNmLst: String? = null
+        var nonatchRsn: String? = null
+        var ongoingYn: String? = null
+        var decimalDay: Int? = null
     }
+
 }
