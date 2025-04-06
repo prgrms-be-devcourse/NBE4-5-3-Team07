@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service
 import java.io.IOException
 import java.time.LocalDateTime
 
-@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -45,7 +44,7 @@ open class PaymentService {
     open fun verifyPayment(requestDto: PaymentRequestDto): PaymentResponseDto {
         val member = memberService!!.memberFromRq
         try {
-            val impUid: String? = requestDto.getImpUid()
+            val impUid: String? = requestDto.imp_uid
             val paymentResponse = iamportClient!!.paymentByImpUid(impUid)
 
             if (paymentResponse == null || paymentResponse.response == null) {
@@ -105,14 +104,16 @@ open class PaymentService {
 
             // 결제 상품이 "PREMIUM"이면 Member의 구독 플랜 변경
             if ("PREMIUM" == payment.name) {
-                PaymentService.log.info("PREMIUM 상품 결제 확인됨. 회원 {} 의 구독 상태를 PREMIUM으로 변경합니다.", member.username)
-                member.subscriptionPlan = SubscriptionPlan.PREMIUM
-                member.subscribeEndDate = LocalDateTime.now().plusDays(30)
+                println("PREMIUM 상품 결제 확인됨. 회원 ${member?.username} 의 구독 상태를 PREMIUM으로 변경합니다.")
+                if (member != null) {
+                    member.subscriptionPlan = SubscriptionPlan.PREMIUM
+                    member.subscribeEndDate = LocalDateTime.now().plusDays(30)
+                }
             }
 
             orderRepository.save(orderEntity)
         } else {
-            PaymentService.log.error("결제 정보가 존재하지 않음: " + payment.impUid)
+            println("결제 정보가 존재하지 않음: " + payment.impUid)
         }
     }
 
@@ -121,10 +122,10 @@ open class PaymentService {
         try {
             return iamportClient!!.paymentByImpUid(impUid)
         } catch (e: IamportResponseException) {
-            PaymentService.log.error("아임포트 API 호출 실패: " + e.message)
+            println("아임포트 API 호출 실패: " + e.message)
             return null
         } catch (e: IOException) {
-            PaymentService.log.error("아임포트 API 호출 실패: " + e.message)
+            println("아임포트 API 호출 실패: " + e.message)
             return null
         }
     }
@@ -149,9 +150,9 @@ open class PaymentService {
             val order = orderOptional.get()
             order.status = "cancelled" // 주문 상태를 '취소'로 업데이트
             orderRepository.save(order) // 취소된 주문 저장
-            PaymentService.log.info("회원 {} 의 PREMIUM 구독 취소 처리 완료", member.username)
+            println("회원 ${member.username} 의 PREMIUM 구독 취소 처리 완료")
         } else {
-            PaymentService.log.error("결제된 주문을 찾을 수 없습니다. 회원: {}", member.username)
+            println("결제된 주문을 찾을 수 없습니다. 회원: ${member.username}")
         }
     }
 }
