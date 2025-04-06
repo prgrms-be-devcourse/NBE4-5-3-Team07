@@ -1,25 +1,28 @@
-package com.java.NBE4_5_3_7.domain.study.entity;
+package com.java.NBE4_5_3_7.domain.study.entity
 
-import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.persistence.*
 
 @Entity
-@Data
-public class StudyContent {
+class StudyContent {
+    @JvmField
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long study_content_id;
+    var study_content_id: Long? = null
 
+    @JvmField
     @Column(name = "first_category")
     @Enumerated(EnumType.STRING)
-    private FirstCategory firstCategory;
+    var firstCategory: FirstCategory? = null
 
+    @JvmField
     @Column(name = "second_category")
-    private String secondCategory;
+    var secondCategory: String? = null
 
-    private String title;
+    @JvmField
+    var title: String? = null
 
+    @JvmField
     @Lob
     @Column(name = "body", columnDefinition = "TEXT")
-    private String body;
+    var body: String? = null
 }

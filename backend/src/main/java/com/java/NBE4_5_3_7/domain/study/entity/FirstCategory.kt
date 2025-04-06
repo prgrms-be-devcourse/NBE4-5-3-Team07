@@ -1,9 +1,6 @@
-package com.java.NBE4_5_3_7.domain.study.entity;
+package com.java.NBE4_5_3_7.domain.study.entity
 
-import lombok.Getter;
-
-@Getter
-public enum FirstCategory {
+enum class FirstCategory(val category: String) {
     ComputerArchitecture("컴퓨터구조"),
     DataStructure("자료구조"),
     Database("데이터베이스"),
@@ -12,18 +9,14 @@ public enum FirstCategory {
     SoftwareEngineering("소프트웨어엔지니어링"),
     Web("웹");
 
-    private final String category;
-
-    FirstCategory(String category) {
-        this.category = category;
-    }
-
-    public static FirstCategory fromString(String category) {
-        for (FirstCategory c : FirstCategory.values()) {
-            if (c.getCategory().equalsIgnoreCase(category) || c.name().equalsIgnoreCase(category)) {
-                return c;
+    companion object {
+        fun fromString(category: String): FirstCategory {
+            for (c in entries) {
+                if (c.category.equals(category, ignoreCase = true) || c.name.equals(category, ignoreCase = true)) {
+                    return c
+                }
             }
+            throw IllegalArgumentException("Unknown category: $category")
         }
-        throw new IllegalArgumentException("Unknown category: " + category);
     }
 }

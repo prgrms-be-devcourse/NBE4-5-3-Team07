@@ -1,114 +1,111 @@
-package com.java.NBE4_5_3_7.domain.study.service;
+package com.java.NBE4_5_3_7.domain.study.service
 
-import com.java.NBE4_5_3_7.domain.member.entity.Member;
-import com.java.NBE4_5_3_7.domain.member.service.MemberService;
-import com.java.NBE4_5_3_7.domain.study.dto.request.StudyMemoCreateRequestDto;
-import com.java.NBE4_5_3_7.domain.study.dto.request.StudyMemoRequestDto;
-import com.java.NBE4_5_3_7.domain.study.dto.response.StudyMemoResponseDto;
-import com.java.NBE4_5_3_7.domain.study.entity.FirstCategory;
-import com.java.NBE4_5_3_7.domain.study.entity.StudyContent;
-import com.java.NBE4_5_3_7.domain.study.entity.StudyMemo;
-import com.java.NBE4_5_3_7.domain.study.repository.StudyContentRepository;
-import com.java.NBE4_5_3_7.domain.study.repository.StudyMemoRepository;
-import com.java.NBE4_5_3_7.global.exception.ServiceException;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import com.java.NBE4_5_3_7.domain.member.entity.Member
+import com.java.NBE4_5_3_7.domain.member.service.MemberService
+import com.java.NBE4_5_3_7.domain.study.dto.request.StudyMemoCreateRequestDto
+import com.java.NBE4_5_3_7.domain.study.dto.request.StudyMemoRequestDto
+import com.java.NBE4_5_3_7.domain.study.dto.response.StudyMemoResponseDto
+import com.java.NBE4_5_3_7.domain.study.entity.FirstCategory
+import com.java.NBE4_5_3_7.domain.study.entity.StudyContent
+import com.java.NBE4_5_3_7.domain.study.entity.StudyMemo
+import com.java.NBE4_5_3_7.domain.study.repository.StudyContentRepository
+import com.java.NBE4_5_3_7.domain.study.repository.StudyMemoRepository
+import com.java.NBE4_5_3_7.global.exception.ServiceException
+import jakarta.transaction.Transactional
+import org.springframework.stereotype.Service
+import java.util.stream.Collectors
 
 @Service
-@RequiredArgsConstructor
-public class StudyMemoService {
-    private final StudyMemoRepository studyMemoRepository;
-    private final StudyContentRepository studyContentRepository;
-    private final StudyMemoLikeService studyMemoLikeService;
-    private final MemberService memberService;
-
+class StudyMemoService(
+    private val studyMemoRepository: StudyMemoRepository,
+    private val studyContentRepository: StudyContentRepository,
+    private val studyMemoLikeService: StudyMemoLikeService,
+    private val memberService: MemberService
+) {
     // 멤버, 학습 컨텐츠 ID, 메모 내용 저장, 중복 작성 시 수정하게끔 변경
     @Transactional
-    public void createStudyMemo(StudyMemoCreateRequestDto requestDto, Long studyContentId) {
-        Member member = memberService.getMemberFromRq();
+    fun createStudyMemo(requestDto: StudyMemoCreateRequestDto, studyContentId: Long) {
+        val member = memberService.memberFromRq
 
-        StudyContent studyContent = studyContentRepository.findById(studyContentId)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 학습 컨텐츠 입니다."));
+        val studyContent = studyContentRepository.findById(studyContentId)
+            .orElseThrow { RuntimeException("존재하지 않는 학습 컨텐츠 입니다.") }!!
 
-        StudyMemo studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContent);
+        var studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContent)
 
         if (studyMemo == null) {
-            studyMemo = new StudyMemo(requestDto.getContent(), studyContent, member, requestDto.isPublished());
-
+            studyMemo = StudyMemo(requestDto.content, studyContent, member, requestDto.isPublished)
         } else {
 //            updateStudyMemo(studyMemo.getId(), new StudyMemoRequestDto(studyMemo), member);
-            studyMemo.setMemoContent(requestDto.getContent());
-            studyMemo.setPublished(requestDto.isPublished());
+            studyMemo.memoContent = requestDto.content
+            studyMemo.isPublished = requestDto.isPublished
         }
-        studyMemoRepository.save(studyMemo);
+        studyMemoRepository.save<StudyMemo>(studyMemo)
     }
 
     // 메모 단건 조회
-    public StudyMemoResponseDto getStudyMemoByStudyMemberAndContentId(Member member, StudyContent studyContent) {
-        StudyMemo studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContent);
-        int likeCount = studyMemoLikeService.getLikeCount(studyContent.getStudy_content_id());
-        return new StudyMemoResponseDto(studyMemo, likeCount);
+    fun getStudyMemoByStudyMemberAndContentId(member: Member?, studyContent: StudyContent): StudyMemoResponseDto {
+        val studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContent)
+        val likeCount = studyMemoLikeService.getLikeCount(studyContent.study_content_id)
+        return StudyMemoResponseDto(studyMemo!!, likeCount)
     }
 
-    public List<StudyMemoResponseDto> getStudyMemosByMemberAndCategory(Member member, FirstCategory category) {
-        List<StudyMemo> memos = studyMemoRepository.findByMemberAndStudyContentCategory(member, category);
+    fun getStudyMemosByMemberAndCategory(member: Member?, category: FirstCategory?): List<StudyMemoResponseDto> {
+        val memos = studyMemoRepository.findByMemberAndStudyContentCategory(member, category)
 
-        return memos.stream()
-                .map(memo -> new StudyMemoResponseDto(
-                        memo.getId(),
-                        memo.getMemoContent(),
-                        memo.getStudyContent().getStudy_content_id(),
-                        memo.getStudyContent().getFirstCategory().getCategory(),
-                        memo.getStudyContent().getTitle(),
-                        memo.getStudyContent().getBody(),
-                        studyMemoLikeService.getLikeCount(memo.getStudyContent().getStudy_content_id())
-                ))
-                .collect(Collectors.toList());
+        return memos!!.stream()
+            .map { memo: StudyMemo? ->
+                StudyMemoResponseDto(
+                    memo!!.id,
+                    memo.memoContent,
+                    memo.studyContent!!.study_content_id,
+                    memo.studyContent!!.firstCategory!!.category,
+                    memo.studyContent!!.title,
+                    memo.studyContent!!.body,
+                    studyMemoLikeService.getLikeCount(memo.studyContent!!.study_content_id)
+                )
+            }
+            .collect(Collectors.toList())
     }
 
-    public StudyMemoResponseDto updateStudyMemo(Long studyMemoId, StudyMemoRequestDto updatedDto, Member member) {
-        StudyMemo studyMemo = studyMemoRepository.findById(studyMemoId)
-                .orElseThrow(() -> new RuntimeException("해당 메모를 찾을 수 없습니다."));
+    fun updateStudyMemo(studyMemoId: Long, updatedDto: StudyMemoRequestDto, member: Member): StudyMemoResponseDto {
+        val studyMemo = studyMemoRepository.findById(studyMemoId)
+            .orElseThrow { RuntimeException("해당 메모를 찾을 수 없습니다.") }!!
 
-        if (!studyMemo.getMember().equals(member)) {
-            throw new ServiceException("403", "본인이 작성한 메모만 수정할 수 있습니다.");
+        if (studyMemo.member != member) {
+            throw ServiceException("403", "본인이 작성한 메모만 수정할 수 있습니다.")
         }
 
-        studyMemo.setMemoContent(updatedDto.getMemoContent());
-        StudyMemo updatedMemo = studyMemoRepository.save(studyMemo);
+        studyMemo.memoContent = updatedDto.memoContent
+        val updatedMemo = studyMemoRepository.save(studyMemo)
 
-        return new StudyMemoResponseDto(
-                updatedMemo.getId(),
-                updatedMemo.getMemoContent(),
-                updatedMemo.getStudyContent().getStudy_content_id(),
-                updatedMemo.getStudyContent().getFirstCategory().getCategory(),
-                updatedMemo.getStudyContent().getTitle(),
-                updatedMemo.getStudyContent().getBody(),
-                studyMemoLikeService.getLikeCount(updatedMemo.getStudyContent().getStudy_content_id())
-        );
+        return StudyMemoResponseDto(
+            updatedMemo.id,
+            updatedMemo.memoContent,
+            updatedMemo.studyContent!!.study_content_id,
+            updatedMemo.studyContent!!.firstCategory!!.category,
+            updatedMemo.studyContent!!.title,
+            updatedMemo.studyContent!!.body,
+            studyMemoLikeService.getLikeCount(updatedMemo.studyContent!!.study_content_id)
+        )
     }
 
-    public void deleteStudyMemo(Long studyMemoId, Member member) {
-        StudyMemo studyMemo = studyMemoRepository.findById(studyMemoId)
-                .orElseThrow(() -> new RuntimeException("해당 메모를 찾을 수 없습니다."));
+    fun deleteStudyMemo(studyMemoId: Long, member: Member) {
+        val studyMemo = studyMemoRepository.findById(studyMemoId)
+            .orElseThrow { RuntimeException("해당 메모를 찾을 수 없습니다.") }!!
 
-        if (!studyMemo.getMember().equals(member)) {
-            throw new ServiceException("403", "본인이 작성한 댓글만 삭제할 수 있습니다.");
+        if (studyMemo.member != member) {
+            throw ServiceException("403", "본인이 작성한 댓글만 삭제할 수 있습니다.")
         }
 
-        studyMemoRepository.delete(studyMemo);
+        studyMemoRepository.delete(studyMemo)
     }
 
-    public List<StudyMemoResponseDto> getStudyMemoListByStudyContentId(Long studyContentId) {
-        StudyContent studyContent = studyContentRepository.findById(studyContentId).orElse(null);
-        List<StudyMemo> studyMemo = studyMemoRepository.findByStudyContent(studyContent);
-        int likeCount = studyMemoLikeService.getLikeCount(studyContentId);
-        return studyMemo.stream()
-                .map(memo -> new StudyMemoResponseDto(memo, likeCount))
-                .toList();
+    fun getStudyMemoListByStudyContentId(studyContentId: Long): List<StudyMemoResponseDto> {
+        val studyContent = studyContentRepository.findById(studyContentId).orElse(null)
+        val studyMemo = studyMemoRepository.findByStudyContent(studyContent)
+        val likeCount = studyMemoLikeService.getLikeCount(studyContentId)
+        return studyMemo!!.stream()
+            .map { memo: StudyMemo? -> StudyMemoResponseDto(memo!!, likeCount) }
+            .toList()
     }
 }

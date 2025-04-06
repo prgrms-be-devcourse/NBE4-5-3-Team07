@@ -1,25 +1,19 @@
-package com.java.NBE4_5_3_7.domain.study.dto;
+package com.java.NBE4_5_3_7.domain.study.dto.response
 
-import com.java.NBE4_5_3_7.domain.study.entity.StudyContent;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import com.java.NBE4_5_3_7.domain.study.entity.StudyContent
 
-@Getter
-@Setter
-@RequiredArgsConstructor
-public class StudyContentDetailDto {
-    private Long id;
-    private String title;
-    private String body;
-    private String firstCategory;
-    private String secondCategory;
+class StudyContentDetailDto {
+    var id: Long? = null
+    var title: String? = null
+    var body: String? = null
+    var firstCategory: String? = null
+    var secondCategory: String? = null
 
-    public StudyContentDetailDto(StudyContent studyContent) {
-        this.id = studyContent.getStudy_content_id();
-        this.title = studyContent.getTitle();
-        this.body = studyContent.getBody();
-        this.firstCategory = studyContent.getFirstCategory().name();
-        this.secondCategory = studyContent.getSecondCategory();
+    constructor(studyContent: StudyContent) {
+        this.id = studyContent.study_content_id
+        this.title = studyContent.title
+        this.body = studyContent.body
+        this.firstCategory = studyContent.firstCategory.name
+        this.secondCategory = studyContent.secondCategory
     }
 }

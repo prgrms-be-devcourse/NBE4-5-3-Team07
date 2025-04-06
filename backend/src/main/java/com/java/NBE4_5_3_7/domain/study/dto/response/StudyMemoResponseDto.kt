@@ -1,28 +1,40 @@
-package com.java.NBE4_5_3_7.domain.study.dto.response;
+package com.java.NBE4_5_3_7.domain.study.dto.response
 
-import com.java.NBE4_5_3_7.domain.study.entity.StudyMemo;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.java.NBE4_5_3_7.domain.study.entity.StudyMemo
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class StudyMemoResponseDto {
-	private Long memoId;
-	private String memoContent;
-	private Long studyContentId;
-	private String firstCategory;
-	private String title;
-	private String body;
-	private int likeCount;
+class StudyMemoResponseDto {
+    var memoId: Long? = null
+    var memoContent: String? = null
+    var studyContentId: Long? = null
+    var firstCategory: String? = null
+    var title: String? = null
+    var body: String? = null
+    var likeCount: Int = 0
 
-	public StudyMemoResponseDto(StudyMemo studyMemo, int likeCount) {
-		this.memoId = studyMemo.getId();
-		this.memoContent = studyMemo.getMemoContent();
-		this.studyContentId = studyMemo.getStudyContent().getStudy_content_id();
-		this.likeCount = likeCount;
-	}
+    constructor(studyMemo: StudyMemo, likeCount: Int) {
+        this.memoId = studyMemo.id
+        this.memoContent = studyMemo.memoContent
+        this.studyContentId = studyMemo.studyContent.study_content_id
+        this.likeCount = likeCount
+    }
+
+    constructor(
+        memoId: Long?,
+        memoContent: String?,
+        studyContentId: Long?,
+        firstCategory: String?,
+        title: String?,
+        body: String?,
+        likeCount: Int
+    ) {
+        this.memoId = memoId
+        this.memoContent = memoContent
+        this.studyContentId = studyContentId
+        this.firstCategory = firstCategory
+        this.title = title
+        this.body = body
+        this.likeCount = likeCount
+    }
+
+    constructor()
 }

@@ -1,68 +1,73 @@
-package com.java.NBE4_5_3_7.domain.study.service;
+package com.java.NBE4_5_3_7.domain.study.service
 
-import com.java.NBE4_5_3_7.domain.study.dto.StudyContentDetailDto;
-import com.java.NBE4_5_3_7.domain.study.entity.FirstCategory;
-import com.java.NBE4_5_3_7.domain.study.entity.StudyContent;
-import com.java.NBE4_5_3_7.domain.study.repository.StudyContentRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.java.NBE4_5_3_7.domain.study.dto.response.StudyContentDetailDto
+import com.java.NBE4_5_3_7.domain.study.entity.FirstCategory
+import com.java.NBE4_5_3_7.domain.study.entity.StudyContent
+import com.java.NBE4_5_3_7.domain.study.repository.StudyContentRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
-@RequiredArgsConstructor
-public class StudyContentService {
-    private final StudyContentRepository studyContentRepository;
-
-    public StudyContent findById(Long id) {
+class StudyContentService(private val studyContentRepository: StudyContentRepository) {
+    fun findById(id: Long): StudyContent? {
         return studyContentRepository.findById(id)
-                .orElse(null);
+            .orElse(null)
     }
 
-    public Map<String, List<String>> getAllCategory() {
-        Map<String, List<String>> categories = new HashMap<>();
-        List<FirstCategory> firstCategories = studyContentRepository.findDistinctFirstCategories();
-        for (FirstCategory category : firstCategories) {
-            String firstCategory = String.valueOf(category);
-            List<String> second = getSecondCategoryByFirstCategory(firstCategory);
-            categories.put(String.valueOf(firstCategory), second);
+    val allCategory: Map<String, List<String?>?>
+        get() {
+            val categories: MutableMap<String, List<String?>?> =
+                HashMap()
+            val firstCategories =
+                studyContentRepository.findDistinctFirstCategories()
+            for (category in firstCategories!!) {
+                val firstCategory = category.toString()
+                val second = getSecondCategoryByFirstCategory(firstCategory)
+                categories[firstCategory.toString()] = second
+            }
+            return categories
         }
-        return categories;
-    }
 
-    public List<String> getFirstCategory() {
-        List<FirstCategory> firstCategories = studyContentRepository.findDistinctFirstCategories();
-        return firstCategories.stream()
-                .map(FirstCategory::getCategory)
-                .toList();
-    }
+    val firstCategory: List<String>
+        get() {
+            val firstCategories =
+                studyContentRepository.findDistinctFirstCategories()
+            return firstCategories!!.stream()
+                .map<String>(FirstCategory::category)
+                .toList()
+        }
 
-    public List<String> getSecondCategoryByFirstCategory(String firstCategory) {
-        FirstCategory category = FirstCategory.valueOf(firstCategory);
-        return studyContentRepository.findDistinctBySecondCategory(category);
+    fun getSecondCategoryByFirstCategory(firstCategory: String): List<String?>? {
+        val category = FirstCategory.valueOf(firstCategory)
+        return studyContentRepository.findDistinctBySecondCategory(category)
     }
 
     // 다건 조회 (페이징 처리 추가)
-    public Page<StudyContentDetailDto> getStudyContentsByCategory(String firstCategory, String secondCategory, Pageable pageable) {
-        FirstCategory category = FirstCategory.valueOf(firstCategory);
-        Page<StudyContent> studyContentsPage = studyContentRepository
-                .findByFirstCategoryAndSecondCategory(category, secondCategory, pageable);
+    fun getStudyContentsByCategory(
+        firstCategory: String,
+        secondCategory: String?,
+        pageable: Pageable?
+    ): Page<StudyContentDetailDto> {
+        val category = FirstCategory.valueOf(firstCategory)
+        val studyContentsPage = studyContentRepository
+            .findByFirstCategoryAndSecondCategory(category, secondCategory, pageable)
 
-        return studyContentsPage.map(StudyContentDetailDto::new);
+        return studyContentsPage!!.map { studyContent: StudyContent? ->
+            StudyContentDetailDto(
+                studyContent!!
+            )
+        }
     }
 
     @Transactional
-    public void updateStudyContent(Long studyContentId, String updateContent) {
-        StudyContent studyContent = studyContentRepository.findById(studyContentId).orElse(null);
-        studyContent.setBody(updateContent);
+    fun updateStudyContent(studyContentId: Long, updateContent: String?) {
+        val studyContent = studyContentRepository.findById(studyContentId).orElse(null)
+        studyContent!!.body = updateContent
     }
 
-    public void deleteStudyContent(Long studyContentId) {
-        studyContentRepository.deleteById(studyContentId);
+    fun deleteStudyContent(studyContentId: Long) {
+        studyContentRepository.deleteById(studyContentId)
     }
 }

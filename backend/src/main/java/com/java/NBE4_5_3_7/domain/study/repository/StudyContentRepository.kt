@@ -1,27 +1,25 @@
-package com.java.NBE4_5_3_7.domain.study.repository;
+package com.java.NBE4_5_3_7.domain.study.repository
 
-import com.java.NBE4_5_3_7.domain.study.entity.FirstCategory;
-import com.java.NBE4_5_3_7.domain.study.entity.StudyContent;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import com.java.NBE4_5_3_7.domain.study.entity.FirstCategory
+import com.java.NBE4_5_3_7.domain.study.entity.StudyContent
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import java.util.*
 
-import java.util.List;
-import java.util.Optional;
-
-public interface StudyContentRepository extends JpaRepository<StudyContent, Long> {
-
+interface StudyContentRepository : JpaRepository<StudyContent?, Long?> {
     @Query("SELECT DISTINCT s.firstCategory FROM StudyContent s")
-    List<FirstCategory> findDistinctFirstCategories();
+    fun findDistinctFirstCategories(): List<FirstCategory?>?
 
     @Query("SELECT DISTINCT s.secondCategory FROM StudyContent s WHERE s.firstCategory = :firstCategory")
-    List<String> findDistinctBySecondCategory(FirstCategory firstCategory);
+    fun findDistinctBySecondCategory(firstCategory: FirstCategory?): List<String?>?
 
-    Page<StudyContent> findByFirstCategory(FirstCategory firstCategory, Pageable pageable);
+    fun findByFirstCategory(firstCategory: FirstCategory?, pageable: Pageable?): Page<StudyContent?>?
 
-    Page<StudyContent> findByFirstCategoryAndSecondCategory(
-            FirstCategory firstCategory, String secondCategory, Pageable pageable);
+    fun findByFirstCategoryAndSecondCategory(
+        firstCategory: FirstCategory?, secondCategory: String?, pageable: Pageable?
+    ): Page<StudyContent?>?
 
-    Optional<StudyContent> findByTitle(String title);
+    fun findByTitle(title: String?): Optional<StudyContent?>?
 }

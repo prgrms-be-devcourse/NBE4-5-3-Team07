@@ -1,59 +1,51 @@
-package com.java.NBE4_5_3_7.domain.study.service;
+package com.java.NBE4_5_3_7.domain.study.service
 
-import com.java.NBE4_5_3_7.domain.member.entity.Member;
-import com.java.NBE4_5_3_7.domain.member.service.MemberService;
-import com.java.NBE4_5_3_7.domain.study.entity.StudyMemo;
-import com.java.NBE4_5_3_7.domain.study.entity.StudyMemoLike;
-import com.java.NBE4_5_3_7.domain.study.repository.StudyMemoLikeRepository;
-import com.java.NBE4_5_3_7.domain.study.repository.StudyMemoRepository;
-import lombok.RequiredArgsConstructor;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+import com.java.NBE4_5_3_7.domain.member.service.MemberService
+import com.java.NBE4_5_3_7.domain.study.entity.StudyMemoLike
+import com.java.NBE4_5_3_7.domain.study.repository.StudyMemoLikeRepository
+import com.java.NBE4_5_3_7.domain.study.repository.StudyMemoRepository
+import org.redisson.api.RedissonClient
+import org.springframework.stereotype.Service
+import java.util.concurrent.TimeUnit
 
 @Service
-@RequiredArgsConstructor
-public class StudyMemoLikeService {
-    private final StudyMemoLikeRepository studyMemoLikeRepository;
-    private final StudyMemoRepository studyMemoRepository;
-    private final MemberService memberService;
-    private final RedissonClient redissonClient;
-
-    public int getLikeCount(Long studyMemoId) {
-        return studyMemoLikeRepository.countByStudyMemoId(studyMemoId);
+class StudyMemoLikeService(
+    private val studyMemoLikeRepository: StudyMemoLikeRepository,
+    private val studyMemoRepository: StudyMemoRepository,
+    private val memberService: MemberService,
+    private val redissonClient: RedissonClient
+) {
+    fun getLikeCount(studyMemoId: Long?): Int {
+        return studyMemoLikeRepository.countByStudyMemoId(studyMemoId)
     }
 
-    public String memoLike(Long studyMemoId) {
-        StudyMemo studyMemo = studyMemoRepository.findById(studyMemoId).orElse(null);
-        Member member = memberService.getMemberFromRq();
+    fun memoLike(studyMemoId: Long): String {
+        val studyMemo = studyMemoRepository.findById(studyMemoId).orElse(null)
+        val member = memberService.memberFromRq
 
-        String lockKey = "lock:interview:like:" + studyMemoId;
-        RLock lock = redissonClient.getLock(lockKey);
+        val lockKey = "lock:interview:like:$studyMemoId"
+        val lock = redissonClient.getLock(lockKey)
 
-        boolean isLocked = false;
+        var isLocked = false
         try {
-            isLocked = lock.tryLock(5, 10, TimeUnit.SECONDS);
+            isLocked = lock.tryLock(5, 10, TimeUnit.SECONDS)
             if (!isLocked) {
-                throw new RuntimeException("시스템이 바빠 요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요.");
+                throw RuntimeException("시스템이 바빠 요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요.")
             }
-            Optional<StudyMemoLike> existingLike = studyMemoLikeRepository.findByStudyMemo(studyMemo);
-            if (existingLike.isPresent()) {
-                studyMemoLikeRepository.delete(existingLike.get());
-                return "좋아요 취소";
+            val existingLike = studyMemoLikeRepository.findByStudyMemo(studyMemo)
+            if (existingLike!!.isPresent) {
+                studyMemoLikeRepository.delete(existingLike.get())
+                return "좋아요 취소"
             } else {
-                studyMemoLikeRepository.save(new StudyMemoLike(member, studyMemo));
-                return "좋아요 추가";
+                studyMemoLikeRepository.save(StudyMemoLike(member, studyMemo))
+                return "좋아요 추가"
             }
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("락 획득 중 인터럽트가 발생했습니다.", e);
+        } catch (e: InterruptedException) {
+            Thread.currentThread().interrupt()
+            throw RuntimeException("락 획득 중 인터럽트가 발생했습니다.", e)
         } finally {
-            if (isLocked && lock.isHeldByCurrentThread()) {
-                lock.unlock();
+            if (isLocked && lock.isHeldByCurrentThread) {
+                lock.unlock()
             }
         }
     }
