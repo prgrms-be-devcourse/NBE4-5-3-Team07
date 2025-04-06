@@ -13,7 +13,7 @@ class StudyContentDetailDto {
         this.id = studyContent.study_content_id
         this.title = studyContent.title
         this.body = studyContent.body
-        this.firstCategory = studyContent.firstCategory.name
+        this.firstCategory = studyContent.firstCategory?.name
         this.secondCategory = studyContent.secondCategory
     }
 }

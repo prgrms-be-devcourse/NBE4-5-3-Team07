@@ -21,7 +21,7 @@ class StudyMemoController(
     @PostMapping("/create/{studyContentId}")
     fun createStudyMemo(
         @RequestBody requestDto: StudyMemoCreateRequestDto,
-        @PathVariable studyContentId: Long?
+        @PathVariable studyContentId: Long
     ): ResponseEntity<String> {
         println(requestDto.isPublished)
         studyMemoService.createStudyMemo(requestDto, studyContentId)
@@ -30,7 +30,7 @@ class StudyMemoController(
 
     /** 학습 컨텐츠에 대한 나의 메모 조회 */
     @GetMapping("/{studyContentId}")
-    fun getStudyMemoByMemberAndStudyContentId(@PathVariable("studyContentId") studyContentId: Long?): ResponseEntity<StudyMemoResponseDto> {
+    fun getStudyMemoByMemberAndStudyContentId(@PathVariable("studyContentId") studyContentId: Long): ResponseEntity<StudyMemoResponseDto> {
         val member = memberService.memberFromRq
         val studyContent = studyContentService.findById(studyContentId)
         return ResponseEntity.ok(studyMemoService.getStudyMemoByStudyMemberAndContentId(member, studyContent))
@@ -38,7 +38,7 @@ class StudyMemoController(
 
     /** 학습 컨텐츠 별 사용자들의 공개 메모 리스트 반환 */
     @GetMapping("/list/{studyContentId}")
-    fun getStudyMemoListByMemberAndStudyContentId(@PathVariable studyContentId: Long?): ResponseEntity<List<StudyMemoResponseDto>> {
+    fun getStudyMemoListByMemberAndStudyContentId(@PathVariable studyContentId: Long): ResponseEntity<List<StudyMemoResponseDto>> {
         return ResponseEntity.ok(studyMemoService.getStudyMemoListByStudyContentId(studyContentId))
     }
 
@@ -55,8 +55,8 @@ class StudyMemoController(
     /** 메모 수정 */
     @PatchMapping("/{studyMemoId}")
     fun updateStudyMemo(
-        @PathVariable studyMemoId: Long?,
-        @RequestBody updatedDto: StudyMemoRequestDto?
+        @PathVariable studyMemoId: Long,
+        @RequestBody updatedDto: StudyMemoRequestDto
     ): ResponseEntity<StudyMemoResponseDto> {
         val member = memberService.memberFromRq
 
@@ -66,7 +66,7 @@ class StudyMemoController(
 
     /** 메모 삭제 */
     @DeleteMapping("/{studyMemoId}")
-    fun deleteStudyMemo(@PathVariable studyMemoId: Long?): ResponseEntity<String> {
+    fun deleteStudyMemo(@PathVariable studyMemoId: Long): ResponseEntity<String> {
         val member = memberService.memberFromRq
 
         studyMemoService.deleteStudyMemo(studyMemoId, member)

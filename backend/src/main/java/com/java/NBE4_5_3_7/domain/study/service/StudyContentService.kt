@@ -25,17 +25,16 @@ class StudyContentService(private val studyContentRepository: StudyContentReposi
             for (category in firstCategories!!) {
                 val firstCategory = category.toString()
                 val second = getSecondCategoryByFirstCategory(firstCategory)
-                categories[firstCategory.toString()] = second
+                categories[firstCategory] = second
             }
             return categories
         }
 
     val firstCategory: List<String>
         get() {
-            val firstCategories =
-                studyContentRepository.findDistinctFirstCategories()
+            val firstCategories = studyContentRepository.findDistinctFirstCategories()
             return firstCategories!!.stream()
-                .map<String>(FirstCategory::category)
+                .map { it?.category.toString() }
                 .toList()
         }
 

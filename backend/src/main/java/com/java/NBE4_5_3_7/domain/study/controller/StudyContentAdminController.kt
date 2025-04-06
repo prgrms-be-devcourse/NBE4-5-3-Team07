@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*
 class StudyContentAdminController(private val studyContentAdminService: StudyContentAdminService) {
     @get:GetMapping("/all")
     @get:Operation(summary = "모든 카테고리 조회", description = "첫 번째 및 두 번째 카테고리 목록을 조회합니다.")
-    val allCategory: ResponseEntity<Map<String, List<String>>>
+    val allCategory: ResponseEntity<Map<String, List<String?>?>>
         get() = ResponseEntity.ok(
             studyContentAdminService.allCategory
         )
@@ -53,14 +53,14 @@ class StudyContentAdminController(private val studyContentAdminService: StudyCon
 
     @Operation(summary = "학습 콘텐츠 상세 조회", description = "지정된 ID의 학습 콘텐츠 정보를 조회합니다.")
     @GetMapping("/{studyContentId}")
-    fun getStudyContentById(@PathVariable studyContentId: Long?): ResponseEntity<StudyContentDetailDto> {
+    fun getStudyContentById(@PathVariable studyContentId: Long): ResponseEntity<StudyContentDetailDto> {
         return ResponseEntity.ok(studyContentAdminService.getStudyContentById(studyContentId))
     }
 
     @Operation(summary = "학습 콘텐츠 수정", description = "지정된 ID의 학습 콘텐츠를 수정합니다.")
     @PutMapping("/{studyContentId}")
     fun updateStudyContent(
-        @PathVariable studyContentId: Long?,
+        @PathVariable studyContentId: Long,
         @RequestBody requestDto: StudyContentUpdateRequestDto
     ): ResponseEntity<String> {
         studyContentAdminService.updateStudyContent(studyContentId, requestDto)
@@ -69,7 +69,7 @@ class StudyContentAdminController(private val studyContentAdminService: StudyCon
 
     @Operation(summary = "학습 콘텐츠 삭제", description = "지정된 ID의 학습 콘텐츠를 삭제합니다.")
     @DeleteMapping("/{studyContentId}")
-    fun deleteStudyContent(@PathVariable studyContentId: Long?): ResponseEntity<String> {
+    fun deleteStudyContent(@PathVariable studyContentId: Long): ResponseEntity<String> {
         studyContentAdminService.deleteStudyContent(studyContentId)
         return ResponseEntity.ok("delete success")
     }

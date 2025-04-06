@@ -3,7 +3,7 @@ package com.java.NBE4_5_3_7.domain.study.dto.request
 import io.swagger.v3.oas.annotations.media.Schema
 
 class StudyContentCreateRequestDto {
-    @kotlin.jvm.JvmField
+    @JvmField
     @Schema(description = "첫 번째 카테고리 (기존에 존재하는 카테고리 중에서 선택)", example = "Database")
     var firstCategory: String? = null
 

@@ -4,17 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 class NewsItem {
     @JsonProperty("title")
-    private var title: String? = null
+    var title: String? = null
 
     @JsonProperty("originallink")
-    private var originallink: String? = null
+    var originallink: String? = null
 
     @JsonProperty("link")
-    private var link: String? = null
+    var link: String? = null
 
     @JsonProperty("description")
-    private var description: String? = null
+    var description: String? = null
 
     @JsonProperty("pubDate")
-    private var pubDate: String? = null
+     var pubDate: String? = null
 }

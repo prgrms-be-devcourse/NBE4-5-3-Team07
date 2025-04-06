@@ -43,9 +43,9 @@ class StudyMemoService(
     }
 
     // 메모 단건 조회
-    fun getStudyMemoByStudyMemberAndContentId(member: Member?, studyContent: StudyContent): StudyMemoResponseDto {
+    fun getStudyMemoByStudyMemberAndContentId(member: Member?, studyContent: StudyContent?): StudyMemoResponseDto {
         val studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContent)
-        val likeCount = studyMemoLikeService.getLikeCount(studyContent.study_content_id)
+        val likeCount = studyMemoLikeService.getLikeCount(studyContent?.study_content_id)
         return StudyMemoResponseDto(studyMemo!!, likeCount)
     }
 

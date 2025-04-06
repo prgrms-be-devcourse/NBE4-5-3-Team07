@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("api/v1/studyMemo/like")
 class StudyMemoLikeController(private val studyMemoLikeService: StudyMemoLikeService) {
     @PostMapping("/{studyMemoId}")
-    fun saveStudyMemoLike(@PathVariable studyMemoId: Long?): ResponseEntity<String> {
+    fun saveStudyMemoLike(@PathVariable studyMemoId: Long): ResponseEntity<String> {
         return ResponseEntity.ok(studyMemoLikeService.memoLike(studyMemoId))
     }
 }

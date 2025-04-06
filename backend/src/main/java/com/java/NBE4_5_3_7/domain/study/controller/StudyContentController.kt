@@ -16,20 +16,20 @@ class StudyContentController(private val studyContentService: StudyContentServic
         get() = ResponseEntity.ok(studyContentService.firstCategory)
 
     @get:GetMapping("/all")
-    val allCategory: ResponseEntity<Map<String, List<String>>>
+    val allCategory: ResponseEntity<Map<String, List<String?>?>>
         get() = ResponseEntity.ok(
             studyContentService.allCategory
         )
 
     @GetMapping("/{firstCategory}")
-    fun getSecondCategory(@PathVariable firstCategory: String?): ResponseEntity<List<String>> {
+    fun getSecondCategory(@PathVariable firstCategory: String): ResponseEntity<List<String?>?> {
         return ResponseEntity.ok(studyContentService.getSecondCategoryByFirstCategory(firstCategory))
     }
 
     // 다건 조회
     @GetMapping("/{firstCategory}/{secondCategory}")
     fun getStudyContentByCategory(
-        @PathVariable firstCategory: String?,
+        @PathVariable firstCategory: String,
         @PathVariable secondCategory: String?,
         @RequestParam(defaultValue = "0") page: Int,
         @RequestParam(defaultValue = "1") size: Int
@@ -42,7 +42,7 @@ class StudyContentController(private val studyContentService: StudyContentServic
 
     @PutMapping("/update/{studyContentId}")
     fun updateStudyContent(
-        @PathVariable("studyContentId") studyContentId: Long?,
+        @PathVariable("studyContentId") studyContentId: Long,
         @RequestBody requestDto: StudyContentUpdateRequestDto
     ): ResponseEntity<String> {
         studyContentService.updateStudyContent(studyContentId, requestDto.updateContent)
@@ -50,7 +50,7 @@ class StudyContentController(private val studyContentService: StudyContentServic
     }
 
     @DeleteMapping("/delete/{studyContentId}")
-    fun deleteStudyContent(@PathVariable("studyContentId") studyContentId: Long?): ResponseEntity<String> {
+    fun deleteStudyContent(@PathVariable("studyContentId") studyContentId: Long): ResponseEntity<String> {
         studyContentService.deleteStudyContent(studyContentId)
         return ResponseEntity.ok("delete studyContent")
     }

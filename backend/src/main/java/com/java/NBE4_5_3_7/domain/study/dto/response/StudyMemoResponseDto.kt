@@ -14,7 +14,7 @@ class StudyMemoResponseDto {
     constructor(studyMemo: StudyMemo, likeCount: Int) {
         this.memoId = studyMemo.id
         this.memoContent = studyMemo.memoContent
-        this.studyContentId = studyMemo.studyContent.study_content_id
+        this.studyContentId = studyMemo.studyContent?.study_content_id
         this.likeCount = likeCount
     }
 

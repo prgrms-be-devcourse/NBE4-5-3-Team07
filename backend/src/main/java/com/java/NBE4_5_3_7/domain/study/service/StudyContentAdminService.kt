@@ -29,15 +29,15 @@ class StudyContentAdminService(private val studyContentRepository: StudyContentR
                 val firstCategory = category?.name
                 val secondCategories =
                     studyContentRepository.findDistinctBySecondCategory(category)
-                categories[firstCategory] = secondCategories
+                categories[firstCategory.toString()] = secondCategories
             }
             return categories
         }
 
-    fun getPagedStudyContentsByCategory(firstCategory: String, pageable: Pageable?): Page<StudyContentDetailDto> {
+    fun getPagedStudyContentsByCategory(firstCategory: String?, pageable: Pageable?): Page<StudyContentDetailDto> {
         val category: FirstCategory
         try {
-            category = FirstCategory.fromString(firstCategory)
+            category = FirstCategory.fromString(firstCategory.toString())
         } catch (e: IllegalArgumentException) {
             throw ServiceException("400", "올바르지 않은 첫 번째 카테고리 값입니다: $firstCategory")
         }
@@ -56,13 +56,13 @@ class StudyContentAdminService(private val studyContentRepository: StudyContentR
     }
 
     fun getPagedStudyContentsByCategories(
-        firstCategory: String,
-        secondCategory: String,
+        firstCategory: String?,
+        secondCategory: String?,
         pageable: Pageable?
     ): Page<StudyContentDetailDto> {
         val category: FirstCategory
         try {
-            category = FirstCategory.fromString(firstCategory)
+            category = FirstCategory.fromString(firstCategory.toString())
         } catch (e: IllegalArgumentException) {
             throw ServiceException("400", "올바르지 않은 첫 번째 카테고리 값입니다: $firstCategory")
         }
@@ -143,9 +143,9 @@ class StudyContentAdminService(private val studyContentRepository: StudyContentR
     fun createStudyContent(requestDto: StudyContentCreateRequestDto): StudyContentDetailDto {
         val firstCategory: FirstCategory
         try {
-            firstCategory = FirstCategory.fromString(requestDto.getFirstCategory())
+            firstCategory = FirstCategory.fromString(requestDto.firstCategory.toString())
         } catch (e: IllegalArgumentException) {
-            throw ServiceException("400", "존재하지 않는 첫 번째 카테고리입니다: " + requestDto.getFirstCategory())
+            throw ServiceException("400", "존재하지 않는 첫 번째 카테고리입니다: " + requestDto.firstCategory.toString())
         }
 
         if (requestDto.secondCategory == null || requestDto.secondCategory!!.trim { it <= ' ' }
