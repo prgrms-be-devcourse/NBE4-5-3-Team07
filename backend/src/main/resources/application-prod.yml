@@ -80,6 +80,7 @@ spring:
 redisson:
   address: ${redisson.elasticache-address}
 
+
 custom:
   jwt:
     secret-key: ${security.jwt.secret-key}
