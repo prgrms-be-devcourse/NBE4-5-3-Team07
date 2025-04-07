@@ -1,514 +1,555 @@
-package com.java.NBE4_5_3_7.domain.interview.service;
+package com.java.NBE4_5_3_7.domain.interview.service
 
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewCategory;
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent;
-import com.java.NBE4_5_3_7.domain.interview.entity.dto.request.InterviewContentAdminRequestDto;
-import com.java.NBE4_5_3_7.domain.interview.entity.dto.response.InterviewContentAdminResponseDto;
-import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentAdminRepository;
-import com.java.NBE4_5_3_7.global.exception.ServiceException;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewCategory
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent
+import com.java.NBE4_5_3_7.domain.interview.entity.dto.request.InterviewContentAdminRequestDto
+import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentAdminRepository
+import com.java.NBE4_5_3_7.global.exception.ServiceException
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
+import java.util.*
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
-@ExtendWith(MockitoExtension.class)
 class InterviewAdminServiceTest {
 
-    @Mock
-    InterviewContentAdminRepository repository;
+    private val repository: InterviewContentAdminRepository = mockk(relaxed = true)
+    private lateinit var service: InterviewAdminService
 
-    @InjectMocks
-    InterviewAdminService service;
-
+    @BeforeEach
+    fun setUp() {
+        service = InterviewAdminService(repository)
+    }
 
     @Test
-    @DisplayName("카테고리 키워드 목록 조회 성공 (DATABASE)")
-    void getCategoryKeywords_success() {
+    @DisplayName("카테고리 키워드 목록 조회 성공")
+    fun getCategoryKeywords_success() {
         // given
-        InterviewCategory category = InterviewCategory.DATABASE;
-        List<String> keywords = List.of(
-                "sequence", "DBMS", "view", "정규화", "이상현상", "DB설계",
-                "무결성", "Oracle", "Transaction", "JDBC", "Index", "MySQL"
-        );
-
-        when(repository.findUniqueCategories()).thenReturn(List.of(category));
-        when(repository.findUniqueKeywordsByCategory(category)).thenReturn(keywords);
+        val category = InterviewCategory.DATABASE
+        val keywords = listOf(
+            "sequence", "DBMS", "view", "정규화", "이상현상", "DB설계",
+            "무결성", "Oracle", "Transaction", "JDBC", "Index", "MySQL"
+        )
+        every { repository.findUniqueCategories() } returns listOf(category)
+        every { repository.findUniqueKeywordsByCategory(category) } returns keywords
 
         // when
-        Map<String, List<String>> result = service.getCategoryKeywords();
+        val result = service.categoryKeywords
 
         // then
-        assertThat(result).containsKey("DATABASE");
-        assertThat(result.get("DATABASE")).containsExactlyElementsOf(keywords);
+        assertThat(result).containsKey("DATABASE")
+        val dbKeywords = requireNotNull(result["DATABASE"]) { "DATABASE 키워드가 존재하지 않습니다." }
+        assertThat(dbKeywords).containsExactlyElementsOf(keywords)
     }
 
     @Test
     @DisplayName("카테고리 목록이 없는 경우 - 예외 발생")
-    void getCategoryKeywords_noCategories() {
-        // given
-        when(repository.findUniqueCategories()).thenReturn(List.of());
+    fun getCategoryKeywords_noCategories() {
+        every { repository.findUniqueCategories() } returns emptyList()
 
-        // then
-        assertThatThrownBy(() -> service.getCategoryKeywords())
-                .isInstanceOf(ServiceException.class)
-                .hasMessageContaining("등록된 면접 질문 카테고리");
+        val exception = assertThrows<ServiceException> {
+            service.categoryKeywords
+        }
+
+        assertThat(exception.message).contains("등록된 면접 질문 카테고리")
     }
 
     @Test
     @DisplayName("특정 카테고리에 키워드가 없는 경우 - 빈 리스트 반환")
-    void getCategoryKeywords_categoryWithoutKeywords() {
+    fun getCategoryKeywords_noContent() {
         // given
-        InterviewCategory category = InterviewCategory.DATABASE;
-
-        when(repository.findUniqueCategories()).thenReturn(List.of(category));
-        when(repository.findUniqueKeywordsByCategory(category)).thenReturn(List.of());
+        val category = InterviewCategory.DATABASE
+        every { repository.findUniqueCategories() } returns listOf(category)
+        every { repository.findUniqueKeywordsByCategory(category) } returns emptyList()
 
         // when
-        Map<String, List<String>> result = service.getCategoryKeywords();
+        val result = service.categoryKeywords
 
         // then
-        assertThat(result).containsKey("DATABASE");
-        assertThat(result.get("DATABASE")).isEmpty();
+        assertThat(result).containsKey("DATABASE")
+        val dbKeywords = requireNotNull(result["DATABASE"]) { "DATABASE 키워드가 존재하지 않습니다." }
+        assertThat(dbKeywords).isEmpty()
     }
 
     @Test
     @DisplayName("카테고리별 면접 질문 조회 성공")
-    void getInterviewsByCategory_success() {
-        // Given
-        InterviewCategory category = InterviewCategory.SPRING;
-        int page = 0, size = 10;
+    fun getInterviewsByCategory_success() {
+        // given
+        val category = InterviewCategory.SPRING
+        val page = 0
+        val size = 10
 
-        InterviewContent content = new InterviewContent();
-        content.setInterviewContentId(1L);
-        content.setKeyword("DI");
-        content.setCategory(category);
-        content.setQuestion("DI란 무엇인가?");
-        content.setModelAnswer("DI는 의존성을 외부에서 주입하는 방식입니다.");
-        content.setHead(true);
-        content.setHasTail(false);
+        val content = InterviewContent().apply {
+            interviewContentId = 1L
+            keyword = "DI"
+            this.category = category
+            question = "DI란 무엇인가?"
+            modelAnswer = "DI는 의존성을 외부에서 주입하는 방식입니다."
+            isHead = true
+            hasTail = false
+        }
 
-        Page<InterviewContent> contentPage = new PageImpl<>(List.of(content));
+        val contentPage = PageImpl(listOf(content))
 
-        when(repository.findByCategory(eq(category), any(Pageable.class))).thenReturn(contentPage);
-        when(repository.countLikesByInterviewContentId(anyLong())).thenReturn(5L);
+        every { repository.findByCategory(eq(category), any<Pageable>()) } returns contentPage
+        every { repository.countLikesByInterviewContentId(1L) } returns 5L
 
-        // When
-        Page<InterviewContentAdminResponseDto> result = service.getInterviewsByCategory(category, page, size);
+        // when
+        val result = service.getInterviewsByCategory(category, page, size)
 
-        // Then
-        assertThat(result.getContent()).hasSize(1);
-        assertThat(result.getContent().getFirst().getId()).isEqualTo(content.getInterviewContentId());
-        assertThat(result.getContent().getFirst().getLikeCount()).isEqualTo(5L);
+        // then
+        assertThat(result.content).hasSize(1)
+        val dto = result.content.first()
+        assertThat(dto.id).isEqualTo(content.interviewContentId)
+        assertThat(dto.likeCount).isEqualTo(5L)
     }
 
     @Test
     @DisplayName("카테고리별 면접 질문 조회 실패")
-    void getInterviewsByCategory_noContent() {
-        // Given
-        InterviewCategory category = InterviewCategory.SPRING;
-        Page<InterviewContent> emptyPage = new PageImpl<>(Collections.emptyList());
-        when(repository.findByCategory(eq(category), any(Pageable.class))).thenReturn(emptyPage);
+    fun getInterviewsByCategory_noContent() {
+        // given
+        val category = InterviewCategory.SPRING
+        val emptyPage = PageImpl<InterviewContent>(emptyList())
 
-        // Expect
-        assertThatThrownBy(() -> service.getInterviewsByCategory(category, 0, 10))
-                .isInstanceOf(ServiceException.class)
-                .hasMessageContaining("해당 카테고리에 속하는 면접 질문이 없습니다.");
+        every { repository.findByCategory(eq(category), any<Pageable>()) } returns emptyPage
+
+        // expect
+        val exception = assertThrows<ServiceException> {
+            service.getInterviewsByCategory(category, 0, 10)
+        }
+
+        assertThat(exception.message).contains("해당 카테고리에 속하는 면접 질문이 없습니다.")
     }
 
     @Test
     @DisplayName("카테고리와 키워드로 면접 질문 조회 성공")
-    void getInterviewsByCategoryAndKeyword_success() {
-        // Given
-        InterviewCategory category = InterviewCategory.SPRING;
-        String keyword = "DI";
-        int page = 0, size = 10;
+    fun getInterviewsByCategoryAndKeyword_success() {
+        // given
+        val category = InterviewCategory.SPRING
+        val keyword = "DI"
+        val page = 0
+        val size = 10
 
-        InterviewContent content = new InterviewContent();
-        content.setInterviewContentId(1L);
-        content.setKeyword(keyword);
-        content.setCategory(category);
-        content.setQuestion("DI란 무엇인가?");
-        content.setModelAnswer("DI는 의존성을 외부에서 주입하는 방식입니다.");
-        content.setHead(true);
-        content.setHasTail(false);
+        val content = InterviewContent().apply {
+            interviewContentId = 1L
+            this.keyword = keyword
+            this.category = category
+            question = "DI란 무엇인가?"
+            modelAnswer = "DI는 의존성을 외부에서 주입하는 방식입니다."
+            isHead = true
+            hasTail = false
+        }
 
-        Page<InterviewContent> contentPage = new PageImpl<>(List.of(content));
+        val contentPage = PageImpl(listOf(content))
 
-        when(repository.findByCategoryAndKeyword(eq(category), eq(keyword), any(Pageable.class)))
-                .thenReturn(contentPage);
-        when(repository.countLikesByInterviewContentId(1L)).thenReturn(7L);
+        every {
+            repository.findByCategoryAndKeyword(eq(category), eq(keyword), any<Pageable>())
+        } returns contentPage
+        every { repository.countLikesByInterviewContentId(1L) } returns 7L
 
-        // When
-        Page<InterviewContentAdminResponseDto> result = service.getInterviewsByCategoryAndKeyword(category, keyword, page, size);
+        // when
+        val result = service.getInterviewsByCategoryAndKeyword(category, keyword, page, size)
 
-        // Then
-        assertThat(result.getContent()).hasSize(1);
-        InterviewContentAdminResponseDto dto = result.getContent().getFirst();
-        assertThat(dto.getId()).isEqualTo(1L);
-        assertThat(dto.getKeyword()).isEqualTo("DI");
-        assertThat(dto.getCategory()).isEqualTo(InterviewCategory.SPRING);
-        assertThat(dto.getLikeCount()).isEqualTo(7L);
+        // then
+        assertThat(result.content).hasSize(1)
+        val dto = result.content.first()
+        assertThat(dto.id).isEqualTo(1L)
+        assertThat(dto.keyword).isEqualTo("DI")
+        assertThat(dto.category).isEqualTo(InterviewCategory.SPRING)
+        assertThat(dto.likeCount).isEqualTo(7L)
     }
 
     @Test
     @DisplayName("카테고리와 키워드로 면접 질문 조회 실패")
-    void getInterviewsByCategoryAndKeyword_noContent() {
-        // Given
-        InterviewCategory category = InterviewCategory.SPRING;
-        String keyword = "DI";
+    fun getInterviewsByCategoryAndKeyword_noContent() {
+        // given
+        val category = InterviewCategory.SPRING
+        val keyword = "DI"
 
-        when(repository.findByCategoryAndKeyword(eq(category), eq(keyword), any(Pageable.class)))
-                .thenReturn(Page.empty());
+        every {
+            repository.findByCategoryAndKeyword(eq(category), eq(keyword), any<Pageable>())
+        } returns Page.empty()
 
-        // Expect
-        assertThatThrownBy(() -> service.getInterviewsByCategoryAndKeyword(category, keyword, 0, 10))
-                .isInstanceOf(ServiceException.class)
-                .hasMessageContaining("해당 카테고리와 키워드를 포함하는 면접 질문이 없습니다.");
+        // expect
+        val exception = assertThrows<ServiceException> {
+            service.getInterviewsByCategoryAndKeyword(category, keyword, 0, 10)
+        }
+
+        assertThat(exception.message).contains("해당 카테고리와 키워드를 포함하는 면접 질문이 없습니다.")
     }
-
 
     @Test
     @DisplayName("면접 질문 ID로 조회 성공")
-    void getInterviewContentById_success() {
-        // Given
-        Long id = 1L;
-        InterviewContent content = new InterviewContent();
-        content.setInterviewContentId(id);
-        content.setKeyword("AOP");
-        content.setCategory(InterviewCategory.SPRING);
-        content.setQuestion("AOP란 무엇인가?");
-        content.setModelAnswer("관점 지향 프로그래밍입니다.");
-        content.setHead(true);
-        content.setHasTail(false);
+    fun getInterviewContentById_success() {
+        // given
+        val id = 1L
+        val content = InterviewContent().apply {
+            interviewContentId = id
+            keyword = "AOP"
+            category = InterviewCategory.SPRING
+            question = "AOP란 무엇인가?"
+            modelAnswer = "관점 지향 프로그래밍입니다."
+            isHead = true
+            hasTail = false
+        }
 
-        when(repository.findById(id)).thenReturn(Optional.of(content));
-        when(repository.countLikesByInterviewContentId(id)).thenReturn(10L);
+        every { repository.findById(id) } returns Optional.of(content)
+        every { repository.countLikesByInterviewContentId(id) } returns 10L
 
-        // When
-        InterviewContentAdminResponseDto result = service.getInterviewContentById(id);
+        // when
+        val result = service.getInterviewContentById(id)
 
-        // Then
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(id);
-        assertThat(result.getKeyword()).isEqualTo("AOP");
-        assertThat(result.getLikeCount()).isEqualTo(10L);
+        // then
+        assertThat(result).isNotNull
+        assertThat(result.id).isEqualTo(id)
+        assertThat(result.keyword).isEqualTo("AOP")
+        assertThat(result.likeCount).isEqualTo(10L)
     }
 
     @Test
     @DisplayName("면접 질문 ID로 조회 실패")
-    void getInterviewContentById_notFound() {
-        // Given
-        long id = 999L;
-        when(repository.findById(id)).thenReturn(Optional.empty());
+    fun getInterviewContentById_notFound() {
+        // given
+        val id = 999L
+        every { repository.findById(id) } returns Optional.empty()
 
-        // Expect
-        assertThatThrownBy(() -> service.getInterviewContentById(id))
-                .isInstanceOf(ServiceException.class)
-                .hasMessageContaining("해당 ID의 면접 질문을 찾을 수 없습니다.");
+        // expect
+        val exception = assertThrows<ServiceException> {
+            service.getInterviewContentById(id)
+        }
+
+        assertThat(exception.message).contains("해당 ID의 면접 질문을 찾을 수 없습니다.")
     }
 
     @Test
     @DisplayName("면접 질문 및 모든 꼬리 질문 조회 성공")
-    void getInterviewContentWithAllTails_success() {
-        // Given
-        InterviewCategory category = InterviewCategory.SPRING;
+    fun getInterviewContentWithAllTails_success() {
+        // given
+        val category = InterviewCategory.SPRING
 
-        InterviewContent main = new InterviewContent();
-        main.setInterviewContentId(1L);
-        main.setQuestion("메인 질문 1");
-        main.setModelAnswer("메인 답변 1");
-        main.setHasTail(true);
-        main.setCategory(category);
+        val main = InterviewContent().apply {
+            interviewContentId = 1L
+            question = "메인 질문 1"
+            modelAnswer = "메인 답변 1"
+            hasTail = true
+            this.category = category
+        }
 
-        InterviewContent tail1 = new InterviewContent();
-        tail1.setInterviewContentId(2L);
-        tail1.setQuestion("꼬리 질문 1");
-        tail1.setModelAnswer("꼬리 답변 1");
-        tail1.setHasTail(true);
-        tail1.setCategory(category);
+        val tail1 = InterviewContent().apply {
+            interviewContentId = 2L
+            question = "꼬리 질문 1"
+            modelAnswer = "꼬리 답변 1"
+            hasTail = true
+            this.category = category
+        }
 
-        InterviewContent tail2 = new InterviewContent();
-        tail2.setInterviewContentId(3L);
-        tail2.setQuestion("꼬리 질문 2");
-        tail2.setModelAnswer("꼬리 답변 2");
-        tail2.setHasTail(false);
-        tail2.setCategory(category);
+        val tail2 = InterviewContent().apply {
+            interviewContentId = 3L
+            question = "꼬리 질문 2"
+            modelAnswer = "꼬리 답변 2"
+            hasTail = false
+            this.category = category
+        }
 
-        when(repository.findById(1L)).thenReturn(Optional.of(main));
-        when(repository.countLikesByInterviewContentId(anyLong())).thenReturn(0L);
-        when(repository.findRelatedQuestions(1L)).thenReturn(List.of(tail1));
-        when(repository.findRelatedQuestions(2L)).thenReturn(List.of(tail2));
+        every { repository.findById(1L) } returns Optional.of(main)
+        every { repository.countLikesByInterviewContentId(any()) } returns 0L
+        every { repository.findRelatedQuestions(1L) } returns listOf(tail1)
+        every { repository.findRelatedQuestions(2L) } returns listOf(tail2)
 
-        // When
-        List<InterviewContentAdminResponseDto> result = service.getInterviewContentWithAllTails(1L);
+        // when
+        val result = service.getInterviewContentWithAllTails(1L)
 
-        // Then
-        assertThat(result).hasSize(3);
-        assertThat(result.get(0).getId()).isEqualTo(1L);
-        assertThat(result.get(1).getId()).isEqualTo(2L);
-        assertThat(result.get(2).getId()).isEqualTo(3L);
+        // then
+        assertThat(result).hasSize(3)
+        assertThat(result[0].id).isEqualTo(1L)
+        assertThat(result[1].id).isEqualTo(2L)
+        assertThat(result[2].id).isEqualTo(3L)
     }
 
     @Test
     @DisplayName("면접 질문 조회 실패")
-    void getInterviewContentWithAllTails_notFound() {
-        // Given
-        when(repository.findById(999L)).thenReturn(Optional.empty());
+    fun getInterviewContentWithAllTails_notFound() {
+        // given
+        every { repository.findById(999L) } returns Optional.empty()
 
-        // Then
-        assertThatThrownBy(() -> service.getInterviewContentWithAllTails(999L))
-                .isInstanceOf(ServiceException.class)
-                .hasMessageContaining("해당 ID의 면접 질문을 찾을 수 없습니다.");
+        // expect
+        val exception = assertThrows<ServiceException> {
+            service.getInterviewContentWithAllTails(999L)
+        }
+
+        assertThat(exception.message).contains("해당 ID의 면접 질문을 찾을 수 없습니다.")
     }
 
     @Test
     @DisplayName("면접 질문 수정 성공")
-    void updateInterviewContent_success() {
-        // Given
-        Long id = 1L;
-        InterviewContent content = new InterviewContent();
-        content.setInterviewContentId(id);
-        content.setQuestion("old");
-        when(repository.findById(id)).thenReturn(Optional.of(content));
-        when(repository.countLikesByInterviewContentId(id)).thenReturn(3L);
+    fun updateInterviewContent_success() {
+        // given
+        val id = 1L
+        val content = InterviewContent().apply {
+            interviewContentId = id
+            question = "old"
+        }
 
-        InterviewContentAdminRequestDto dto = new InterviewContentAdminRequestDto(
-                InterviewCategory.SPRING, "new keyword", "new Q", "new A", null
-        );
+        every { repository.findById(id) } returns Optional.of(content)
+        every { repository.countLikesByInterviewContentId(id) } returns 3L
+        every { repository.save(any<InterviewContent>()) } answers { firstArg() }
 
-        // When
-        InterviewContentAdminResponseDto result = service.updateInterviewContent(id, dto);
+        val dto = InterviewContentAdminRequestDto(
+            InterviewCategory.SPRING,
+            "new keyword",
+            "new Q",
+            "new A",
+            null
+        )
 
-        // Then
-        assertThat(result.getQuestion()).isEqualTo("new Q");
-        assertThat(result.getModelAnswer()).isEqualTo("new A");
+        // when
+        val result = service.updateInterviewContent(id, dto)
+
+        // then
+        assertThat(result.question).isEqualTo("new Q")
+        assertThat(result.modelAnswer).isEqualTo("new A")
     }
 
     @Test
     @DisplayName("면접 질문 수정 실패")
-    void updateInterviewContent_notFound() {
-        // Given
-        long id = 999L;
-        when(repository.findById(id)).thenReturn(Optional.empty());
+    fun updateInterviewContent_notFound() {
+        // given
+        val id = 999L
+        every { repository.findById(id) } returns Optional.empty()
 
-        // Then
-        assertThatThrownBy(() -> service.updateInterviewContent(id, new InterviewContentAdminRequestDto()))
-                .isInstanceOf(ServiceException.class)
-                .hasMessageContaining("해당 ID의 면접 질문을 찾을 수 없습니다.");
+        // expect
+        val exception = assertThrows<ServiceException> {
+            service.updateInterviewContent(id, InterviewContentAdminRequestDto())
+        }
+
+        assertThat(exception.message).contains("해당 ID의 면접 질문을 찾을 수 없습니다.")
     }
 
     @Test
     @DisplayName("면접 질문 및 꼬리 질문 재귀 삭제 성공")
-    void deleteInterviewContentWithAllTails_success() {
-        InterviewContent head = new InterviewContent();
-        head.setInterviewContentId(1L);
-        head.setHasTail(true);
+    fun deleteInterviewContentWithAllTails_success() {
+        // given
+        val head = InterviewContent().apply {
+            interviewContentId = 1L
+            hasTail = true
+        }
 
-        InterviewContent tail1 = new InterviewContent();
-        tail1.setInterviewContentId(2L);
-        tail1.setHasTail(false);
-        tail1.setHeadId(1L);
+        val tail1 = InterviewContent().apply {
+            interviewContentId = 2L
+            hasTail = false
+            headId = 1L
+        }
 
-        when(repository.findById(1L)).thenReturn(Optional.of(head));
-        when(repository.findById(1L)).thenReturn(Optional.of(head));
-        when(repository.findRelatedQuestions(1L)).thenReturn(List.of(tail1));
+        every { repository.findById(1L) } returns Optional.of(head)
+        every { repository.findRelatedQuestions(1L) } returns listOf(tail1)
 
-        service.deleteInterviewContentWithAllTails(1L);
+        // when
+        service.deleteInterviewContentWithAllTails(1L)
 
-        verify(repository).deleteAll(List.of(tail1));
-        verify(repository).delete(head);
+        // then
+        verify { repository.deleteAll(listOf(tail1)) }
+        verify { repository.delete(head) }
     }
 
     @Test
     @DisplayName("면접 질문 삭제 실패 - 존재하지 않는 ID")
-    void deleteInterviewContentWithAllTails_notFound() {
-        // Given
-        when(repository.findById(999L)).thenReturn(Optional.empty());
+    fun deleteInterviewContentWithAllTails_notFound() {
+        // given
+        every { repository.findById(999L) } returns Optional.empty()
 
-        // When & Then
-        assertThatThrownBy(() -> service.deleteInterviewContentWithAllTails(999L))
-                .isInstanceOf(ServiceException.class)
-                .hasMessageContaining("해당 ID의 면접 질문을 찾을 수 없습니다.");
+        // when & then
+        val exception = assertThrows<ServiceException> {
+            service.deleteInterviewContentWithAllTails(999L)
+        }
+
+        assertThat(exception.message).contains("해당 ID의 면접 질문을 찾을 수 없습니다.")
     }
 
     @Test
     @DisplayName("꼬리 질문 삭제 시 head 질문의 hasTail 갱신 확인")
-    void deleteInterviewContentWithAllTails_withHeadUpdate() {
-        // Given
-        InterviewContent tail = new InterviewContent();
-        tail.setInterviewContentId(2L);
-        tail.setHasTail(false);
-        tail.setHeadId(1L); // head가 존재하는 꼬리 질문
+    fun deleteInterviewContentWithAllTails_withHeadUpdate() {
+        // given
+        val tail = InterviewContent().apply {
+            interviewContentId = 2L
+            hasTail = false
+            headId = 1L
+        }
 
-        InterviewContent head = new InterviewContent();
-        head.setInterviewContentId(1L);
-        head.setHasTail(true);
+        val head = InterviewContent().apply {
+            interviewContentId = 1L
+            hasTail = true
+        }
 
-        when(repository.findById(2L)).thenReturn(Optional.of(tail));
-        when(repository.findById(1L)).thenReturn(Optional.of(head));
-        when(repository.findRelatedQuestions(2L)).thenReturn(List.of());
+        every { repository.findById(2L) } returns Optional.of(tail)
+        every { repository.findById(1L) } returns Optional.of(head)
+        every { repository.findRelatedQuestions(2L) } returns emptyList()
+        every { repository.save(any<InterviewContent>()) } answers { firstArg() }
 
-        // When
-        service.deleteInterviewContentWithAllTails(2L);
+        // when
+        service.deleteInterviewContentWithAllTails(2L)
 
-        // Then
-        verify(repository).save(head); // head의 hasTail → false 저장
-        verify(repository).delete(tail);
+        // then
+        verify { repository.save(head) }
+        verify { repository.delete(tail) }
     }
 
     @Test
     @DisplayName("면접 머리 질문 생성 성공")
-    void createInterviewContent_head_success() {
-        // Given
-        InterviewContentAdminRequestDto dto = new InterviewContentAdminRequestDto(
-                InterviewCategory.SPRING,
-                "DI",
-                "DI란 무엇인가?",
-                "DI는 의존성을 외부에서 주입하는 방식입니다.",
-                null // headId가 null이면 머리 질문
-        );
+    fun createInterviewContent_head_success() {
+        // given
+        val dto = InterviewContentAdminRequestDto(
+            InterviewCategory.SPRING,
+            "DI",
+            "DI란 무엇인가?",
+            "DI는 의존성을 외부에서 주입하는 방식입니다.",
+            null
+        )
 
-        InterviewContent newContent = new InterviewContent();
-        newContent.setInterviewContentId(1L);
-        newContent.setCategory(dto.getCategory());
-        newContent.setKeyword(dto.getKeyword());
-        newContent.setQuestion(dto.getQuestion());
-        newContent.setModelAnswer(dto.getModelAnswer());
-        newContent.setHead(true);
-        newContent.setHasTail(false);
+        val newContent = InterviewContent().apply {
+            interviewContentId = 1L
+            category = dto.category!!
+            keyword = dto.keyword
+            question = dto.question!!
+            modelAnswer = dto.modelAnswer!!
+            isHead = true
+            hasTail = false
+        }
 
-        when(repository.save(any())).thenReturn(newContent);
+        every { repository.save(any()) } returns newContent
 
-        // When
-        InterviewContentAdminResponseDto result = service.createInterviewContent(dto);
+        // when
+        val result = service.createInterviewContent(dto)
 
-        // Then
-        assertThat(result.getQuestion()).isEqualTo(dto.getQuestion());
-        assertThat(result.getModelAnswer()).isEqualTo(dto.getModelAnswer());
-        assertThat(result.getCategory()).isEqualTo(dto.getCategory());
-        assertThat(result.getLikeCount()).isEqualTo(0L);
+        // then
+        assertThat(result.question).isEqualTo(dto.question)
+        assertThat(result.modelAnswer).isEqualTo(dto.modelAnswer)
+        assertThat(result.category).isEqualTo(dto.category)
+        assertThat(result.likeCount).isEqualTo(0L)
     }
 
     @Test
     @DisplayName("꼬리 질문 생성 성공")
-    void createInterviewContent_tail_success() {
-        // Given
-        InterviewContent head = InterviewContent.createNewHead("Q1", "A1", InterviewCategory.SPRING, "spring");
-        head.setInterviewContentId(10L);
+    fun createInterviewContent_tail_success() {
+        // given
+        val head = InterviewContent.createNewHead("Q1", "A1", InterviewCategory.SPRING, "spring").apply {
+            interviewContentId = 10L
+        }
 
-        InterviewContentAdminRequestDto request = new InterviewContentAdminRequestDto();
-        request.setHeadId(10L);
-        request.setQuestion("Q2");
-        request.setModelAnswer("A2");
-        request.setKeyword("spring");
-        request.setCategory(InterviewCategory.SPRING);
+        val request = InterviewContentAdminRequestDto().apply {
+            headId = 10L
+            question = "Q2"
+            modelAnswer = "A2"
+            keyword = "spring"
+            category = InterviewCategory.SPRING
+        }
 
-        when(repository.findById(10L)).thenReturn(Optional.of(head));
+        every { repository.findById(10L) } returns Optional.of(head)
+        every { repository.save(any<InterviewContent>()) } answers { firstArg() }
 
-        // 두 번 호출되는 save 모두 처리
-        when(repository.save(any(InterviewContent.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+        // when
+        val response = service.createInterviewContent(request)
 
-        // When
-        InterviewContentAdminResponseDto response = service.createInterviewContent(request);
+        // then
+        assertThat(response.question).isEqualTo("Q2")
+        assertThat(response.keyword).isEqualTo("spring")
 
-        // Then
-        assertThat(response.getQuestion()).isEqualTo("Q2");
-        assertThat(response.getKeyword()).isEqualTo("spring");
-
-        // save 두 번 호출되었는지 확인
-        verify(repository, times(2)).save(any(InterviewContent.class));
+        verify(exactly = 2) { repository.save(any<InterviewContent>()) }
     }
 
     @Test
     @DisplayName("중간 질문에 꼬리 질문 추가 실패 - 이미 꼬리 질문이 있는 경우")
-    void createInterviewContent_tail_fail_midHasTail() {
-        // Given
-        InterviewContent head = new InterviewContent();
-        head.setInterviewContentId(1L);
-        head.setHasTail(true); // 이미 꼬리 질문이 있음 (중간 질문 상태)
+    fun createInterviewContent_tail_noEmpty() {
+        // given
+        val head = InterviewContent().apply {
+            interviewContentId = 1L
+            hasTail = true
+        }
 
-        InterviewContentAdminRequestDto dto = new InterviewContentAdminRequestDto();
-        dto.setHeadId(1L);
-        dto.setCategory(InterviewCategory.SPRING);
-        dto.setKeyword("spring");
-        dto.setQuestion("중간 질문에 꼬리 추가");
-        dto.setModelAnswer("실패해야 함");
+        val dto = InterviewContentAdminRequestDto().apply {
+            headId = 1L
+            category = InterviewCategory.SPRING
+            keyword = "spring"
+            question = "중간 질문에 꼬리 추가"
+            modelAnswer = "실패해야 함"
+        }
 
-        when(repository.findById(1L)).thenReturn(Optional.of(head));
+        every { repository.findById(1L) } returns Optional.of(head)
 
-        // When & Then
-        assertThatThrownBy(() -> service.createInterviewContent(dto))
-                .isInstanceOf(ServiceException.class)
-                .hasMessageContaining("중간 질문");
+        // when & then
+        val exception = assertThrows<ServiceException> {
+            service.createInterviewContent(dto)
+        }
+
+        assertThat(exception.message).contains("중간 질문")
     }
 
     @Test
     @DisplayName("꼬리 질문 생성 실패 - 존재하지 않는 head ID")
-    void createInterviewContent_tail_fail_headNotFound() {
-        // Given
-        InterviewContentAdminRequestDto dto = new InterviewContentAdminRequestDto();
-        dto.setHeadId(999L);
-        dto.setCategory(InterviewCategory.SPRING);
-        dto.setKeyword("spring");
-        dto.setQuestion("Q?");
-        dto.setModelAnswer("A");
+    fun createInterviewContent_tail_notFound() {
+        // given
+        val dto = InterviewContentAdminRequestDto().apply {
+            headId = 999L
+            category = InterviewCategory.SPRING
+            keyword = "spring"
+            question = "Q?"
+            modelAnswer = "A"
+        }
 
-        when(repository.findById(999L)).thenReturn(Optional.empty());
+        every { repository.findById(999L) } returns Optional.empty()
 
-        // When & Then
-        assertThatThrownBy(() -> service.createInterviewContent(dto))
-                .isInstanceOf(ServiceException.class)
-                .hasMessageContaining("해당 ID의 면접 질문을 찾을 수 없습니다.");
+        // when & then
+        val exception = assertThrows<ServiceException> {
+            service.createInterviewContent(dto)
+        }
+
+        assertThat(exception.message).contains("해당 ID의 면접 질문을 찾을 수 없습니다.")
     }
 
     @Test
     @DisplayName("재귀적으로 꼬리 질문 삭제 확인")
-    void deleteInterviewContentWithAllTails_recursive() {
-        // Given
-        InterviewContent head = new InterviewContent();
-        head.setInterviewContentId(1L);
-        head.setHasTail(true);
+    fun deleteInterviewContentWithAllTails_recursive() {
+        // given
+        val head = InterviewContent().apply {
+            interviewContentId = 1L
+            hasTail = true
+        }
 
-        InterviewContent tail1 = new InterviewContent();
-        tail1.setInterviewContentId(2L);
-        tail1.setHeadId(1L);
-        tail1.setHasTail(true);
+        val tail1 = InterviewContent().apply {
+            interviewContentId = 2L
+            headId = 1L
+            hasTail = true
+        }
 
-        InterviewContent tail2 = new InterviewContent();
-        tail2.setInterviewContentId(3L);
-        tail2.setHeadId(2L);
-        tail2.setHasTail(false);
+        val tail2 = InterviewContent().apply {
+            interviewContentId = 3L
+            headId = 2L
+            hasTail = false
+        }
 
-        when(repository.findById(1L)).thenReturn(Optional.of(head));
-        when(repository.findRelatedQuestions(1L)).thenReturn(List.of(tail1));
-        when(repository.findRelatedQuestions(2L)).thenReturn(List.of(tail2));
+        every { repository.findById(1L) } returns Optional.of(head)
+        every { repository.findRelatedQuestions(1L) } returns listOf(tail1)
+        every { repository.findRelatedQuestions(2L) } returns listOf(tail2)
 
-        // When
-        service.deleteInterviewContentWithAllTails(1L);
+        val deletedCaptor = slot<List<InterviewContent>>()
+        every { repository.deleteAll(capture(deletedCaptor)) } returns Unit
+        every { repository.delete(any()) } returns Unit
 
-        // Then
-        ArgumentCaptor<List<InterviewContent>> captor = ArgumentCaptor.forClass(List.class);
-        verify(repository).deleteAll(captor.capture());
+        // when
+        service.deleteInterviewContentWithAllTails(1L)
 
-        List<InterviewContent> deleted = captor.getValue();
-        assertThat(deleted).containsExactlyInAnyOrder(tail1, tail2);
-        verify(repository).delete(head);
+        // then
+        val deleted = deletedCaptor.captured
+        assertThat(deleted).containsExactlyInAnyOrder(tail1, tail2)
+
+        verify { repository.delete(head) }
     }
 }
+
