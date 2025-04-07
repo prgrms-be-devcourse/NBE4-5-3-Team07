@@ -1,25 +1,30 @@
-package com.java.NBE4_5_3_7.domain.interview.repository;
+package com.java.NBE4_5_3_7.domain.interview.repository
 
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewCategory;
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewCategory
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
-import java.util.List;
+interface InterviewContentRepository : JpaRepository<InterviewContent, Long> {
 
-public interface InterviewContentRepository extends JpaRepository<InterviewContent, Long> {
-    @Query("select ic.interview_content_id from InterviewContent ic where ic.head = true and ic.head_id is null")
-    List<Long> findInterviewContentIdsByHeadTrueAndHeadIdIsNull();
+    @Query("select ic.interviewContentId from InterviewContent ic where ic.isHead = true and ic.headId is null")
+    fun findInterviewContentIdsByHeadTrueAndHeadIdIsNull(): List<Long>
 
-    @Query("select ic.interview_content_id from InterviewContent ic where ic.category = :category and ic.head = true and ic.head_id is null")
-    List<Long> findInterviewContentIdsByCategoryAndHeadTrueAndHeadIdIsNull(@Param("category") InterviewCategory category);
+    @Query("select ic.interviewContentId from InterviewContent ic where ic.category = :category and ic.isHead = true and ic.headId is null")
+    fun findInterviewContentIdsByCategoryAndHeadTrueAndHeadIdIsNull(
+        @Param("category") category: InterviewCategory?
+    ): List<Long>
 
     @Query(value = "select distinct keyword from interview_content", nativeQuery = true)
-    List<String> findDistinctCategories();
+    fun findDistinctCategories(): List<String>
 
-    @Query("select ic.interview_content_id from InterviewContent ic where ic.keyword in :keywords and ic.head = true and ic.head_id is null")
-    List<Long> findInterviewKeyword(@Param("keywords") List<String> keywords);
+    @Query("select ic.interviewContentId from InterviewContent ic where ic.keyword in :keywords and ic.isHead = true and ic.headId is null")
+    fun findInterviewKeyword(@Param("keywords") keywords: List<String>): List<Long>
 
-    boolean existsByQuestion(String question);
+    @Query("SELECT c FROM InterviewContent c WHERE c.interviewContentId > :id ORDER BY c.interviewContentId ASC")
+    fun findNextInterviewContent(@Param("id") id: Long, pageable: Pageable): List<InterviewContent>
+
+    fun existsByQuestion(question: String): Boolean
 }

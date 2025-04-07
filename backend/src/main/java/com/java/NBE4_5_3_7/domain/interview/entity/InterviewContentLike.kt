@@ -1,27 +1,27 @@
-package com.java.NBE4_5_3_7.domain.interview.entity;
+package com.java.NBE4_5_3_7.domain.interview.entity
 
-import com.java.NBE4_5_3_7.domain.member.entity.Member;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.java.NBE4_5_3_7.domain.member.entity.Member
+import jakarta.persistence.*
 
 @Entity
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class InterviewContentLike {
+open class InterviewContentLike {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    open var id: Long? = null
 
     @ManyToOne
     @JoinColumn(name = "interview_content_id", nullable = false)
-    private InterviewContent interviewContent;
+    open var interviewContent: InterviewContent? = null
 
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    open var member: Member? = null
+
+    constructor()
+
+    constructor(content: InterviewContent, member: Member) : this() {
+        this.interviewContent = content
+        this.member = member
+    }
 }

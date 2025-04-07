@@ -1,21 +1,30 @@
-package com.java.NBE4_5_3_7.domain.interviewComment.repository;
+package com.java.NBE4_5_3_7.domain.interviewComment.repository
 
-import java.util.List;
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewCategory
+import com.java.NBE4_5_3_7.domain.interviewComment.entity.InterviewContentComment
+import com.java.NBE4_5_3_7.domain.member.entity.Member
+import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
+import org.springframework.data.repository.query.Param
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
+interface InterviewCommentRepository : JpaRepository<InterviewContentComment, Long> {
 
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewCategory;
-import com.java.NBE4_5_3_7.domain.interviewComment.entity.InterviewContentComment;
-import com.java.NBE4_5_3_7.domain.member.entity.Member;
+    @Query(
+        """
+        SELECT c FROM InterviewContentComment c 
+        JOIN c.interviewContent ic 
+        WHERE c.member = :member AND ic.category = :category
+        """
+    )
+    fun findByMemberAndInterviewContentCategory(
+        @Param("member") member: Member,
+        @Param("category") category: InterviewCategory
+    ): List<InterviewContentComment>
 
-public interface InterviewCommentRepository extends JpaRepository<InterviewContentComment, Long> {
-	@Query("SELECT c FROM InterviewContentComment c JOIN c.interviewContent ic " +
-		"WHERE c.member = :member AND ic.category = :category")
-	List<InterviewContentComment> findByMemberAndInterviewContentCategory(@Param("member") Member member, @Param("category") InterviewCategory category);
-
-	@Query("select c from InterviewContentComment c where c.interviewContent.interview_content_id = :interviewContentId")
-	List<InterviewContentComment> findByInterviewContentId(@Param("interviewContentId") Long interviewContentId);
+    @Query(
+        "SELECT c FROM InterviewContentComment c WHERE c.interviewContent.interviewContentId = :interviewContentId"
+    )
+    fun findByInterviewContentId(
+        @Param("interviewContentId") interviewContentId: Long
+    ): List<InterviewContentComment>
 }
-

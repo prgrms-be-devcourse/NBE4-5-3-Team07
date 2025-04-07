@@ -1,20 +1,11 @@
-package com.java.NBE4_5_3_7.domain.interviewComment.dto.response;
+package com.java.NBE4_5_3_7.domain.interviewComment.dto.response
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class MyPageInterviewCommentResponseDto {
-	private Long commentId;
-	private String comment;
-	private boolean isPublic;
-	private Long interviewContentId;
-	private String interviewContentTitle;
-	private String category;
-	private String modelAnswer;
-}
+data class MyPageInterviewCommentResponseDto(
+    val commentId: Long? = null,
+    val comment: String? = null,
+    val isPublic: Boolean = false,
+    val interviewContentId: Long? = null,
+    val interviewContentTitle: String? = null,
+    val category: String? = null,
+    val modelAnswer: String? = null
+)

@@ -1,13 +1,6 @@
-package com.java.NBE4_5_3_7.domain.interview.entity.dto.response;
+package com.java.NBE4_5_3_7.domain.interview.entity.dto.response
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-import java.util.List;
-
-@Data
-@AllArgsConstructor
-public class RandomResponseDto {
-    private List<Long> indexList;
-    private InterviewResponseDto interviewResponseDto;
-}
+data class RandomResponseDto(
+    var indexList: List<Long> = emptyList(),
+    var interviewResponseDto: InterviewResponseDto? = null
+)

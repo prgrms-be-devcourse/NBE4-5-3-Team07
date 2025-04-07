@@ -1,19 +1,14 @@
-package com.java.NBE4_5_3_7.domain.interview.entity.dto.response;
+package com.java.NBE4_5_3_7.domain.interview.entity.dto.response
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
-@AllArgsConstructor
-public class InterviewResponseDto {
-    private Long id;
-    private Long head_id;
-    private Long tail_id;
-    private String question;
-    private String model_answer;
-    private String category;
-    private String keyword;
-    private Long next_id;
-    private Long likeCount;
-    private boolean likedByUser;
-}
+data class InterviewResponseDto(
+    var id: Long? = null,
+    var head_id: Long? = null,
+    var tail_id: Long? = null,
+    var question: String? = null,
+    var model_answer: String? = null,
+    var category: String? = null,
+    var keyword: String? = null,
+    var next_id: Long? = null,
+    var likeCount: Long? = null,
+    var likedByUser: Boolean = false
+)

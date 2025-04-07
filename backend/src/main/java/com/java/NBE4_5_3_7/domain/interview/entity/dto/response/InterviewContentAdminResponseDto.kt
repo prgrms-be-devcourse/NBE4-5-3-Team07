@@ -1,34 +1,30 @@
-package com.java.NBE4_5_3_7.domain.interview.entity.dto.response;
+package com.java.NBE4_5_3_7.domain.interview.entity.dto.response
 
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewCategory;
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent;
-import lombok.Getter;
-import lombok.Setter;
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewCategory
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent
 
-@Getter
-@Setter
-public class InterviewContentAdminResponseDto {
-    private Long id;
-    private Long headId;
-    private Long tailId;
-    private boolean isHead;
-    private boolean hasTail;
-    private String keyword;
-    private InterviewCategory category;
-    private String question;
-    private String modelAnswer;
-    private Long likeCount;
-
-    public InterviewContentAdminResponseDto(InterviewContent content, Long likeCount) {
-        this.id = content.getInterview_content_id();
-        this.headId = content.getHead_id();
-        this.tailId = content.getTail_id();
-        this.isHead = content.isHead();
-        this.hasTail = content.isHasTail();
-        this.keyword = content.getKeyword();
-        this.category = content.getCategory();
-        this.question = content.getQuestion();
-        this.modelAnswer = content.getModelAnswer();
-        this.likeCount = likeCount;
-    }
+data class InterviewContentAdminResponseDto(
+    var id: Long? = null,
+    var headId: Long? = null,
+    var tailId: Long? = null,
+    var isHead: Boolean = false,
+    var hasTail: Boolean = false,
+    var keyword: String? = null,
+    var category: InterviewCategory? = null,
+    var question: String? = null,
+    var modelAnswer: String? = null,
+    var likeCount: Long? = null
+) {
+    constructor(content: InterviewContent, likeCount: Long) : this(
+        id = content.interviewContentId,
+        headId = content.headId,
+        tailId = content.tailId,
+        isHead = content.isHead,
+        hasTail = content.hasTail,
+        keyword = content.keyword,
+        category = content.category,
+        question = content.question,
+        modelAnswer = content.modelAnswer,
+        likeCount = likeCount
+    )
 }

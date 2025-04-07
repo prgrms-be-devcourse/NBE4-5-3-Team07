@@ -1,29 +1,39 @@
-package com.java.NBE4_5_3_7.domain.interview.entity;
+package com.java.NBE4_5_3_7.domain.interview.entity
 
-import com.java.NBE4_5_3_7.domain.member.entity.Member;
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.java.NBE4_5_3_7.domain.member.entity.Member
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "interview_content_bookmark")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class InterviewContentBookmark {
+open class InterviewContentBookmark(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    open var id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interview_content_id")
-    private InterviewContent interviewContent;
+    open var interviewContent: InterviewContent? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    open var member: Member? = null
+) {
+    companion object {
+        fun builder(): Builder = Builder()
+    }
+
+    class Builder {
+        private var id: Long? = null
+        private var interviewContent: InterviewContent? = null
+        private var member: Member? = null
+
+        fun id(id: Long?) = apply { this.id = id }
+        fun interviewContent(interviewContent: InterviewContent) = apply { this.interviewContent = interviewContent }
+        fun member(member: Member) = apply { this.member = member }
+
+        fun build(): InterviewContentBookmark {
+            return InterviewContentBookmark(id, interviewContent, member)
+        }
+    }
 }

@@ -1,12 +1,11 @@
-package com.java.NBE4_5_3_7.domain.interview.repository;
+package com.java.NBE4_5_3_7.domain.interview.repository
 
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent;
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContentBookmark;
-import com.java.NBE4_5_3_7.domain.member.entity.Member;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContentBookmark
+import com.java.NBE4_5_3_7.domain.member.entity.Member
+import org.springframework.data.jpa.repository.JpaRepository
 
-public interface BookmarkRepository extends JpaRepository<InterviewContentBookmark, Long> {
-    boolean existsByMemberAndInterviewContent(Member member, InterviewContent interviewContent);
-
-    InterviewContentBookmark findByMemberAndInterviewContent(Member member, InterviewContent interviewContent);
+interface BookmarkRepository : JpaRepository<InterviewContentBookmark, Long> {
+    fun existsByMemberAndInterviewContent(member: Member, interviewContent: InterviewContent): Boolean
+    fun findByMemberAndInterviewContent(member: Member, interviewContent: InterviewContent): InterviewContentBookmark
 }
