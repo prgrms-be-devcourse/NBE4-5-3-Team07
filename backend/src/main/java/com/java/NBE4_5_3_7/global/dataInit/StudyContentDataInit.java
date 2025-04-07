@@ -83,10 +83,10 @@ public class StudyContentDataInit {
                 }
 
                 StudyContent studyContent = new StudyContent();
-                studyContent.setFirstCategory(firstCategory);
-                studyContent.setSecondCategory(secondCategory);
-                studyContent.setTitle(title);
-                studyContent.setBody(body);
+                studyContent.firstCategory = firstCategory;
+                studyContent.secondCategory = secondCategory;
+                studyContent.title = title;
+                studyContent.body = body;
 
                 repository.save(studyContent);
             }
