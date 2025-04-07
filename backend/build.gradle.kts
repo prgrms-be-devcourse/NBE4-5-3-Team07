@@ -77,6 +77,9 @@ dependencies {
 	testImplementation(kotlin("test"))
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("io.mockk:mockk:1.13.10")
+	testImplementation("io.mockk:mockk-spring:3.0.1")
 }
 
 tasks.test {

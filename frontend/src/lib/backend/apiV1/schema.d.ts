@@ -55,21 +55,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * 특정 면접 질문 ID 조회
-         * @description 면접 질문 ID를 이용하여 해당 데이터를 조회합니다.
-         */
+        /** 특정 면접 질문 ID 조회 */
         get: operations["getInterviewContentById"];
-        /**
-         * 특정 면접 질문 수정
-         * @description 면접 질문 ID를 기준으로 카테고리, 키워드, 질문, 모범 답안을 수정합니다.
-         */
+        /** 특정 면접 질문 수정 */
         put: operations["updateInterviewContent"];
         post?: never;
-        /**
-         * 특정 면접 질문 삭제
-         * @description 면접 질문 ID를 기준으로 해당 질문과 모든 꼬리 질문을 삭제합니다.
-         */
+        /** 특정 면접 질문 삭제 */
         delete: operations["deleteInterviewContent"];
         options?: never;
         head?: never;
@@ -343,9 +334,11 @@ export interface paths {
         put?: never;
         /**
          * 학습 콘텐츠 등록
-         * @description     새로운 학습 콘텐츠를 등록합니다.
-         *         - `firstCategory`는 기존에 존재하는 카테고리 중에서만 선택 가능합니다.
-         *         - `secondCategory`, `title`, `body`는 빈 문자열 또는 `null`일 수 없습니다.
+         * @description
+         *             새로운 학습 콘텐츠를 등록합니다.
+         *
+         *             - `firstCategory`는 기존에 존재하는 카테고리 중에서만 선택 가능합니다.
+         *             - `secondCategory`, `title`, `body`는 빈 문자열 또는 `null`일 수 없습니다.
          *
          */
         post: operations["createStudyContent"];
@@ -366,10 +359,10 @@ export interface paths {
         put?: never;
         /**
          * 면접 질문 등록
-         * @description 새로운 면접 질문을 등록합니다. 기존 질문의 꼬리 질문으로 추가할 수도 있습니다.
-         *
-         *     - `headId`가 `null`이면 새로운 머리 질문이 됩니다.
-         *     - `headId`가 존재하면, 해당 질문의 마지막 질문인지(`has_tail = 0`) 확인 후 꼬리 질문으로 추가합니다.
+         * @description
+         *                 새로운 면접 질문을 등록합니다. 기존 질문의 꼬리 질문으로 추가할 수도 있습니다.
+         *                 - `headId`가 `null`이면 새로운 머리 질문이 됩니다.
+         *                 - `headId`가 존재하면, 해당 질문의 마지막 질문인지(`has_tail = 0`) 확인 후 꼬리 질문으로 추가합니다.
          *
          */
         post: operations["createInterviewContent"];
@@ -754,7 +747,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getChatRooms"];
+        get: operations["chatRooms"];
         put?: never;
         post?: never;
         delete?: never;
@@ -770,7 +763,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getChatRoomInfo"];
+        get: operations["chatRoomInfo"];
         put?: never;
         post?: never;
         delete?: never;
@@ -802,7 +795,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getAllMessages"];
+        get: operations["allMessages"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1070,10 +1063,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * 연관된 면접 질문 조회
-         * @description 특정 면접 질문 ID를 기준으로 관련된 모든 꼬리 질문을 조회합니다.
-         */
+        /** 연관된 면접 질문 조회 */
         get: operations["getRelatedInterviewContents"];
         put?: never;
         post?: never;
@@ -1090,10 +1080,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * 특정 카테고리의 모든 질문 조회
-         * @description 선택한 카테고리에 속하는 모든 면접 질문 데이터를 조회합니다.
-         */
+        /** 특정 카테고리의 모든 질문 조회 */
         get: operations["getInterviewsByCategory"];
         put?: never;
         post?: never;
@@ -1110,10 +1097,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * 특정 카테고리의 키워드에 해당하는 모든 질문 조회
-         * @description 선택한 카테고리 내에서 특정 키워드를 포함하는 면접 질문을 조회합니다.
-         */
+        /** 특정 카테고리의 키워드에 해당하는 모든 질문 조회 */
         get: operations["getInterviewsByCategoryAndKeyword"];
         put?: never;
         post?: never;
@@ -1212,9 +1196,9 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         RsDataVoid: {
-            code: string;
-            msg: string;
-            data: Record<string, never>;
+            code?: string;
+            msg?: string;
+            data?: Record<string, never>;
         };
         StudyContentUpdateRequestDto: {
             title?: string;
@@ -1253,9 +1237,9 @@ export interface components {
             head?: boolean;
         };
         RsDataString: {
-            code: string;
-            msg: string;
-            data: string;
+            code?: string;
+            msg?: string;
+            data?: string;
         };
         RandomRequestDto: {
             indexList?: number[];
@@ -1333,7 +1317,7 @@ export interface components {
         };
         StudyMemoCreateRequestDto: {
             content?: string;
-            published?: boolean;
+            isPublished?: boolean;
         };
         PaymentRequestDto: {
             imp_uid?: string;
@@ -1351,10 +1335,11 @@ export interface components {
             item_name?: string;
         };
         InterviewCommentRequestDto: {
+            isPublic?: boolean;
             comment?: string;
             /** Format: int64 */
             interviewContentId?: number;
-            isPublic?: boolean;
+            public?: boolean;
         };
         MyPageInterviewCommentResponseDto: {
             /** Format: int64 */
@@ -1429,9 +1414,9 @@ export interface components {
             likeCount?: number;
         };
         RsDataBoolean: {
-            code: string;
-            msg: string;
-            data: boolean;
+            code?: string;
+            msg?: string;
+            data?: boolean;
         };
         MemberDto: {
             /** Format: int64 */
@@ -1442,9 +1427,9 @@ export interface components {
             subscribeEndDate: string;
         };
         RsDataMemberDto: {
-            code: string;
-            msg: string;
-            data: components["schemas"]["MemberDto"];
+            code?: string;
+            msg?: string;
+            data?: components["schemas"]["MemberDto"];
         };
         BookmarkResponseDto: {
             /** Format: int64 */
@@ -1468,33 +1453,33 @@ export interface components {
             message?: string;
         };
         PagePostListResponseDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PostListResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
+            paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            paged?: boolean;
-            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -1508,21 +1493,21 @@ export interface components {
             role?: string;
         };
         PageStudyContentDetailDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["StudyContentDetailDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         NewResponseDto: {
@@ -1649,28 +1634,28 @@ export interface components {
             public?: boolean;
         };
         PageInterviewContentAdminResponseDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["InterviewContentAdminResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         Empty: Record<string, never>;
         RsDataEmpty: {
-            code: string;
-            msg: string;
-            data: components["schemas"]["Empty"];
+            code?: string;
+            msg?: string;
+            data?: components["schemas"]["Empty"];
         };
     };
     responses: never;
@@ -1915,7 +1900,7 @@ export interface operations {
     changeRoleToAdmin: {
         parameters: {
             query: {
-                id: number;
+                arg0: number;
             };
             header?: never;
             path?: never;
@@ -2791,9 +2776,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3346,7 +3329,7 @@ export interface operations {
             };
         };
     };
-    getChatRooms: {
+    chatRooms: {
         parameters: {
             query?: never;
             header?: never;
@@ -3375,7 +3358,7 @@ export interface operations {
             };
         };
     };
-    getChatRoomInfo: {
+    chatRoomInfo: {
         parameters: {
             query?: never;
             header?: never;
@@ -3464,7 +3447,7 @@ export interface operations {
             };
         };
     };
-    getAllMessages: {
+    allMessages: {
         parameters: {
             query?: never;
             header?: never;
@@ -3524,8 +3507,8 @@ export interface operations {
     };
     getStudyMemosByMemberAndCategory: {
         parameters: {
-            query: {
-                category: string;
+            query?: {
+                category?: string;
             };
             header?: never;
             path?: never;
