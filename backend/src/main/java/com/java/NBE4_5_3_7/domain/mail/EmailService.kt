@@ -31,7 +31,6 @@ class EmailService(
 
         CompletableFuture.runAsync({
             try {
-                println("⏳ 2초 대기 중...")
                 TimeUnit.SECONDS.sleep(2)
 
                 val context = Context().apply {
@@ -50,9 +49,7 @@ class EmailService(
                 messageHelper.setText(htmlBody, true)
 
                 mailSender.send(mimeMessage)
-                println("✅ 이메일 전송 성공: $sender -> $adminEmail")
             } catch (e: MessagingException) {
-                println("❌ 이메일 전송 실패: ${e.message}")
                 throw RuntimeException(e)
             } catch (e: InterruptedException) {
                 Thread.currentThread().interrupt()
