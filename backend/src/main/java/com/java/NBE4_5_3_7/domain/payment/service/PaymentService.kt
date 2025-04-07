@@ -42,7 +42,7 @@ open class PaymentService {
     // 결제 검증 (DB 저장은 하지 않음)
     @Transactional
     open fun verifyPayment(requestDto: PaymentRequestDto): PaymentResponseDto {
-        val member = memberService!!.memberFromRq
+        val member = memberService!!.getMemberFromRq()
         try {
             val impUid: String? = requestDto.imp_uid
             val paymentResponse = iamportClient!!.paymentByImpUid(impUid)
@@ -133,7 +133,7 @@ open class PaymentService {
     // 구독 취소 기능
     fun cancelSubscription() {
         // 1. 회원 정보 조회
-        val member = memberService!!.memberFromRq
+        val member = memberService!!.getMemberFromRq()
 
         requireNotNull(member) { "존재하지 않는 회원입니다." }
 

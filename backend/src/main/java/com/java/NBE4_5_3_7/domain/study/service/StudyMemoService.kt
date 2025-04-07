@@ -25,7 +25,7 @@ class StudyMemoService(
     // 멤버, 학습 컨텐츠 ID, 메모 내용 저장, 중복 작성 시 수정하게끔 변경
     @Transactional
     fun createStudyMemo(requestDto: StudyMemoCreateRequestDto, studyContentId: Long) {
-        val member = memberService.memberFromRq
+        val member = memberService.getMemberFromRq()
 
         val studyContent = studyContentRepository.findById(studyContentId)
             .orElseThrow { RuntimeException("존재하지 않는 학습 컨텐츠 입니다.") }!!
