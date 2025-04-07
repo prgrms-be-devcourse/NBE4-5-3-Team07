@@ -103,7 +103,7 @@ class MemberService(
         return "Member [$id] 의 권한이 ${member.role} 로 변경되었습니다."
     }
 
-    fun isAdmin(id: Long): Boolean {
+    fun isAdmin(id: Long?): Boolean {
         val member = memberRepository.findById(id)
             .orElseThrow { IllegalArgumentException("해당 멤버를 찾을 수 없습니다.") }
         return member.isAdmin
