@@ -9,5 +9,5 @@ import java.util.*
 interface PostLikeRepository : JpaRepository<PostLike?, Long?> {
     fun countByPostPostId(postId: Long?): Int?
 
-    fun findByPostAndMember(post: Post?, member: Member?): Optional<PostLike?>?
+    fun findByPostAndMember(post: Post?, member: Member?): Optional<PostLike>
 }

@@ -304,13 +304,33 @@ class PostService(
     private fun getMemberField(obj: Any?, fieldName: String): Any? {
         if (obj == null) return null
         return try {
+            // 1. 먼저 필드 찾기 시도
             val field = findField(obj.javaClass, fieldName)
             field.isAccessible = true
             field.get(obj)
+        } catch (e: NoSuchFieldException) {
+            try {
+                // 2. 실패 시 getter 메서드 접근 시도
+                val method = obj.javaClass.getMethod("get${fieldName.replaceFirstChar { it.uppercaseChar() }}")
+                method.invoke(obj)
+            } catch (ex: Exception) {
+                null
+            }
         } catch (e: Exception) {
             null
         }
     }
+
+//    private fun getMemberField(obj: Any?, fieldName: String): Any? {
+//        if (obj == null) return null
+//        return try {
+//            val field = findField(obj.javaClass, fieldName)
+//            field.isAccessible = true
+//            field.get(obj)
+//        } catch (e: Exception) {
+//            null
+//        }
+//    }
 
     private fun setField(obj: Any, fieldName: String, value: Any?) {
         try {

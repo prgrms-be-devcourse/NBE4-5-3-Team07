@@ -79,7 +79,8 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("io.mockk:mockk:1.13.10")
-	testImplementation("io.mockk:mockk-spring:3.0.1")
+//	testImplementation("io.mockk:mockk-spring:3.0.1")
+	testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 
 tasks.test {
