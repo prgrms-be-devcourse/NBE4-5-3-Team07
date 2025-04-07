@@ -4,6 +4,7 @@ import com.java.NBE4_5_3_7.domain.interview.entity.dto.response.BookmarkResponse
 import com.java.NBE4_5_3_7.domain.interview.service.InterviewService
 import com.java.NBE4_5_3_7.domain.member.entity.Member
 import com.java.NBE4_5_3_7.domain.member.service.MemberService
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -14,7 +15,7 @@ class InterviewBookmarkController(
     private val memberService: MemberService
 ) {
 
-    @PostMapping
+    @PostMapping(produces = [MediaType.TEXT_PLAIN_VALUE + ";charset=UTF-8"])
     fun bookmarkAdd(@RequestParam("id") contentId: Long): ResponseEntity<String> {
         val memberId = memberService.getIdFromRq()
         return ResponseEntity.ok(interviewService.bookmark(memberId, contentId))
@@ -26,7 +27,7 @@ class InterviewBookmarkController(
         return ResponseEntity.ok(interviewService.showMyBookmark(memberId))
     }
 
-    @DeleteMapping("/{noteId}")
+    @DeleteMapping("/{noteId}", produces = [MediaType.TEXT_PLAIN_VALUE + ";charset=UTF-8"])
     fun deleteNote(@PathVariable noteId: Long): ResponseEntity<String> {
         val member: Member = memberService.getMemberFromRq()
         interviewService.deleteNote(noteId, member)
