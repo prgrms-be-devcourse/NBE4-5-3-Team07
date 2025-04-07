@@ -14,7 +14,7 @@ class ChatPublisherTest {
     private val chatPublisher = ChatPublisher(messagingTemplate)
 
     @Test
-    fun `ChatPublisher TEST`() {
+    fun `메시지 전송 경로 TEST`() {
         val message = "Hello Admin"
         val channel = "chat:admin:123"
 
