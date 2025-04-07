@@ -21,7 +21,7 @@ class StudyMemoLikeService(
 
     fun memoLike(studyMemoId: Long): String {
         val studyMemo = studyMemoRepository.findById(studyMemoId).orElse(null)
-        val member = memberService.memberFromRq
+        val member = memberService.getMemberFromRq()
 
         val lockKey = "lock:interview:like:$studyMemoId"
         val lock = redissonClient.getLock(lockKey)

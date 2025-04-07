@@ -31,7 +31,7 @@ class StudyMemoController(
     /** 학습 컨텐츠에 대한 나의 메모 조회 */
     @GetMapping("/{studyContentId}")
     fun getStudyMemoByMemberAndStudyContentId(@PathVariable("studyContentId") studyContentId: Long): ResponseEntity<StudyMemoResponseDto> {
-        val member = memberService.memberFromRq
+        val member = memberService.getMemberFromRq()
         val studyContent = studyContentService.findById(studyContentId)
         return ResponseEntity.ok(studyMemoService.getStudyMemoByStudyMemberAndContentId(member, studyContent))
     }
@@ -45,7 +45,7 @@ class StudyMemoController(
     /** 사용자 + 카테고리별 메모 및 컨텐츠 조회 */
     @GetMapping
     fun getStudyMemosByMemberAndCategory(@RequestParam category: String?): ResponseEntity<List<StudyMemoResponseDto>> {
-        val member = memberService.memberFromRq
+        val member = memberService.getMemberFromRq()
 
         val categoryEnum = FirstCategory.fromString(category!!)
         val studyMemos = studyMemoService.getStudyMemosByMemberAndCategory(member, categoryEnum)
@@ -58,7 +58,7 @@ class StudyMemoController(
         @PathVariable studyMemoId: Long,
         @RequestBody updatedDto: StudyMemoRequestDto
     ): ResponseEntity<StudyMemoResponseDto> {
-        val member = memberService.memberFromRq
+        val member = memberService.getMemberFromRq()
 
         val updatedStudyMemo = studyMemoService.updateStudyMemo(studyMemoId, updatedDto, member)
         return ResponseEntity.ok(updatedStudyMemo)
@@ -67,7 +67,7 @@ class StudyMemoController(
     /** 메모 삭제 */
     @DeleteMapping("/{studyMemoId}")
     fun deleteStudyMemo(@PathVariable studyMemoId: Long): ResponseEntity<String> {
-        val member = memberService.memberFromRq
+        val member = memberService.getMemberFromRq()
 
         studyMemoService.deleteStudyMemo(studyMemoId, member)
         return ResponseEntity.ok("해당 메모가 삭제되었습니다.")

@@ -77,7 +77,7 @@ public class InterviewContentDataInit {
                 }
 
                 InterviewContent content = new InterviewContent();
-                content.setHead_id(headId);
+                content.setHeadId(headId);
                 content.setCategory(category);
                 content.setKeyword(keyword);
                 content.setQuestion(question);
@@ -103,11 +103,11 @@ public class InterviewContentDataInit {
     @Transactional
     public void updateHasTailField() {
         repository.findAll().stream()
-                .filter(interview -> interview.getHead_id() != null)
+                .filter(interview -> interview.getHeadId() != null)
                 .forEach(tail -> {
-                    repository.findById(tail.getHead_id()).ifPresent(head -> {
+                    repository.findById(tail.getHeadId()).ifPresent(head -> {
                         head.setHasTail(true);
-                        head.setTail_id(tail.getInterview_content_id());
+                        head.setTailId(tail.getInterviewContentId());
                         repository.save(head);
                     });
                 });
