@@ -11,7 +11,6 @@ import java.util.Map;
 
 public class SecurityUser extends User implements OAuth2User {
 
-    @Getter
     private long id;
     @Getter
     private String nickname;
@@ -19,6 +18,10 @@ public class SecurityUser extends User implements OAuth2User {
         super(username, "", authorities);
         this.id = id;
         this.nickname = nickname;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public SecurityUser(Member member) {

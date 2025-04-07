@@ -48,6 +48,8 @@ class MemberService(
     }
 
     fun getMemberByAccessToken(accessToken: String?): Optional<Member> {
+        if (accessToken == null) return Optional.empty()
+
         val payload = authTokenService.getPayload(accessToken)
             ?: return Optional.empty()
 
