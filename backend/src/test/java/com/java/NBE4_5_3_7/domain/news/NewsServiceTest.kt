@@ -5,21 +5,22 @@ import com.java.NBE4_5_3_7.domain.news.dto.responseDto.JobsDetailDto
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.NewResponseDto
 import com.java.NBE4_5_3_7.domain.news.service.NewsService
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import kotlin.test.assertContains
 
 @SpringBootTest
-@ActiveProfiles("local") // application-test.yml 사용하는 경우
+@ActiveProfiles("local")
 class NewsServiceTest {
 
     @Autowired
     private lateinit var newsService: NewsService
 
     @Test
-    fun `네이버 뉴스 API 호출 테스트`() {
+    @DisplayName("네이버 뉴스 API 호출 테스트")
+    fun testNaverNewsApiCall() {
         val keyword = "인공지능"
         val page = 1
 
@@ -42,7 +43,8 @@ class NewsServiceTest {
     }
 
     @Test
-    fun `공공 데이터 구인공고 리스트 API 호출 테스트`() {
+    @DisplayName("공공 데이터 구인공고 리스트 API 호출 테스트")
+    fun testPublicJobListApiCall() {
         val ncsCdLst = "R600006"
         val page = 1
 
@@ -66,7 +68,8 @@ class NewsServiceTest {
     }
 
     @Test
-    fun `공공 데이터 구인공고 상세 API 호출 테스트`() {
+    @DisplayName("공공 데이터 구인공고 상세 API 호출 테스트")
+    fun testPublicJobDetailApiCall() {
         val recrutPblntSn = "284270"
 
         val response: JobsDetailDto? = newsService.getJobDetail(recrutPblntSn)
@@ -89,5 +92,4 @@ class NewsServiceTest {
         assertThat(response?.instNm).isNotNull
         assertThat(allStepsHaveTitles).isTrue()
     }
-
 }
