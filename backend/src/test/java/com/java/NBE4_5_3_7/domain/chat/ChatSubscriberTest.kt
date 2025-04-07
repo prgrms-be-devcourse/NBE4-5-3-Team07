@@ -15,7 +15,7 @@ class ChatSubscriberTest {
         val message = "User Hello"
         val channel = "chat:456"
 
-        chatSubscriber.receiveMessage(message, channel)
+        chatSubscriber.forwardUserMessageToRoom(message, channel)
 
         verify { messagingTemplate.convertAndSend("/topic/chat/456", message) }
     }
@@ -25,7 +25,7 @@ class ChatSubscriberTest {
         val message = "Admin Hello"
         val channel = "chat:admin:789"
 
-        chatSubscriber.receiveAdminMessage(message, channel)
+        chatSubscriber.forwardAdminMessageToRoom(message, channel)
 
         verify { messagingTemplate.convertAndSend("/topic/admin/chat/789", message) }
     }

@@ -18,7 +18,7 @@ class ChatPublisherTest {
         val message = "Hello Admin"
         val channel = "chat:admin:123"
 
-        chatPublisher.receiveAdminMessage(message, channel)
+        chatPublisher.publishToAdminChat(message, channel)
 
         verify { messagingTemplate.convertAndSend("/topic/admin/chat/123", message) }
     }

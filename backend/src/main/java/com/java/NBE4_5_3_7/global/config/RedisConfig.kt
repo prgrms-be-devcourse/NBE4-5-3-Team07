@@ -37,9 +37,9 @@ class RedisConfig(private val chatSubscriber: ChatSubscriber, @param:Lazy privat
             val channel = String(message.channel, StandardCharsets.UTF_8)
             val messageContent = String(message.body, StandardCharsets.UTF_8)
             if (channel.startsWith("chat:")) {
-                chatSubscriber.receiveMessage(messageContent, channel)
+                chatSubscriber.forwardUserMessageToRoom(messageContent, channel)
             } else if (channel.startsWith("admin:chat:")) {
-                chatPublisher.receiveAdminMessage(messageContent, channel)
+                chatPublisher.publishToAdminChat(messageContent, channel)
             }
         }, PatternTopic("chat:*"))
 
@@ -48,7 +48,7 @@ class RedisConfig(private val chatSubscriber: ChatSubscriber, @param:Lazy privat
             val channel = String(message.channel, StandardCharsets.UTF_8)
             val messageContent = String(message.body, StandardCharsets.UTF_8)
             println("✅ [RedisConfig] 관리자 메시지 수신 - 채널: $channel | 메시지: $messageContent")
-            chatSubscriber.receiveAdminMessage(messageContent, channel) // ChatSubscriber가 직접 WebSocket으로 메시지 전송
+            chatSubscriber.forwardAdminMessageToRoom(messageContent, channel) // ChatSubscriber가 직접 WebSocket으로 메시지 전송
         }, PatternTopic("admin:chat:*"))
 
         return container
