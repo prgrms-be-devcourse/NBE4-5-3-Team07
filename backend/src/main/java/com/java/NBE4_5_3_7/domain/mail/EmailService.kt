@@ -24,7 +24,6 @@ class EmailService(
 
     @Async("asyncExecutor")
     fun sendChatNotification(sender: String, messageContent: String?, timestamp: String) {
-        println("📥 sendChatNotification() 호출됨: $sender")
         if ("ADMIN" == sender || "SYSTEM" == sender) return
 
         val formattedKSTTimestamp = convertToKST(timestamp)
