@@ -1,91 +1,93 @@
-package com.java.NBE4_5_3_7.domain.interview.service;
+package com.java.NBE4_5_3_7.domain.interview.service
 
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent;
-import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContentLike;
-import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentLikeRepository;
-import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentRepository;
-import com.java.NBE4_5_3_7.domain.member.entity.Member;
-import com.java.NBE4_5_3_7.domain.member.repository.MemberRepository;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContent
+import com.java.NBE4_5_3_7.domain.interview.entity.InterviewContentLike
+import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentLikeRepository
+import com.java.NBE4_5_3_7.domain.interview.repository.InterviewContentRepository
+import com.java.NBE4_5_3_7.domain.member.entity.Member
+import com.java.NBE4_5_3_7.domain.member.repository.MemberRepository
+import io.mockk.*
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.redisson.api.RLock
+import org.redisson.api.RedissonClient
+import java.util.*
+import java.util.concurrent.TimeUnit
 
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-@ExtendWith(MockitoExtension.class)
 class InterviewLikeServiceTest {
 
-    @InjectMocks
-    InterviewLikeService service;
+    private lateinit var service: InterviewLikeService
 
-    @Mock
-    InterviewContentRepository interviewContentRepository;
+    private val interviewContentRepository: InterviewContentRepository = mockk()
+    private val memberRepository: MemberRepository = mockk()
+    private val interviewContentLikeRepository: InterviewContentLikeRepository = mockk()
+    private val redissonClient: RedissonClient = mockk()
+    private val rLock: RLock = mockk()
 
-    @Mock
-    MemberRepository memberRepository;
-
-    @Mock
-    InterviewContentLikeRepository interviewContentLikeRepository;
-
-    @Mock
-    RedissonClient redissonClient;
-
-    @Mock
-    RLock rLock;
+    @BeforeEach
+    fun setup() {
+        service = InterviewLikeService(
+            interviewContentLikeRepository,
+            interviewContentRepository,
+            memberRepository,
+            redissonClient
+        )
+    }
 
     @Test
     @DisplayName("좋아요 추가 성공")
-    void interviewLike_add_success() throws Exception {
-        InterviewContent content = new InterviewContent();
-        content.setInterviewContentId(1L);
-        Member member = mock(Member.class);
+    fun interviewLike_add_success() {
+        // given
+        val content = InterviewContent().apply { interviewContentId = 1L }
+        val member = mockk<Member>()
 
-        when(redissonClient.getLock(any())).thenReturn(rLock);
-        when(rLock.tryLock(5L, 10L, TimeUnit.SECONDS)).thenReturn(true);
-        when(rLock.isHeldByCurrentThread()).thenReturn(true);
-        when(interviewContentRepository.findById(1L)).thenReturn(Optional.of(content));
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-        when(interviewContentLikeRepository.findByInterviewContentAndMember(content, member))
-                .thenReturn(Optional.empty());
+        every { redissonClient.getLock(any()) } returns rLock
+        every { rLock.tryLock(5L, 10L, TimeUnit.SECONDS) } returns true
+        every { rLock.isHeldByCurrentThread } returns true
+        every { interviewContentRepository.findById(1L) } returns Optional.of(content)
+        every { memberRepository.findById(1L) } returns Optional.of(member)
+        every {
+            interviewContentLikeRepository.findByInterviewContentAndMember(content, member)
+        } returns Optional.empty()
+        every { interviewContentLikeRepository.save(any<InterviewContentLike>()) } returns mockk()
+        every { rLock.unlock() } just Runs
 
-        String result = service.interviewLike(1L, 1L);
+        // when
+        val result = service.interviewLike(1L, 1L)
 
-        assertThat(result).isEqualTo("좋아요 추가");
-        verify(interviewContentLikeRepository).save(any());
-        verify(rLock).unlock();
+        // then
+        assertThat(result).isEqualTo("좋아요 추가")
+        verify { interviewContentLikeRepository.save(any()) }
+        verify { rLock.unlock() }
     }
 
     @Test
     @DisplayName("좋아요 취소 성공")
-    void interviewLike_cancel_success() throws Exception {
-        InterviewContent content = new InterviewContent();
-        content.setInterviewContentId(1L);
-        Member member = mock(Member.class);
+    fun interviewLike_cancel_success() {
+        // given
+        val content = InterviewContent().apply { interviewContentId = 1L }
+        val member = mockk<Member>()
+        val like = InterviewContentLike(content, member)
 
-        InterviewContentLike like = new InterviewContentLike(content, member);
+        every { redissonClient.getLock(any()) } returns rLock
+        every { rLock.tryLock(5L, 10L, TimeUnit.SECONDS) } returns true
+        every { rLock.isHeldByCurrentThread } returns true
+        every { interviewContentRepository.findById(1L) } returns Optional.of(content)
+        every { memberRepository.findById(1L) } returns Optional.of(member)
+        every {
+            interviewContentLikeRepository.findByInterviewContentAndMember(content, member)
+        } returns Optional.of(like)
+        every { interviewContentLikeRepository.delete(like) } just Runs
+        every { rLock.unlock() } just Runs
 
-        when(redissonClient.getLock(any())).thenReturn(rLock);
-        when(rLock.tryLock(5L, 10L, TimeUnit.SECONDS)).thenReturn(true);
-        when(rLock.isHeldByCurrentThread()).thenReturn(true);
-        when(interviewContentRepository.findById(1L)).thenReturn(Optional.of(content));
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-        when(interviewContentLikeRepository.findByInterviewContentAndMember(content, member))
-                .thenReturn(Optional.of(like));
+        // when
+        val result = service.interviewLike(1L, 1L)
 
-        String result = service.interviewLike(1L, 1L);
-
-        assertThat(result).isEqualTo("좋아요 취소");
-        verify(interviewContentLikeRepository).delete(like);
-        verify(rLock).unlock();
+        // then
+        assertThat(result).isEqualTo("좋아요 취소")
+        verify { interviewContentLikeRepository.delete(like) }
+        verify { rLock.unlock() }
     }
 }
