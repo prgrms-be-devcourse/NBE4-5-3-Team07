@@ -24,21 +24,20 @@ class EmailService(
 
     @Async("asyncExecutor")
     fun sendChatNotification(sender: String, messageContent: String?, timestamp: String) {
-        if ("ADMIN" == sender || "SYSTEM" == sender) {
-            return
-        }
+        if ("ADMIN" == sender || "SYSTEM" == sender) return
 
         val formattedKSTTimestamp = convertToKST(timestamp)
 
-        // 스레드 블로킹 없이 동작
         taskScheduler.schedule({
             try {
                 Thread.sleep(2000)
 
-                val context = Context()
-                context.setVariable("sender", sender)
-                context.setVariable("content", messageContent)
-                context.setVariable("timestamp", formattedKSTTimestamp)
+                val context = Context().apply {
+                    setVariable("sender", sender)
+                    setVariable("content", messageContent)
+                    setVariable("timestamp", formattedKSTTimestamp)
+                }
+
                 val htmlBody = templateEngine.process("email-template", context)
 
                 val mimeMessage = mailSender.createMimeMessage()
@@ -49,7 +48,9 @@ class EmailService(
                 messageHelper.setText(htmlBody, true)
 
                 mailSender.send(mimeMessage)
+                println("✅ 이메일 전송 성공: $sender -> $adminEmail")
             } catch (e: MessagingException) {
+                println("❌ 이메일 전송 실패: ${e.message}")
                 throw RuntimeException(e)
             } catch (e: InterruptedException) {
                 Thread.currentThread().interrupt()

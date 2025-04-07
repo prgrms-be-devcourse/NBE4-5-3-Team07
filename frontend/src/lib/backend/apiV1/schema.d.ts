@@ -754,7 +754,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getChatRooms"];
+        get: operations["chatRooms"];
         put?: never;
         post?: never;
         delete?: never;
@@ -770,7 +770,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getChatRoomInfo"];
+        get: operations["chatRoomInfo"];
         put?: never;
         post?: never;
         delete?: never;
@@ -802,7 +802,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["getAllMessages"];
+        get: operations["allMessages"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1212,9 +1212,9 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         RsDataVoid: {
-            code: string;
-            msg: string;
-            data: Record<string, never>;
+            code?: string;
+            msg?: string;
+            data?: Record<string, never>;
         };
         StudyContentUpdateRequestDto: {
             title?: string;
@@ -1253,9 +1253,9 @@ export interface components {
             head?: boolean;
         };
         RsDataString: {
-            code: string;
-            msg: string;
-            data: string;
+            code?: string;
+            msg?: string;
+            data?: string;
         };
         RandomRequestDto: {
             indexList?: number[];
@@ -1429,9 +1429,9 @@ export interface components {
             likeCount?: number;
         };
         RsDataBoolean: {
-            code: string;
-            msg: string;
-            data: boolean;
+            code?: string;
+            msg?: string;
+            data?: boolean;
         };
         MemberDto: {
             /** Format: int64 */
@@ -1442,9 +1442,9 @@ export interface components {
             subscribeEndDate: string;
         };
         RsDataMemberDto: {
-            code: string;
-            msg: string;
-            data: components["schemas"]["MemberDto"];
+            code?: string;
+            msg?: string;
+            data?: components["schemas"]["MemberDto"];
         };
         BookmarkResponseDto: {
             /** Format: int64 */
@@ -1468,38 +1468,38 @@ export interface components {
             message?: string;
         };
         PagePostListResponseDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PostListResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         PageableObject: {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
+            paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            paged?: boolean;
-            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
-            sorted?: boolean;
             unsorted?: boolean;
+            sorted?: boolean;
         };
         ChatRoom: {
             /** Format: int64 */
@@ -1508,21 +1508,21 @@ export interface components {
             role?: string;
         };
         PageStudyContentDetailDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["StudyContentDetailDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         NewResponseDto: {
@@ -1649,28 +1649,28 @@ export interface components {
             public?: boolean;
         };
         PageInterviewContentAdminResponseDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["InterviewContentAdminResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            first?: boolean;
-            last?: boolean;
             /** Format: int32 */
             numberOfElements?: number;
             pageable?: components["schemas"]["PageableObject"];
+            first?: boolean;
+            last?: boolean;
             empty?: boolean;
         };
         Empty: Record<string, never>;
         RsDataEmpty: {
-            code: string;
-            msg: string;
-            data: components["schemas"]["Empty"];
+            code?: string;
+            msg?: string;
+            data?: components["schemas"]["Empty"];
         };
     };
     responses: never;
@@ -1720,9 +1720,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                studyContentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -1751,9 +1749,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                studyContentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody: {
@@ -1786,9 +1782,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                studyContentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -1852,9 +1846,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                interviewContentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody: {
@@ -1887,9 +1879,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                interviewContentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -1915,7 +1905,7 @@ export interface operations {
     changeRoleToAdmin: {
         parameters: {
             query: {
-                id: number;
+                arg0: number;
             };
             header?: never;
             path?: never;
@@ -2265,9 +2255,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                studyMemoId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -2296,9 +2284,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                studyContentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody: {
@@ -2429,7 +2415,7 @@ export interface operations {
     getCommentsByMemberAndCategory: {
         parameters: {
             query: {
-                category: string;
+                arg0: string;
             };
             header?: never;
             path?: never;
@@ -2659,9 +2645,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                studyMemoId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -2690,9 +2674,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                studyMemoId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody: {
@@ -2725,9 +2707,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                commentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -2791,9 +2771,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3346,7 +3324,7 @@ export interface operations {
             };
         };
     };
-    getChatRooms: {
+    chatRooms: {
         parameters: {
             query?: never;
             header?: never;
@@ -3375,7 +3353,7 @@ export interface operations {
             };
         };
     };
-    getChatRoomInfo: {
+    chatRoomInfo: {
         parameters: {
             query?: never;
             header?: never;
@@ -3464,7 +3442,7 @@ export interface operations {
             };
         };
     };
-    getAllMessages: {
+    allMessages: {
         parameters: {
             query?: never;
             header?: never;
@@ -3525,7 +3503,7 @@ export interface operations {
     getStudyMemosByMemberAndCategory: {
         parameters: {
             query: {
-                category: string;
+                arg0: string;
             };
             header?: never;
             path?: never;
@@ -3588,9 +3566,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                studyContentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3619,9 +3595,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                firstCategory: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3649,14 +3623,11 @@ export interface operations {
     getStudyContentByCategory: {
         parameters: {
             query?: {
-                page?: number;
-                size?: number;
+                arg2?: number;
+                arg3?: number;
             };
             header?: never;
-            path: {
-                firstCategory: string;
-                secondCategory: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3715,8 +3686,8 @@ export interface operations {
     getNews: {
         parameters: {
             query: {
-                keyWord: string;
-                page?: number;
+                arg0: string;
+                arg1?: number;
             };
             header?: never;
             path?: never;
@@ -3747,8 +3718,8 @@ export interface operations {
     getJobs: {
         parameters: {
             query: {
-                ncsCdLst: string;
-                page?: number;
+                arg0: string;
+                arg1?: number;
             };
             header?: never;
             path?: never;
@@ -3780,9 +3751,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                recrutPblntSn: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3811,9 +3780,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                interviewContentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3842,9 +3809,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                interviewContentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3872,13 +3837,11 @@ export interface operations {
     getPagedStudyContentsByFirstCategory: {
         parameters: {
             query?: {
-                page?: number;
-                size?: number;
+                arg1?: number;
+                arg2?: number;
             };
             header?: never;
-            path: {
-                firstCategory: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3906,14 +3869,11 @@ export interface operations {
     getPagedStudyContentsByCategories: {
         parameters: {
             query?: {
-                page?: number;
-                size?: number;
+                arg2?: number;
+                arg3?: number;
             };
             header?: never;
-            path: {
-                firstCategory: string;
-                secondCategory: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -3973,13 +3933,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                /**
-                 * @description 조회할 면접 질문 ID
-                 * @example 1
-                 */
-                interviewContentId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -4007,8 +3961,8 @@ export interface operations {
     getInterviewsByCategory: {
         parameters: {
             query?: {
-                page?: number;
-                size?: number;
+                arg1?: number;
+                arg2?: number;
             };
             header?: never;
             path: {
@@ -4045,8 +3999,8 @@ export interface operations {
     getInterviewsByCategoryAndKeyword: {
         parameters: {
             query?: {
-                page?: number;
-                size?: number;
+                arg2?: number;
+                arg3?: number;
             };
             header?: never;
             path: {
@@ -4178,9 +4132,7 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                noteId: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
