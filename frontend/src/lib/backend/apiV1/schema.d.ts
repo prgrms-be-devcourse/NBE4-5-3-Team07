@@ -55,21 +55,12 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * 특정 면접 질문 ID 조회
-         * @description 면접 질문 ID를 이용하여 해당 데이터를 조회합니다.
-         */
+        /** 특정 면접 질문 ID 조회 */
         get: operations["getInterviewContentById"];
-        /**
-         * 특정 면접 질문 수정
-         * @description 면접 질문 ID를 기준으로 카테고리, 키워드, 질문, 모범 답안을 수정합니다.
-         */
+        /** 특정 면접 질문 수정 */
         put: operations["updateInterviewContent"];
         post?: never;
-        /**
-         * 특정 면접 질문 삭제
-         * @description 면접 질문 ID를 기준으로 해당 질문과 모든 꼬리 질문을 삭제합니다.
-         */
+        /** 특정 면접 질문 삭제 */
         delete: operations["deleteInterviewContent"];
         options?: never;
         head?: never;
@@ -343,9 +334,11 @@ export interface paths {
         put?: never;
         /**
          * 학습 콘텐츠 등록
-         * @description     새로운 학습 콘텐츠를 등록합니다.
-         *         - `firstCategory`는 기존에 존재하는 카테고리 중에서만 선택 가능합니다.
-         *         - `secondCategory`, `title`, `body`는 빈 문자열 또는 `null`일 수 없습니다.
+         * @description
+         *             새로운 학습 콘텐츠를 등록합니다.
+         *
+         *             - `firstCategory`는 기존에 존재하는 카테고리 중에서만 선택 가능합니다.
+         *             - `secondCategory`, `title`, `body`는 빈 문자열 또는 `null`일 수 없습니다.
          *
          */
         post: operations["createStudyContent"];
@@ -366,10 +359,10 @@ export interface paths {
         put?: never;
         /**
          * 면접 질문 등록
-         * @description 새로운 면접 질문을 등록합니다. 기존 질문의 꼬리 질문으로 추가할 수도 있습니다.
-         *
-         *     - `headId`가 `null`이면 새로운 머리 질문이 됩니다.
-         *     - `headId`가 존재하면, 해당 질문의 마지막 질문인지(`has_tail = 0`) 확인 후 꼬리 질문으로 추가합니다.
+         * @description
+         *                 새로운 면접 질문을 등록합니다. 기존 질문의 꼬리 질문으로 추가할 수도 있습니다.
+         *                 - `headId`가 `null`이면 새로운 머리 질문이 됩니다.
+         *                 - `headId`가 존재하면, 해당 질문의 마지막 질문인지(`has_tail = 0`) 확인 후 꼬리 질문으로 추가합니다.
          *
          */
         post: operations["createInterviewContent"];
@@ -1070,10 +1063,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * 연관된 면접 질문 조회
-         * @description 특정 면접 질문 ID를 기준으로 관련된 모든 꼬리 질문을 조회합니다.
-         */
+        /** 연관된 면접 질문 조회 */
         get: operations["getRelatedInterviewContents"];
         put?: never;
         post?: never;
@@ -1090,10 +1080,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * 특정 카테고리의 모든 질문 조회
-         * @description 선택한 카테고리에 속하는 모든 면접 질문 데이터를 조회합니다.
-         */
+        /** 특정 카테고리의 모든 질문 조회 */
         get: operations["getInterviewsByCategory"];
         put?: never;
         post?: never;
@@ -1110,10 +1097,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /**
-         * 특정 카테고리의 키워드에 해당하는 모든 질문 조회
-         * @description 선택한 카테고리 내에서 특정 키워드를 포함하는 면접 질문을 조회합니다.
-         */
+        /** 특정 카테고리의 키워드에 해당하는 모든 질문 조회 */
         get: operations["getInterviewsByCategoryAndKeyword"];
         put?: never;
         post?: never;
@@ -1333,7 +1317,7 @@ export interface components {
         };
         StudyMemoCreateRequestDto: {
             content?: string;
-            published?: boolean;
+            isPublished?: boolean;
         };
         PaymentRequestDto: {
             imp_uid?: string;
@@ -1351,10 +1335,11 @@ export interface components {
             item_name?: string;
         };
         InterviewCommentRequestDto: {
+            isPublic?: boolean;
             comment?: string;
             /** Format: int64 */
             interviewContentId?: number;
-            isPublic?: boolean;
+            public?: boolean;
         };
         MyPageInterviewCommentResponseDto: {
             /** Format: int64 */
@@ -1468,19 +1453,19 @@ export interface components {
             message?: string;
         };
         PagePostListResponseDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PostListResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             first?: boolean;
             last?: boolean;
             empty?: boolean;
@@ -1489,17 +1474,17 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
-            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
+            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
-            unsorted?: boolean;
             sorted?: boolean;
+            unsorted?: boolean;
         };
         ChatRoom: {
             /** Format: int64 */
@@ -1508,19 +1493,19 @@ export interface components {
             role?: string;
         };
         PageStudyContentDetailDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["StudyContentDetailDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             first?: boolean;
             last?: boolean;
             empty?: boolean;
@@ -1649,19 +1634,19 @@ export interface components {
             public?: boolean;
         };
         PageInterviewContentAdminResponseDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["InterviewContentAdminResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             first?: boolean;
             last?: boolean;
             empty?: boolean;
@@ -1720,7 +1705,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                studyContentId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -1749,7 +1736,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                studyContentId: number;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -1782,7 +1771,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                studyContentId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -1846,7 +1837,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                interviewContentId: number;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -1879,7 +1872,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                interviewContentId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -2255,7 +2250,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                studyMemoId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -2284,7 +2281,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                studyContentId: number;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -2415,7 +2414,7 @@ export interface operations {
     getCommentsByMemberAndCategory: {
         parameters: {
             query: {
-                arg0: string;
+                category: string;
             };
             header?: never;
             path?: never;
@@ -2645,7 +2644,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                studyMemoId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -2674,7 +2675,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                studyMemoId: number;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -2707,7 +2710,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                commentId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3502,8 +3507,8 @@ export interface operations {
     };
     getStudyMemosByMemberAndCategory: {
         parameters: {
-            query: {
-                arg0: string;
+            query?: {
+                category?: string;
             };
             header?: never;
             path?: never;
@@ -3566,7 +3571,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                studyContentId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3595,7 +3602,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                firstCategory: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3623,11 +3632,14 @@ export interface operations {
     getStudyContentByCategory: {
         parameters: {
             query?: {
-                arg2?: number;
-                arg3?: number;
+                page?: number;
+                size?: number;
             };
             header?: never;
-            path?: never;
+            path: {
+                firstCategory: string;
+                secondCategory: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3686,8 +3698,8 @@ export interface operations {
     getNews: {
         parameters: {
             query: {
-                arg0: string;
-                arg1?: number;
+                keyWord: string;
+                page?: number;
             };
             header?: never;
             path?: never;
@@ -3718,8 +3730,8 @@ export interface operations {
     getJobs: {
         parameters: {
             query: {
-                arg0: string;
-                arg1?: number;
+                ncsCdLst: string;
+                page?: number;
             };
             header?: never;
             path?: never;
@@ -3751,7 +3763,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                recrutPblntSn: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3780,7 +3794,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                interviewContentId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3809,7 +3825,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                interviewContentId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3837,11 +3855,13 @@ export interface operations {
     getPagedStudyContentsByFirstCategory: {
         parameters: {
             query?: {
-                arg1?: number;
-                arg2?: number;
+                page?: number;
+                size?: number;
             };
             header?: never;
-            path?: never;
+            path: {
+                firstCategory: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3869,11 +3889,14 @@ export interface operations {
     getPagedStudyContentsByCategories: {
         parameters: {
             query?: {
-                arg2?: number;
-                arg3?: number;
+                page?: number;
+                size?: number;
             };
             header?: never;
-            path?: never;
+            path: {
+                firstCategory: string;
+                secondCategory: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3933,7 +3956,13 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                /**
+                 * @description 조회할 면접 질문 ID
+                 * @example 1
+                 */
+                interviewContentId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -3961,8 +3990,8 @@ export interface operations {
     getInterviewsByCategory: {
         parameters: {
             query?: {
-                arg1?: number;
-                arg2?: number;
+                page?: number;
+                size?: number;
             };
             header?: never;
             path: {
@@ -3999,8 +4028,8 @@ export interface operations {
     getInterviewsByCategoryAndKeyword: {
         parameters: {
             query?: {
-                arg2?: number;
-                arg3?: number;
+                page?: number;
+                size?: number;
             };
             header?: never;
             path: {
@@ -4132,7 +4161,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                noteId: number;
+            };
             cookie?: never;
         };
         requestBody?: never;

@@ -4,7 +4,6 @@ import jakarta.mail.MessagingException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
-import org.springframework.scheduling.TaskScheduler
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.thymeleaf.context.Context
@@ -12,25 +11,28 @@ import org.thymeleaf.spring6.SpringTemplateEngine
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
 @Service
 class EmailService(
     private val mailSender: JavaMailSender,
     private val templateEngine: SpringTemplateEngine,
-    private val taskScheduler: TaskScheduler,
     @Value("\${mail.username}") private val fromEmail: String,
     @Value("\${admin.email}") private val adminEmail: String,
-    ) {
+) {
 
     @Async("asyncExecutor")
     fun sendChatNotification(sender: String, messageContent: String?, timestamp: String) {
+        println("📥 sendChatNotification() 호출됨: $sender")
         if ("ADMIN" == sender || "SYSTEM" == sender) return
 
         val formattedKSTTimestamp = convertToKST(timestamp)
 
-        taskScheduler.schedule({
+        CompletableFuture.runAsync({
             try {
-                Thread.sleep(2000)
+                println("⏳ 2초 대기 중...")
+                TimeUnit.SECONDS.sleep(2)
 
                 val context = Context().apply {
                     setVariable("sender", sender)
@@ -55,7 +57,7 @@ class EmailService(
             } catch (e: InterruptedException) {
                 Thread.currentThread().interrupt()
             }
-        }, Instant.now().plusMillis(2000))
+        })
     }
 
     private fun convertToKST(isoTimestamp: String): String? {
