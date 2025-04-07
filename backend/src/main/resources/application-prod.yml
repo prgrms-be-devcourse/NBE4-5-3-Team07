@@ -78,7 +78,7 @@ spring:
             socket: DEBUG
 
 redisson:
-  address: "redis://localhost:6379"
+  address: ${redisson.elasticache-address}
 
 custom:
   jwt:
