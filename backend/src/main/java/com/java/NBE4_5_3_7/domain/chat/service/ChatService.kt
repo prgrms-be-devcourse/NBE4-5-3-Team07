@@ -70,7 +70,6 @@ class ChatService(
     @Transactional
     fun deleteChatRoomMessages(roomId: Long) {
         redisTemplate.delete("chat:$roomId")
-        println("🗑️ 채팅방 삭제 완료 - roomId=$roomId")
     }
 
     /**  채팅방 목록 조회 */
