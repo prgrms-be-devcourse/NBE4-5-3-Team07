@@ -60,7 +60,7 @@ class InterviewControllerTest {
     @DisplayName("GET /interview/category/{category} → 카테고리 별 머리 질문 ID 리스트 반환")
     fun getCategoryHeadQuestionIds() {
         // given
-        val category = InterviewCategory.DATABASE  // 예시로 TECH 카테고리 사용
+        val category = InterviewCategory.DATABASE
         val mockResponse = listOf(4L, 5L, 6L)
         every { interviewService.categoryHeadQuestion(category) } returns mockResponse
 
