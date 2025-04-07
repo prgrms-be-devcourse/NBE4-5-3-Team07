@@ -128,7 +128,9 @@ export default function PaymentResultPage() {
                       결제 금액
                     </span>
                     <strong className="text-lg text-gray-800 dark:text-white">
-                      {paymentData.amount.toLocaleString()} 원
+                      {paymentData.amount
+                        ? paymentData.amount.toLocaleString() + " 원"
+                        : "금액 정보 없음"}
                     </strong>
                   </div>
                   <div className="flex justify-between items-center pt-2">

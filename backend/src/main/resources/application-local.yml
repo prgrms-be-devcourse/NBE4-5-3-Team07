@@ -1,0 +1,107 @@
+server:
+  port: 8080
+
+spring:
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        highlight_sql: true
+        use_sql_comments: true
+        default_batch_fetch_size: 10
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${security.kakao.client-id}
+            scope: profile_nickname, profile_image
+            client-name: Kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          debug: true
+          starttls:
+            enable: true
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+  logging:
+    level:
+      org:
+        hibernate:
+          SQL: DEBUG
+          orm:
+            jdbc:
+              bind: TRACE
+              extract: TRACE
+        springframework:
+          transaction:
+            interceptor: TRACE
+          web:
+            socket: DEBUG
+
+redisson:
+  address: "redis://localhost:6379"
+
+custom:
+  jwt:
+    secret-key: ${security.jwt.secret-key}
+    expire-seconds: "#{60}"
+    refresh-expire-seconds: "#{3600}"
+
+springdoc:
+  swagger-ui:
+    requestInterceptor: >
+      function(request) {
+          request.credentials = 'include';
+          return request;
+      }
+
+imp:
+  code: ${imp.code}
+  key: ${imp.api-key}
+  secret_key: ${imp.pg-secret-key}
+
+naver:
+  key: ${naver.client-id}
+  secret: ${naver.client-secret}
+
+publicData:
+  key: ${publicData.secret-key}
