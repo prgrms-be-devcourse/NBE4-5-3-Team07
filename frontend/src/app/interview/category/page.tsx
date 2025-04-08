@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import CodeParticles from "@/app/components/common/CodeParticles";
 // 질문 데이터 타입
 interface InterviewResponseDto {
   id: number;
@@ -74,7 +74,7 @@ export default function CategoryStudyPage() {
     if (!currentInterview) return;
     try {
       const res = await fetch(
-        `http://localhost:8080/interview/bookmark?id=${currentInterview.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/interview/bookmark?id=${currentInterview.id}`,
         {
           method: "POST",
           credentials: "include",
@@ -82,7 +82,7 @@ export default function CategoryStudyPage() {
       );
       if (!res.ok) {
         if (res.status === 401) {
-          router.push("http://localhost:3000/login");
+          router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
           return;
         }
         throw new Error("북마크 요청에 실패했습니다.");
@@ -99,7 +99,7 @@ export default function CategoryStudyPage() {
     if (!currentInterview) return;
     try {
       const res = await fetch(
-        `http://localhost:8080/interview/like?id=${currentInterview.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/interview/like?id=${currentInterview.id}`,
         {
           method: "GET",
           credentials: "include",
@@ -107,7 +107,7 @@ export default function CategoryStudyPage() {
       );
       if (!res.ok) {
         if (res.status === 401) {
-          router.push("http://localhost:3000/login");
+          router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
           return;
         }
         throw new Error("좋아요 요청에 실패했습니다.");
@@ -134,13 +134,16 @@ export default function CategoryStudyPage() {
     setCurrentInterview(null);
     setHistory([]);
     setListLoading(true);
-    fetch(`http://localhost:8080/interview/category/${category}`, {
-      credentials: "include",
-    })
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/interview/category/${category}`,
+      {
+        credentials: "include",
+      }
+    )
       .then((res) => {
         if (!res.ok) {
           if (res.status === 401) {
-            router.push("http://localhost:3000/login");
+            router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
             return;
           }
           throw new Error(
@@ -170,12 +173,15 @@ export default function CategoryStudyPage() {
         }
         return prev;
       });
-      const res = await fetch(`http://localhost:8080/interview/${id}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/interview/${id}`,
+        {
+          credentials: "include",
+        }
+      );
       if (!res.ok) {
         if (res.status === 401) {
-          router.push("http://localhost:3000/login");
+          router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
           return;
         }
         throw new Error("면접 질문을 가져오는 데 실패했습니다.");
@@ -249,7 +255,7 @@ export default function CategoryStudyPage() {
     }
     try {
       const res = await fetch(
-        "http://localhost:8080/api/v1/interview/comment",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/interview/comment`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -263,7 +269,7 @@ export default function CategoryStudyPage() {
       );
       if (!res.ok) {
         if (res.status === 401) {
-          router.push("http://localhost:3000/login");
+          router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
           return;
         }
         throw new Error("댓글 저장에 실패했습니다.");
@@ -282,12 +288,12 @@ export default function CategoryStudyPage() {
     setMemosError(null);
     try {
       const res = await fetch(
-        `http://localhost:8080/api/v1/interview/comment/my/${currentInterview.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/interview/comment/my/${currentInterview.id}`,
         { credentials: "include" }
       );
       if (!res.ok) {
         if (res.status === 401) {
-          router.push("http://localhost:3000/login");
+          router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
           return;
         }
         throw new Error("내 메모를 가져오는데 실패했습니다.");
@@ -309,12 +315,12 @@ export default function CategoryStudyPage() {
     setMemosError(null);
     try {
       const res = await fetch(
-        `http://localhost:8080/api/v1/interview/comment/public/${currentInterview.id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/interview/comment/public/${currentInterview.id}`,
         { credentials: "include" }
       );
       if (!res.ok) {
         if (res.status === 401) {
-          router.push("http://localhost:3000/login");
+          router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
           return;
         }
         throw new Error("공개 메모를 가져오는데 실패했습니다.");
@@ -338,35 +344,7 @@ export default function CategoryStudyPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-purple-300 dark:bg-purple-700 blur-3xl"></div>
       </div>
 
-      {/* Code particles decoration */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
-        {Array.from({ length: 15 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute text-gray-800 dark:text-gray-200 text-opacity-30 font-mono text-sm"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              transform: `rotate(${Math.random() * 90 - 45}deg)`,
-            }}
-          >
-            {
-              [
-                "function()",
-                "const data = []",
-                "for(let i=0;)",
-                "if(isValid)",
-                "return result",
-                "{ }",
-                "=> {}",
-                "import",
-                "export",
-                "class",
-              ][Math.floor(Math.random() * 10)]
-            }
-          </div>
-        ))}
-      </div>
+      <CodeParticles />
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 lg:py-12 relative z-10">

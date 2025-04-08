@@ -40,9 +40,12 @@ const CommunityListPage: React.FC = () => {
   // 로그인 상태 확인 함수
   const checkAuth = async () => {
     try {
-      const response = await fetch("http://localhost:8080/member/me", {
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/member/me`,
+        {
+          credentials: "include",
+        }
+      );
       if (!response.ok) {
         throw new Error("Unauthorized");
       }
@@ -66,7 +69,7 @@ const CommunityListPage: React.FC = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `http://localhost:8080/community${sortingEndpoints[sorting]}?page=${page}&size=${size}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/community${sortingEndpoints[sorting]}?page=${page}&size=${size}`,
         {
           credentials: "include",
         }
@@ -288,10 +291,11 @@ const CommunityListPage: React.FC = () => {
 
           <div className="flex justify-between mt-6">
             <button
-              className={`px-5 py-2 flex items-center rounded-full border transition-colors duration-200 ${page > 0
-                ? "border-indigo-600 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700"
-                : "border-gray-300 text-gray-400 cursor-not-allowed"
-                }`}
+              className={`px-5 py-2 flex items-center rounded-full border transition-colors duration-200 ${
+                page > 0
+                  ? "border-indigo-600 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700"
+                  : "border-gray-300 text-gray-400 cursor-not-allowed"
+              }`}
               onClick={() => setPage(page - 1)}
               disabled={page === 0}
             >

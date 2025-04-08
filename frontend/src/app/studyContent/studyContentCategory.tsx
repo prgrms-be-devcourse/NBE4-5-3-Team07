@@ -15,7 +15,7 @@ const StudyContentCategory = ({
   // 카테고리 리스트 가져오기
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:8080/api/v1/study/all", {
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/study/all`, {
       method: "GET",
       credentials: "include",
     })

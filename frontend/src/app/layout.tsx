@@ -20,18 +20,14 @@ const pretendard = localFont({
   variable: "--font-pretendard",
 });
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html
-      lang="en"
-      className={`${pretendard.variable}`}
-      suppressHydrationWarning
-    >
-      <body className={`min-h-[100dvh] flex flex-col ${pretendard.className}`}>
+    <html lang="en" className={pretendard.variable}>
+      <body className={`min-h-screen flex flex-col ${pretendard.className}`}>
         <ClientLayout>{children}</ClientLayout>
         <ChatWidget />
       </body>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePaymentStore } from "./store/paymentStroe";
 import { useRouter } from "next/navigation";
+import CodeParticles from "../components/common/CodeParticles";
 
 interface MemberDto {
   id: number;
@@ -55,11 +56,14 @@ const SubscriptionPayment = () => {
   useEffect(() => {
     const fetchMemberInfo = async () => {
       try {
-        const response = await fetch("http://localhost:8080/member/me", {
-          method: "GET", // GET 요청으로 변경
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-        });
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/member/me`,
+          {
+            method: "GET", // GET 요청으로 변경
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`서버 오류: ${response.status}`);
@@ -102,7 +106,7 @@ const SubscriptionPayment = () => {
         if (rsp.success) {
           try {
             const response = await fetch(
-              "http://localhost:8080/api/v1/payments/verify",
+              `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/payments/verify`,
               {
                 method: "POST",
                 credentials: "include",
@@ -129,7 +133,7 @@ const SubscriptionPayment = () => {
   const cancelSubscription = async () => {
     try {
       const response = await fetch(
-        "http://localhost:8080/api/v1/payments/cancel",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/payments/cancel`,
         {
           method: "POST",
           credentials: "include",
@@ -167,6 +171,7 @@ const SubscriptionPayment = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-purple-300 dark:bg-purple-700 blur-3xl opacity-20"></div>
       </div>
 
+      <CodeParticles />
       <div className="max-w-6xl mx-auto px-4 py-16 relative z-10">
         <h1 className="text-3xl md:text-4xl font-bold text-center bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 text-transparent bg-clip-text mb-3">
           DevPrep 구독 플랜
@@ -175,19 +180,20 @@ const SubscriptionPayment = () => {
           취업 역량 강화와 학습 효율을 높이는 최적의 구독 플랜을 선택하세요.
           언제든지 플랜을 변경하거나 취소할 수 있습니다.
         </p>
-        <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-center
+        <p
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-center
         bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-400 dark:to-gray-600
         text-transparent bg-clip-text
-        tracking-wide p-3 mb-4">
+        tracking-wide p-3 mb-4"
+        >
           {member?.nickname} 님의 구독 현황 : {member?.subscriptPlan}
           {member?.subscriptPlan === "PREMIUM" && (
-              <p className="text-gray-600 dark:text-gray-300 text-sm mt-2">
-                구독 종료일: <span className="font-medium">{member?.subscribeEndDate}</span>
-              </p>
+            <p className="text-gray-600 dark:text-gray-300 text-sm mt-2">
+              구독 종료일:{" "}
+              <span className="font-medium">{member?.subscribeEndDate}</span>
+            </p>
           )}
         </p>
-
-
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {plans.map((plan) => (
@@ -249,21 +255,21 @@ const SubscriptionPayment = () => {
                   </ul>
                 </div>
                 <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (member?.subscriptPlan !== "PREMIUM") {
-                        setShowPaymentModal(true);
-                      }
-                    }}
-                    disabled={member?.subscriptPlan === "PREMIUM"}
-                    className={`w-full rounded-full py-3 px-6 font-medium transition-all shadow-lg
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (member?.subscriptPlan !== "PREMIUM") {
+                      setShowPaymentModal(true);
+                    }
+                  }}
+                  disabled={member?.subscriptPlan === "PREMIUM"}
+                  className={`w-full rounded-full py-3 px-6 font-medium transition-all shadow-lg
     ${
-                        plan.price === 0
-                            ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                            : member?.subscriptPlan === "PREMIUM"
-                                ? "bg-gray-400 text-gray-700 opacity-50 cursor-not-allowed" // 비활성화된 상태
-                                : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"
-                    }`}
+      plan.price === 0
+        ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
+        : member?.subscriptPlan === "PREMIUM"
+        ? "bg-gray-400 text-gray-700 opacity-50 cursor-not-allowed" // 비활성화된 상태
+        : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"
+    }`}
                 >
                   {plan.price === 0 ? "무료 이용하기" : "구독하기"}
                 </button>
@@ -436,17 +442,12 @@ const SubscriptionPayment = () => {
                 프리미엄 플랜 구독 취소 되었습니다
               </h3>
 
-              <p className="text-center text-gray-600 dark:text-gray-300 mb-6">
-                구독 기간이 종료될 때까지 프리미엄 혜택을 계속 이용하실 수
-                있습니다.
-              </p>
-
               <div className="flex justify-center">
                 <button
-                    onClick={() => {
-                      setShowCancelSuccessModal(false);
-                      window.location.reload(); // 페이지 새로고침
-                    }}
+                  onClick={() => {
+                    setShowCancelSuccessModal(false);
+                    window.location.reload(); // 페이지 새로고침
+                  }}
                   className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-full shadow-lg transition-colors"
                 >
                   확인

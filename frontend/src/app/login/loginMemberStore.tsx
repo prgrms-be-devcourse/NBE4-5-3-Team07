@@ -1,36 +1,35 @@
 "use client";
-import { createContext, useState, useContext, useEffect } from "react";
+
+import {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  ReactNode,
+} from "react";
 import { components } from "@/lib/backend/apiV1/schema";
 import client from "@/lib/backend/client";
 
 type Member = components["schemas"]["MemberDto"];
 
+// 타입 정의: null 허용
 export const LoginMemberContext = createContext<{
-  loginMember: Member;
-  setLoginMember: (member: Member) => void;
+  loginMember: Member | null;
+  setLoginMember: (member: Member | null) => void;
   removeLoginMember: () => void;
   isLogin: boolean;
   isLoginMemberPending: boolean;
   isAdmin: boolean;
   setNoLoginMember: () => void;
 }>({
-  loginMember: createEmptyMember(),
-  setLoginMember: () => { },
-  removeLoginMember: () => { },
+  loginMember: null,
+  setLoginMember: () => {},
+  removeLoginMember: () => {},
   isLogin: false,
   isLoginMemberPending: true,
   isAdmin: false,
-  setNoLoginMember: () => { },
+  setNoLoginMember: () => {},
 });
-
-function createEmptyMember(): Member {
-  return {
-    id: 0,
-    nickname: "",
-    profileImgUrl: "",
-    subscriptPlan: "",
-  };
-}
 
 async function checkIsAdmin(id: number): Promise<boolean> {
   try {
@@ -53,24 +52,29 @@ async function checkIsAdmin(id: number): Promise<boolean> {
 
 export function useLoginMember() {
   const [isLoginMemberPending, setLoginMemberPending] = useState(true);
-  const [loginMember, _setLoginMember] = useState<Member>(createEmptyMember());
+  const [loginMember, _setLoginMember] = useState<Member | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    if (loginMember.id !== 0) {
+    if (loginMember?.id) {
       checkIsAdmin(loginMember.id).then(setIsAdmin);
     } else {
       setIsAdmin(false);
     }
-  }, [loginMember.id]);
+  }, [loginMember?.id]);
 
   const removeLoginMember = () => {
-    _setLoginMember(createEmptyMember());
+    _setLoginMember(null);
     setLoginMemberPending(false);
     setIsAdmin(false);
   };
 
-  const setLoginMember = (member: Member) => {
+  const setLoginMember = (member: Member | null) => {
+    if (!member || !member.id) {
+      removeLoginMember();
+      return;
+    }
+
     _setLoginMember(member);
     setLoginMemberPending(false);
     checkIsAdmin(member.id).then(setIsAdmin);
@@ -80,7 +84,7 @@ export function useLoginMember() {
     setLoginMemberPending(false);
   };
 
-  const isLogin = loginMember.id !== 0;
+  const isLogin = loginMember !== null;
 
   return {
     loginMember,

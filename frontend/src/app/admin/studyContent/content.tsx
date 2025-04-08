@@ -6,7 +6,7 @@ import ContentDetailModal from "./modal/contentDetailModal";
 import ContentEditModal from "./modal/contentEditModal";
 import ContentDeleteModal from "./modal/contentDeleteModal";
 
-const API_URL = "http://localhost:8080/api/v1/admin/study";
+const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/admin/study`;
 
 interface StudyContentDetailDto {
   id: number;
@@ -21,15 +21,22 @@ interface ContentProps {
   selectedSecondCategory: string | null;
 }
 
-export default function Content({ selectedFirstCategory, selectedSecondCategory }: ContentProps) {
+export default function Content({
+  selectedFirstCategory,
+  selectedSecondCategory,
+}: ContentProps) {
   const [contents, setContents] = useState<StudyContentDetailDto[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [pageSize, setPageSize] = useState(6);
   const [totalPages, setTotalPages] = useState(1);
-  const [selectedContent, setSelectedContent] = useState<StudyContentDetailDto | null>(null);
-  const [editContent, setEditContent] = useState<StudyContentDetailDto | null>(null);
-  const [deleteContent, setDeleteContent] = useState<StudyContentDetailDto | null>(null);
+  const [selectedContent, setSelectedContent] =
+    useState<StudyContentDetailDto | null>(null);
+  const [editContent, setEditContent] = useState<StudyContentDetailDto | null>(
+    null
+  );
+  const [deleteContent, setDeleteContent] =
+    useState<StudyContentDetailDto | null>(null);
 
   useEffect(() => {
     if (!selectedFirstCategory) {
@@ -37,7 +44,9 @@ export default function Content({ selectedFirstCategory, selectedSecondCategory 
       return;
     }
 
-    let url = `${API_URL}/category/${encodeURIComponent(selectedFirstCategory)}`;
+    let url = `${API_URL}/category/${encodeURIComponent(
+      selectedFirstCategory
+    )}`;
     if (selectedSecondCategory) {
       url += `/${encodeURIComponent(selectedSecondCategory)}`;
     }
@@ -72,7 +81,9 @@ export default function Content({ selectedFirstCategory, selectedSecondCategory 
   };
 
   const handleDeleteContent = (contentId: number) => {
-    setContents((prevContents) => prevContents.filter((content) => content.id !== contentId));
+    setContents((prevContents) =>
+      prevContents.filter((content) => content.id !== contentId)
+    );
     setDeleteContent(null);
   };
 
@@ -85,17 +96,28 @@ export default function Content({ selectedFirstCategory, selectedSecondCategory 
             <li key={content.id} className={styles.contentItem}>
               <div className={styles.titleContainer}>
                 <span>{content.title}</span>
-                <span className={styles.subTitle}>{content.secondCategory}</span>
+                <span className={styles.subTitle}>
+                  {content.secondCategory}
+                </span>
               </div>
 
               <div className={styles.buttonGroup}>
-                <button className={styles.detailButton} onClick={() => setSelectedContent(content)}>
+                <button
+                  className={styles.detailButton}
+                  onClick={() => setSelectedContent(content)}
+                >
                   상세 보기
                 </button>
-                <button className={styles.editButton} onClick={() => setEditContent(content)}>
+                <button
+                  className={styles.editButton}
+                  onClick={() => setEditContent(content)}
+                >
                   수정
                 </button>
-                <button className={styles.deleteButton} onClick={() => setDeleteContent(content)}>
+                <button
+                  className={styles.deleteButton}
+                  onClick={() => setDeleteContent(content)}
+                >
                   삭제
                 </button>
               </div>
@@ -107,17 +129,30 @@ export default function Content({ selectedFirstCategory, selectedSecondCategory 
       </ul>
 
       <div className={styles.pagination}>
-        <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))} disabled={currentPage === 0}>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+          disabled={currentPage === 0}
+        >
           &lt;
         </button>
-        <span>{currentPage + 1} / {totalPages}</span>
-        <button onClick={() => setCurrentPage((prev) => (prev < totalPages - 1 ? prev + 1 : prev))} disabled={currentPage === totalPages - 1}>
+        <span>
+          {currentPage + 1} / {totalPages}
+        </span>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => (prev < totalPages - 1 ? prev + 1 : prev))
+          }
+          disabled={currentPage === totalPages - 1}
+        >
           &gt;
         </button>
       </div>
 
       {selectedContent && (
-        <ContentDetailModal content={selectedContent} onClose={() => setSelectedContent(null)} />
+        <ContentDetailModal
+          content={selectedContent}
+          onClose={() => setSelectedContent(null)}
+        />
       )}
 
       {editContent && (
@@ -129,7 +164,11 @@ export default function Content({ selectedFirstCategory, selectedSecondCategory 
       )}
 
       {deleteContent && (
-        <ContentDeleteModal content={deleteContent} onClose={() => setDeleteContent(null)} onDelete={handleDeleteContent} />
+        <ContentDeleteModal
+          content={deleteContent}
+          onClose={() => setDeleteContent(null)}
+          onDelete={handleDeleteContent}
+        />
       )}
     </main>
   );

@@ -84,8 +84,8 @@ redisson:
 custom:
   jwt:
     secret-key: ${security.jwt.secret-key}
-    expire-seconds: "#{60}"
-    refresh-expire-seconds: "#{3600}"
+    expire-seconds: "#{1800}"
+    refresh-expire-seconds: "#{604800}"
 
 springdoc:
   swagger-ui:

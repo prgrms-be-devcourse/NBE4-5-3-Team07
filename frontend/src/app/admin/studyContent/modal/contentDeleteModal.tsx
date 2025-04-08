@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const API_URL = "http://localhost:8080/api/v1/admin/study";
+const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/admin/study`;
 
 interface ContentDeleteModalProps {
   content: { id: number; title: string };
@@ -52,7 +52,9 @@ export default function ContentDeleteModal({
         <div className="absolute bottom-0 left-0 -ml-4 -mb-4 w-32 h-32 rounded-full bg-purple-300 dark:bg-purple-800 opacity-20 blur-xl"></div>
 
         <div className="relative p-6">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-red-600 to-purple-600 dark:from-red-400 dark:to-purple-400 text-transparent bg-clip-text mb-6 text-center">삭제 확인</h2>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-red-600 to-purple-600 dark:from-red-400 dark:to-purple-400 text-transparent bg-clip-text mb-6 text-center">
+            삭제 확인
+          </h2>
 
           {error && (
             <div className="mb-5 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded">
@@ -77,7 +79,9 @@ export default function ContentDeleteModal({
             <button
               onClick={handleDelete}
               disabled={loading}
-              className={`rounded-full bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white py-2 px-6 font-medium transition-all flex-1 shadow-lg shadow-red-500/20 ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+              className={`rounded-full bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white py-2 px-6 font-medium transition-all flex-1 shadow-lg shadow-red-500/20 ${
+                loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
               {loading ? "삭제 중..." : "삭제"}
             </button>

@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
     const cookie = req.headers.get("cookie");
     const body = await req.json();
     const response = await fetch(
-      "http://localhost:8080/api/interview/evaluation",
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/interview/evaluation`,
       {
         method: "POST",
         headers: {
@@ -18,7 +18,9 @@ export async function POST(req: NextRequest) {
     );
     if (!response.ok) {
       if (response.status === 401) {
-        return NextResponse.redirect("http://localhost:3000/login");
+        return NextResponse.redirect(
+          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`
+        );
       }
       if (response.status === 403) {
         // 403 응답일 경우, 에러 메시지를 그대로 클라이언트에 전달

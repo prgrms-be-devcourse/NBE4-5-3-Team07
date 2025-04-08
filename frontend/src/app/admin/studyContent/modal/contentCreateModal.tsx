@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const API_URL = "http://localhost:8080/api/v1/admin/study";
+const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/admin/study`;
 
 interface StudyContentCreateRequestDto {
   firstCategory: string;
@@ -198,8 +198,9 @@ export default function ContentCreateModal({
               <button
                 onClick={handleCreate}
                 disabled={loading}
-                className={`rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white py-2 px-6 font-medium transition-all flex-1 shadow-lg shadow-indigo-500/20 ${loading ? "opacity-70 cursor-not-allowed" : ""
-                  }`}
+                className={`rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white py-2 px-6 font-medium transition-all flex-1 shadow-lg shadow-indigo-500/20 ${
+                  loading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
               >
                 {loading ? "등록 중..." : "등록"}
               </button>

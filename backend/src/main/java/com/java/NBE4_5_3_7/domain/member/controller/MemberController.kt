@@ -22,8 +22,14 @@ class MemberController(
     }
 
     @GetMapping("/me")
-    fun me(): RsData<MemberDto> {
-        val actor: Member = rq.actor
+    fun me(): RsData<MemberDto?> {
+        val actor: Member? = rq.actorOrNull
+
+        if (actor == null) {
+            // 로그인되어 있지 않은 경우
+            return RsData("200-2", "로그인된 사용자가 없습니다.", null)
+        }
+
         val realActor: Member = rq.getRealActor(actor)
 
         return RsData(
@@ -32,6 +38,7 @@ class MemberController(
             MemberDto(realActor)
         )
     }
+
 
     @PostMapping("/role")
     fun changeRoleToAdmin(@RequestParam id: Long): RsData<String> {

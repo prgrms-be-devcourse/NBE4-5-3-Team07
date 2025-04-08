@@ -92,4 +92,22 @@ class Rq(
     fun getRealActor(actor: Member): Member {
         return memberService.findById(actor.id).orElseThrow { RuntimeException("해당 멤버를 찾을 수 없습니다.") }
     }
+
+    val actorOrNull: Member?
+        get() {
+            val authentication = SecurityContextHolder.getContext().authentication
+
+            if (authentication == null || !authentication.isAuthenticated) {
+                return null
+            }
+
+            val principal = authentication.principal
+
+            if (principal is SecurityUser) {
+                return memberService.findById(principal.id).orElse(null)
+            }
+
+            return null
+        }
+
 }

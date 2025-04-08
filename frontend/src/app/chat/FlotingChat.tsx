@@ -24,7 +24,9 @@ const FloatingChat = () => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const systemMessageSentRef = useRef(false);
-  const [lastUserMessageTime, setLastUserMessageTime] = useState<Date | null>(null);
+  const [lastUserMessageTime, setLastUserMessageTime] = useState<Date | null>(
+    null
+  );
   const [isMinimized, setIsMinimized] = useState(false);
   const awayTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const endTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -33,9 +35,12 @@ const FloatingChat = () => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const res = await fetch("http://localhost:8080/chat/room/info", {
-          credentials: "include",
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/chat/room/info`,
+          {
+            credentials: "include",
+          }
+        );
         if (!res.ok) throw new Error("Failed to fetch user info");
         const data = await res.json(); // API 응답: { roomId, nickname, role }
         setRoomId(data.roomId);
@@ -68,7 +73,10 @@ const FloatingChat = () => {
   const resizeTextarea = () => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+      textareaRef.current.style.height = `${Math.min(
+        textareaRef.current.scrollHeight,
+        120
+      )}px`;
     }
   };
   useEffect(() => {
@@ -80,7 +88,7 @@ const FloatingChat = () => {
     if (!isOpen || roomId === null || !role || role === "ADMIN") return;
     if (clientRef.current) return; // 이미 연결된 경우 무시
 
-    const socket = new SockJS("http://localhost:8080/ws/chat");
+    const socket = new SockJS(`${process.env.NEXT_PUBLIC_WEBSOCKET_URL}/chat`);
     const stompClient = new Client({
       webSocketFactory: () => socket,
       onConnect: () => {
@@ -89,50 +97,57 @@ const FloatingChat = () => {
         clientRef.current = stompClient;
 
         // 메시지 구독: /topic/chat/{roomId}
-        subscriptionRef.current = stompClient.subscribe(`/topic/chat/${roomId}`, (msgFrame) => {
-          const newMsg: ChatMessage = JSON.parse(msgFrame.body);
-          setMessages((prev) => {
-            // 중복 수신 방지
-            const dup = prev.some(
-              (m) =>
-                m.sender === newMsg.sender &&
-                m.content === newMsg.content &&
-                m.timestamp === newMsg.timestamp
-            );
-            if (dup) return prev;
-            return [...prev, newMsg];
-          });
+        subscriptionRef.current = stompClient.subscribe(
+          `/topic/chat/${roomId}`,
+          (msgFrame) => {
+            const newMsg: ChatMessage = JSON.parse(msgFrame.body);
+            setMessages((prev) => {
+              // 중복 수신 방지
+              const dup = prev.some(
+                (m) =>
+                  m.sender === newMsg.sender &&
+                  m.content === newMsg.content &&
+                  m.timestamp === newMsg.timestamp
+              );
+              if (dup) return prev;
+              return [...prev, newMsg];
+            });
 
-          // 마지막 대화 시각 업데이트 및 타이머 관리 (시스템 메시지는 제외)
-          if (newMsg.sender !== "SYSTEM") {
-            // 새로운 실제 메시지가 도착하면 종료 예정 타이머 취소
-            if (endTimerRef.current) {
-              clearTimeout(endTimerRef.current);
-              endTimerRef.current = null;
-            }
-            if (newMsg.sender === "ADMIN") {
-              // 상담원 응답이 온 경우 부재 알림 타이머 취소
-              if (awayTimerRef.current) {
-                clearTimeout(awayTimerRef.current);
-                awayTimerRef.current = null;
+            // 마지막 대화 시각 업데이트 및 타이머 관리 (시스템 메시지는 제외)
+            if (newMsg.sender !== "SYSTEM") {
+              // 새로운 실제 메시지가 도착하면 종료 예정 타이머 취소
+              if (endTimerRef.current) {
+                clearTimeout(endTimerRef.current);
+                endTimerRef.current = null;
               }
-            } else {
-              // 사용자가 메시지를 보낸 경우 1분 후 상담원 부재 알림 타이머 설정
-              if (awayTimerRef.current) {
-                clearTimeout(awayTimerRef.current);
+              if (newMsg.sender === "ADMIN") {
+                // 상담원 응답이 온 경우 부재 알림 타이머 취소
+                if (awayTimerRef.current) {
+                  clearTimeout(awayTimerRef.current);
+                  awayTimerRef.current = null;
+                }
+              } else {
+                // 사용자가 메시지를 보낸 경우 1분 후 상담원 부재 알림 타이머 설정
+                if (awayTimerRef.current) {
+                  clearTimeout(awayTimerRef.current);
+                }
+                awayTimerRef.current = setTimeout(() => {
+                  sendSystemMessage(
+                    "⚠️ 현재 상담원이 부재중입니다. 잠시만 기다려 주세요."
+                  );
+                }, 60000);
               }
-              awayTimerRef.current = setTimeout(() => {
-                sendSystemMessage("⚠️ 현재 상담원이 부재중입니다. 잠시만 기다려 주세요.");
-              }, 60000);
+              setLastUserMessageTime(new Date(newMsg.timestamp));
             }
-            setLastUserMessageTime(new Date(newMsg.timestamp));
           }
-        });
+        );
 
         // 첫 연결 시 환영 시스템 메시지 전송 (한 번만)
         if (!systemMessageSentRef.current) {
           systemMessageSentRef.current = true;
-          sendSystemMessage("안녕하세요! 😊 DevPrep 고객센터입니다. 무엇을 도와드릴까요?");
+          sendSystemMessage(
+            "안녕하세요! 😊 DevPrep 고객센터입니다. 무엇을 도와드릴까요?"
+          );
         }
       },
       onDisconnect: () => {
@@ -173,7 +188,9 @@ const FloatingChat = () => {
   useEffect(() => {
     if (!isOpen || roomId === null) return;
     if (!role || role === "ADMIN") return;
-    fetch(`http://localhost:8080/chat/messages/${roomId}`, { credentials: "include" })
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/chat/messages/${roomId}`, {
+      credentials: "include",
+    })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load chat messages");
         return res.json();
@@ -181,7 +198,10 @@ const FloatingChat = () => {
       .then((data: ChatMessage[]) => {
         setMessages(data);
         // 마지막 메시지 시각 설정 (없으면 현재 시각)
-        const lastTime = data.length > 0 ? new Date(data[data.length - 1].timestamp) : new Date();
+        const lastTime =
+          data.length > 0
+            ? new Date(data[data.length - 1].timestamp)
+            : new Date();
         setLastUserMessageTime(lastTime);
       })
       .catch((err) => console.error("Error loading messages:", err));
@@ -218,7 +238,8 @@ const FloatingChat = () => {
 
   // 시스템 메시지 전송 함수
   const sendSystemMessage = (content: string) => {
-    if (!clientRef.current || !clientRef.current.connected || roomId === null) return;
+    if (!clientRef.current || !clientRef.current.connected || roomId === null)
+      return;
     const systemMsg: ChatMessage = {
       roomId,
       sender: "SYSTEM",
@@ -243,10 +264,14 @@ const FloatingChat = () => {
         const diffSec = (now.getTime() - lastUserMessageTime.getTime()) / 1000;
         if (diffSec > 180) {
           // 3분 경과: 대화 종료 예정 안내
-          sendSystemMessage("⏳ 대화가 종료될 예정입니다. 계속 상담을 원하시면 메시지를 입력해주세요.");
+          sendSystemMessage(
+            "⏳ 대화가 종료될 예정입니다. 계속 상담을 원하시면 메시지를 입력해주세요."
+          );
           // 3분 30초 경과: 대화 종료 안내 (타이머 등록)
           endTimerRef.current = setTimeout(() => {
-            sendSystemMessage("🔴 상담이 종료되었습니다. 상담을 원하시면 다시 입력해 주세요.");
+            sendSystemMessage(
+              "🔴 상담이 종료되었습니다. 상담을 원하시면 다시 입력해 주세요."
+            );
           }, 30000);
           // 타이머 중복 방지를 위해 마지막 대화시각 초기화
           setLastUserMessageTime(null);
@@ -266,8 +291,8 @@ const FloatingChat = () => {
     role === "USER"
       ? `${nickname} 회원`
       : role === "GUEST"
-        ? `게스트 ${nickname.replace(/\D/g, "")}`
-        : "";
+      ? `게스트 ${nickname.replace(/\D/g, "")}`
+      : "";
 
   // 시/분 포맷 (오전/오후 표기 포함)
   const formatTime = (timestamp: string) => {
@@ -301,7 +326,9 @@ const FloatingChat = () => {
   // 날짜 구분자 컴포넌트
   const DateSeparator = ({ date }: { date: string }) => (
     <div className="flex justify-center my-2">
-      <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">{date}</span>
+      <span className="text-xs text-gray-500 bg-gray-200 px-2 py-1 rounded">
+        {date}
+      </span>
     </div>
   );
 
@@ -322,9 +349,17 @@ const FloatingChat = () => {
           className="fixed bottom-6 right-6 p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg z-50 flex items-center justify-center transition-all duration-300 w-12 h-12"
           aria-label="고객센터 채팅 열기"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
             <path
-              strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
               d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
             />
           </svg>
@@ -334,9 +369,14 @@ const FloatingChat = () => {
       {/* 채팅창 패널 */}
       {isOpen && roomId !== null && role !== "ADMIN" && (
         <div
-          className={`fixed bottom-6 right-6 ${isMinimized ? "w-80 h-12" : "w-96 h-[540px]"} 
+          className={`fixed bottom-6 right-6 ${
+            isMinimized ? "w-80 h-12" : "w-96 h-[540px]"
+          } 
                       bg-white shadow-xl rounded-xl transition-all duration-300 flex flex-col z-50 overflow-hidden`}
-          style={{ boxShadow: "0 10px 25px -5px rgba(79, 70, 229, 0.2), 0 10px 10px -5px rgba(79, 70, 229, 0.1)" }}
+          style={{
+            boxShadow:
+              "0 10px 25px -5px rgba(79, 70, 229, 0.2), 0 10px 10px -5px rgba(79, 70, 229, 0.1)",
+          }}
         >
           {/* 헤더 영역 */}
           <div
@@ -347,9 +387,17 @@ const FloatingChat = () => {
           >
             <div className="flex items-center">
               <div className="bg-white p-1 rounded-full mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-indigo-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path
-                    strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
                     d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 
                       012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
                   />
@@ -367,9 +415,17 @@ const FloatingChat = () => {
                     toggleMinimize();
                   }}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
                     <path
-                      strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
                       d="M18 12H6"
                     />
                   </svg>
@@ -383,9 +439,17 @@ const FloatingChat = () => {
                   toggleChat();
                 }}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
                   <path
-                    strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
@@ -399,9 +463,12 @@ const FloatingChat = () => {
               {/* 인사말 영역 */}
               <div className="p-4 border-b border-gray-100 bg-indigo-50">
                 <p className="text-sm text-gray-700">
-                  {getGreeting()}, <span className="font-medium">{displayLabel}</span>님!
+                  {getGreeting()},{" "}
+                  <span className="font-medium">{displayLabel}</span>님!
                 </p>
-                <p className="text-xs text-gray-500 mt-1">DevPrep 고객센터입니다. 무엇을 도와드릴까요?</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  DevPrep 고객센터입니다. 무엇을 도와드릴까요?
+                </p>
               </div>
 
               {/* 메시지 표시 영역 */}
@@ -415,31 +482,36 @@ const FloatingChat = () => {
                   const alignmentClass = isSystem
                     ? "justify-start"
                     : isMine
-                      ? "justify-end"
-                      : "justify-start";
+                    ? "justify-end"
+                    : "justify-start";
 
                   // 말풍선 스타일 클래스
                   const bubbleClass = isSystem
                     ? "bg-gray-100 text-gray-600 text-sm rounded-lg px-3 py-2 max-w-[85%] whitespace-pre-line"
                     : isMine
-                      ? "bg-indigo-100 text-indigo-800 text-sm rounded-lg px-3 py-2 max-w-[85%] whitespace-pre-line"
-                      : isAdmin
-                        ? "bg-slate-100 text-gray-800 text-sm rounded-lg px-3 py-2 max-w-[85%] whitespace-pre-line"
-                        : "bg-slate-100 text-gray-800 text-sm rounded-lg px-3 py-2 max-w-[85%] whitespace-pre-line";
-
+                    ? "bg-indigo-100 text-indigo-800 text-sm rounded-lg px-3 py-2 max-w-[85%] whitespace-pre-line"
+                    : isAdmin
+                    ? "bg-slate-100 text-gray-800 text-sm rounded-lg px-3 py-2 max-w-[85%] whitespace-pre-line"
+                    : "bg-slate-100 text-gray-800 text-sm rounded-lg px-3 py-2 max-w-[85%] whitespace-pre-line";
 
                   // 현재 메시지와 이전 메시지의 날짜가 다르면 날짜 구분자 삽입
                   const showDateSeparator =
                     index === 0 ||
                     new Date(msg.timestamp).toDateString() !==
-                    new Date(messages[index - 1].timestamp).toDateString();
+                      new Date(messages[index - 1].timestamp).toDateString();
 
                   return (
                     <div key={index} className="mb-3">
-                      {showDateSeparator && <DateSeparator date={formatDate(msg.timestamp)} />}
+                      {showDateSeparator && (
+                        <DateSeparator date={formatDate(msg.timestamp)} />
+                      )}
 
                       <div className={`flex ${alignmentClass}`}>
-                        <div className={`flex flex-col ${isMine ? 'items-end' : ''}`}>
+                        <div
+                          className={`flex flex-col ${
+                            isMine ? "items-end" : ""
+                          }`}
+                        >
                           {/* 보낸 사람 레이블 (상담원/시스템) */}
                           {!isMine && !isSystem && (
                             <span className="text-xs text-gray-500 mb-1 ml-1">
@@ -451,8 +523,21 @@ const FloatingChat = () => {
                             {/* 상담원/시스템 프로필 아이콘 */}
                             {!isMine && (
                               <div className="flex-shrink-0 mr-2">
-                                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${isSystem ? 'bg-gray-200' : 'bg-purple-100'}`}>
-                                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-3 w-3 ${isSystem ? 'text-gray-600' : 'text-purple-600'}`} viewBox="0 0 20 20" fill="currentColor">
+                                <div
+                                  className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                                    isSystem ? "bg-gray-200" : "bg-purple-100"
+                                  }`}
+                                >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className={`h-3 w-3 ${
+                                      isSystem
+                                        ? "text-gray-600"
+                                        : "text-purple-600"
+                                    }`}
+                                    viewBox="0 0 20 20"
+                                    fill="currentColor"
+                                  >
                                     <path
                                       fillRule="evenodd"
                                       d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
@@ -464,13 +549,19 @@ const FloatingChat = () => {
                             )}
 
                             {/* 메시지 내용 말풍선 */}
-                            <div className={`${bubbleClass} whitespace-pre-line`}>
+                            <div
+                              className={`${bubbleClass} whitespace-pre-line`}
+                            >
                               {msg.content}
                             </div>
                           </div>
 
                           {/* 메시지 시간 */}
-                          <span className={`text-xs text-gray-400 mt-1 ${isMine ? '' : 'ml-8'}`}>
+                          <span
+                            className={`text-xs text-gray-400 mt-1 ${
+                              isMine ? "" : "ml-8"
+                            }`}
+                          >
                             {formatTime(msg.timestamp)}
                           </span>
                         </div>
@@ -496,14 +587,23 @@ const FloatingChat = () => {
                   <button
                     onClick={sendMessage}
                     disabled={!isConnected || message.trim() === ""}
-                    className={`px-4 rounded-r-lg flex items-center justify-center ${isConnected && message.trim() !== ""
-                      ? "bg-indigo-600 hover:bg-indigo-700 text-white"
-                      : "bg-gray-200 text-gray-400"
-                      } transition-colors duration-200`}
+                    className={`px-4 rounded-r-lg flex items-center justify-center ${
+                      isConnected && message.trim() !== ""
+                        ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                        : "bg-gray-200 text-gray-400"
+                    } transition-colors duration-200`}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
-                        strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
                         d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                       />
                     </svg>
@@ -513,7 +613,11 @@ const FloatingChat = () => {
                   <span>Shift + Enter로 줄바꿈</span>
                   <div className="flex items-center">
                     {/* 연결 상태 표시 (초록불/빨간불) */}
-                    <span className={`w-2 h-2 rounded-full mr-1 ${isConnected ? "bg-green-500" : "bg-gray-400"}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full mr-1 ${
+                        isConnected ? "bg-green-500" : "bg-gray-400"
+                      }`}
+                    />
                     <span>{isConnected ? "온라인" : "오프라인"}</span>
                   </div>
                 </div>
