@@ -37,8 +37,7 @@ class AuthTokenService(
         if (!isValidToken(keyString, token)) return null
 
         val payload = Ut.Jwt.getPayload(keyString, token)
-        val idNo = payload["id"] as Number
-        val id = idNo.toLong()
+        val id = (payload["id"] as? Number)?.toLong() ?: return null
 
         val username = payload["username"] as? String ?: return null
         val nickname = payload["nickname"] as? String ?: return null
