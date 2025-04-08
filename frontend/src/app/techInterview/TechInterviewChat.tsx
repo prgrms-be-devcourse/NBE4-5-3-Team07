@@ -63,11 +63,15 @@ export default function TechInterviewChat() {
             credentials: "include",
           }
         );
-        if (!res.ok) {
+
+        const json = await res.json();
+
+        // 여기가 문제입니다. 응답의 HTTP 상태 코드가 아닌 응답 내용을 확인해야 합니다.
+        if (!res.ok || json.code === "200-2" || !json.data) {
           router.push("/login");
           return;
         }
-        const json = (await res.json()) as RsData<MeResponseData>;
+
         setUser(json.data);
       } catch (error) {
         router.push("/login");
