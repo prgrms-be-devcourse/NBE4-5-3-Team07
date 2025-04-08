@@ -51,12 +51,19 @@ class ChatControllerTest {
     @LocalServerPort
     private var port: Int = 0
 
-    @BeforeEach
+    @BeforeAll
     fun setupRoomAndMessage() {
         chatService.saveMessage(999, "GUEST", "테스트메시지1", System.currentTimeMillis().toString())
         chatService.saveMessage(998, "GUEST", "테스트메시지2", System.currentTimeMillis().toString())
         chatService.saveMessage(997, "GUEST", "테스트메시지3", System.currentTimeMillis().toString())
         chatService.saveMessage(996, "GUEST", "테스트메시지4", System.currentTimeMillis().toString())
+    }
+
+    @AfterAll
+    fun tearDownRoomAndMessage() {
+        listOf(999L, 998L, 997L, 996L).forEach {
+            chatService.deleteChatRoomMessages(it)
+        }
     }
 
     @Test
@@ -144,7 +151,7 @@ class ChatControllerTest {
 
             override fun handleFrame(headers: StompHeaders, payload: Any?) {
                 val received = payload as Message
-                println("📩 수신된 메시지: $received")
+                println("수신된 메시지: $received")
                 latch.countDown()
             }
         })
