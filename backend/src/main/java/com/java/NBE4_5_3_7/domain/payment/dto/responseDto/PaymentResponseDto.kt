@@ -2,12 +2,8 @@ package com.java.NBE4_5_3_7.domain.payment.dto.responseDto
 
 import com.java.NBE4_5_3_7.domain.member.entity.Member
 import com.siot.IamportRestClient.response.Payment
-import lombok.Getter
-import lombok.Setter
 import java.math.BigDecimal
 
-@Getter
-@Setter
 class PaymentResponseDto(payment: Payment, member: Member) {
     var impUid: String = payment.impUid // 아임포트 결제 고유번호
     var merchantUid: String = payment.merchantUid // 주문번호

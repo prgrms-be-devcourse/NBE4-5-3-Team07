@@ -22,7 +22,7 @@ import java.time.LocalDateTime
 @Service
 @Transactional
 @RequiredArgsConstructor
-open class PaymentService {
+class PaymentService {
     private val orderRepository: OrderRepository? = null
     private val memberService: MemberService? = null
     private var iamportClient: IamportClient? = null
@@ -40,7 +40,7 @@ open class PaymentService {
 
     // 결제 검증 (DB 저장은 하지 않음)
     @Transactional
-    open fun verifyPayment(requestDto: PaymentRequestDto): PaymentResponseDto {
+    fun verifyPayment(requestDto: PaymentRequestDto): PaymentResponseDto {
         val member = memberService!!.getMemberFromRq()
         try {
             val impUid: String? = requestDto.imp_uid
@@ -61,7 +61,7 @@ open class PaymentService {
     }
 
     @Transactional
-    open fun saveOrder(paymentResponseDto: PaymentResponseDto, member: Member?) {
+    fun saveOrder(paymentResponseDto: PaymentResponseDto, member: Member?) {
         val order = orderRepository!!.findByMemberAndStatus(member, "cancelled")
         if (order.isPresent) {
             order.get().createdAt = LocalDateTime.now() // 결제 검증 시간
