@@ -15,7 +15,9 @@ import org.springframework.data.redis.serializer.StringRedisSerializer
 import java.nio.charset.StandardCharsets
 
 @Configuration
-class RedisConfig(private val chatSubscriber: ChatSubscriber, @param:Lazy private val chatPublisher: ChatPublisher) {
+class RedisConfig(
+    @param:Lazy private val chatSubscriber: ChatSubscriber,
+    @param:Lazy private val chatPublisher: ChatPublisher) {
     // RedisTemplate을 생성하여 Redis와 데이터를 송수신할 수 있도록 설정
     @Bean
     fun redisTemplate(connectionFactory: RedisConnectionFactory?): RedisTemplate<String, Message> {
