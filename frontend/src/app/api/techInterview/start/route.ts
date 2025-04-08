@@ -5,21 +5,28 @@ export async function POST(req: NextRequest) {
     const cookie = req.headers.get("cookie");
     const body = await req.json();
     const { interviewType } = body;
-    const response = await fetch("http://localhost:8080/api/interview/start", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(cookie ? { cookie } : {}), // 쿠키 헤더 추가
-      },
-      credentials: "include",
-      body: JSON.stringify({ interviewType }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/interview/start`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(cookie ? { cookie } : {}), // 쿠키 헤더 추가
+        },
+        credentials: "include",
+        body: JSON.stringify({ interviewType }),
+      }
+    );
     if (!response.ok) {
       if (response.status === 401) {
-        return NextResponse.redirect("http://localhost:3000/login");
+        return NextResponse.redirect(
+          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`
+        );
       }
       if (response.status === 403) {
-        return NextResponse.redirect("http://localhost:3000/payment");
+        return NextResponse.redirect(
+          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment`
+        );
       }
       throw new Error("전체 질문 ID 리스트를 가져오는데 실패했습니다.");
     }

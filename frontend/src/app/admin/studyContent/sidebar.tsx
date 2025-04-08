@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const API_URL = "http://localhost:8080/api/v1/admin/study";
+const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/admin/study`;
 
 interface SidebarProps {
   selectedFirstCategory: string | null;
@@ -50,10 +50,11 @@ export default function Sidebar({
         {Object.keys(categories).map((firstCategory) => (
           <div key={firstCategory} className="mb-2">
             <button
-              className={`w-full text-left px-4 py-3 rounded-lg flex justify-between items-center transition-colors ${firstCategory === selectedFirstCategory
-                ? "bg-indigo-600 text-white"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
-                }`}
+              className={`w-full text-left px-4 py-3 rounded-lg flex justify-between items-center transition-colors ${
+                firstCategory === selectedFirstCategory
+                  ? "bg-indigo-600 text-white"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-600"
+              }`}
               onClick={() => {
                 if (openCategory === firstCategory) {
                   setOpenCategory(null);
@@ -66,8 +67,9 @@ export default function Sidebar({
             >
               <span className="font-medium">{firstCategory}</span>
               <svg
-                className={`w-5 h-5 transition-transform duration-200 ${openCategory === firstCategory ? "rotate-180" : "rotate-0"
-                  }`}
+                className={`w-5 h-5 transition-transform duration-200 ${
+                  openCategory === firstCategory ? "rotate-180" : "rotate-0"
+                }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -82,18 +84,18 @@ export default function Sidebar({
               </svg>
             </button>
 
-
             {openCategory === firstCategory &&
               categories[firstCategory].length > 0 && (
                 <div className="mt-2 ml-4 space-y-1 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 transition-all duration-300">
                   {categories[firstCategory].map((secondCategory) => (
                     <button
                       key={secondCategory}
-                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${secondCategory === selectedSecondCategory &&
+                      className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                        secondCategory === selectedSecondCategory &&
                         firstCategory === selectedFirstCategory
-                        ? "bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 font-medium"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        }`}
+                          ? "bg-indigo-100 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-300 font-medium"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      }`}
                       onClick={() => setSelectedSecondCategory(secondCategory)}
                     >
                       {secondCategory}

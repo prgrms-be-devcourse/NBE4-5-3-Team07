@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
+import CodeParticles from "../components/common/CodeParticles";
 
 const DEFAULT_CATEGORY = {
   firstCategory: "OperatingSystem",
@@ -42,7 +43,7 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
       setError(null);
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/study/${category.firstCategory}/${category.secondCategory}?page=${page}&size=1`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/study/${category.firstCategory}/${category.secondCategory}?page=${page}&size=1`
         );
         const data = await response.json();
         setStudyContents(data.content);
@@ -82,7 +83,7 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
   const handleMemoCheck = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/studyMemo/${selectedContentId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/studyMemo/${selectedContentId}`,
         {
           method: "GET",
           credentials: "include",
@@ -95,7 +96,7 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
       if (!response.ok) {
         if (response.status === 401) {
           alert("로그인 후 이용해주세요.");
-          router.push("http://localhost:3000/login");
+          router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
           return;
         }
       }
@@ -115,7 +116,7 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
   const handleMemoCreate = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/studyMemo/create/${selectedContentId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/studyMemo/create/${selectedContentId}`,
         {
           method: "POST",
           credentials: "include",
@@ -132,7 +133,7 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
       if (!response.ok) {
         if (response.status === 401) {
           alert("로그인 후 이용해주세요.");
-          router.push("http://localhost:3000/login");
+          router.push(`${process.env.NEXT_PUBLIC_FRONTEND_URL}/login`);
           return;
         }
       }
@@ -152,30 +153,7 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
         <div className="absolute bottom-10 left-10 w-80 h-80 rounded-full bg-indigo-300 dark:bg-indigo-700 blur-3xl"></div>
       </div>
 
-      {/* Code particles decoration */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute text-gray-800 dark:text-gray-200 text-opacity-30 font-mono text-sm"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              transform: `rotate(${Math.random() * 90 - 45}deg)`,
-            }}
-          >
-            {
-              [
-                "function()",
-                "const data = []",
-                "for(let i=0;)",
-                "if(isValid)",
-                "return result",
-              ][Math.floor(Math.random() * 5)]
-            }
-          </div>
-        ))}
-      </div>
+      <CodeParticles />
 
       {/* Main container */}
       <div className="max-w-7xl mx-auto relative z-10">
@@ -234,17 +212,21 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
             <div className="mb-8">
               {studyContents.length > 0 ? (
                 studyContents.map((content: any, index: number) => (
-                    <div key={index} className="mb-2" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                        <input type="hidden" value={content.id} />
-                        <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
-                            {content.title}
-                        </h3>
-                        <div className="prose prose-indigo dark:prose-invert max-w-none">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                {content.body.replace(/<br\s*\/?>/gi, "")}
-                            </ReactMarkdown>
-                        </div>
+                  <div
+                    key={index}
+                    className="mb-2"
+                    style={{ maxHeight: "400px", overflowY: "auto" }}
+                  >
+                    <input type="hidden" value={content.id} />
+                    <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+                      {content.title}
+                    </h3>
+                    <div className="prose prose-indigo dark:prose-invert max-w-none">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {content.body.replace(/<br\s*\/?>/gi, "")}
+                      </ReactMarkdown>
                     </div>
+                  </div>
                 ))
               ) : (
                 <div className="text-center py-12">
@@ -273,50 +255,52 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
                   나의 메모
                 </h3>
-                <div className="flex items-center gap-4"> {/* 체크박스와 버튼들을 가로로 배치 */}
+                <div className="flex items-center gap-4">
+                  {" "}
+                  {/* 체크박스와 버튼들을 가로로 배치 */}
                   <div className="flex items-center">
                     <input
-                        type="checkbox"
-                        id="shareMemo"
-                        name="shareMemo"
-                        checked={isPublished}
-                        onChange={handlePublishedChange}
-                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      type="checkbox"
+                      id="shareMemo"
+                      name="shareMemo"
+                      checked={isPublished}
+                      onChange={handlePublishedChange}
+                      className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <label
-                        htmlFor="shareMemo"
-                        className="ml-2 text-sm text-gray-700 dark:text-gray-200"
+                      htmlFor="shareMemo"
+                      className="ml-2 text-sm text-gray-700 dark:text-gray-200"
                     >
                       공개
                     </label>
                   </div>
                   <button
-                      onClick={handleMemoCreate}
-                      className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-medium text-sm shadow-lg shadow-indigo-500/20 transition-colors"
+                    onClick={handleMemoCreate}
+                    className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-medium text-sm shadow-lg shadow-indigo-500/20 transition-colors"
                   >
                     저장
                   </button>
                   <button
-                      onClick={handleMemoCheck}
-                      className="inline-flex items-center justify-center px-4 py-2 rounded-full border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 font-medium text-sm shadow-lg transition-colors"
+                    onClick={handleMemoCheck}
+                    className="inline-flex items-center justify-center px-4 py-2 rounded-full border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 font-medium text-sm shadow-lg transition-colors"
                   >
                     나의 메모 조회
                   </button>
                   <button
-                      onClick={handleGetMemoList}
-                      className="inline-flex items-center justify-center px-4 py-2 rounded-full border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 font-medium text-sm shadow-lg transition-colors"
+                    onClick={handleGetMemoList}
+                    className="inline-flex items-center justify-center px-4 py-2 rounded-full border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 font-medium text-sm shadow-lg transition-colors"
                   >
                     메모 참고하기
                   </button>
                 </div>
               </div>
               <div className="p-4">
-    <textarea
-        className="w-full px-3 py-2 text-gray-700 dark:text-gray-200 border border-indigo-100 dark:border-indigo-800 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-h-[10px]"
-        placeholder="메모를 입력하세요..."
-        value={memo}
-        onChange={handleMemoChange}
-    ></textarea>
+                <textarea
+                  className="w-full px-3 py-2 text-gray-700 dark:text-gray-200 border border-indigo-100 dark:border-indigo-800 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 min-h-[10px]"
+                  placeholder="메모를 입력하세요..."
+                  value={memo}
+                  onChange={handleMemoChange}
+                ></textarea>
               </div>
             </div>
           </>

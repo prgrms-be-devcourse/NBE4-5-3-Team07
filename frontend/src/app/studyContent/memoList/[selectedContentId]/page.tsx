@@ -20,7 +20,7 @@ const MemoList = () => {
     const fetchMemoList = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/studyMemo/list/${selectedContentId}`,
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/studyMemo/list/${selectedContentId}`,
           {
             method: "GET",
             credentials: "include",
@@ -46,7 +46,7 @@ const MemoList = () => {
   const handleMemoLike = async (memoId: number) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/studyMemo/like/${memoId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/studyMemo/like/${memoId}`,
         {
           method: "POST",
           credentials: "include",

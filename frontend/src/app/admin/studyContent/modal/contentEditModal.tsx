@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const API_URL = "http://localhost:8080/api/v1/admin/study";
+const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/admin/study`;
 
 interface StudyContentDetailDto {
   id: number;
@@ -121,7 +121,9 @@ export default function ContentEditModal({
         <div className="absolute bottom-0 left-0 -ml-4 -mb-4 w-32 h-32 rounded-full bg-green-300 dark:bg-green-800 opacity-20 blur-xl"></div>
 
         <div className="relative p-6">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-600 dark:from-green-400 dark:to-green-400 text-transparent bg-clip-text mb-6 text-center">학습 콘텐츠 수정</h2>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-600 dark:from-green-400 dark:to-green-400 text-transparent bg-clip-text mb-6 text-center">
+            학습 콘텐츠 수정
+          </h2>
 
           {error && (
             <div className="mb-5 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded">
@@ -132,7 +134,9 @@ export default function ContentEditModal({
 
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">제목</label>
+              <label className="block text-gray-700 dark:text-gray-300 font-medium mb-2">
+                제목
+              </label>
               <input
                 type="text"
                 value={title}
@@ -199,7 +203,9 @@ export default function ContentEditModal({
             <button
               onClick={handleSave}
               disabled={loading}
-              className={`rounded-full bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white py-2 px-6 font-medium transition-all flex-1 shadow-lg shadow-green-500/20 ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+              className={`rounded-full bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white py-2 px-6 font-medium transition-all flex-1 shadow-lg shadow-green-500/20 ${
+                loading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
               {loading ? "저장 중..." : "저장"}
             </button>

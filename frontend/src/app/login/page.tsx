@@ -2,6 +2,7 @@
 import { LoginMemberContext } from "./loginMemberStore";
 import { use } from "react";
 import Link from "next/link";
+import CodeParticles from "../components/common/CodeParticles";
 
 export default function Login() {
   const { isLogin, loginMember } = use(LoginMemberContext);
@@ -15,35 +16,7 @@ export default function Login() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-purple-300 dark:bg-purple-700 blur-3xl"></div>
       </div>
 
-      {/* Code particles decoration */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute text-gray-800 dark:text-gray-200 text-opacity-30 font-mono text-sm"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              transform: `rotate(${Math.random() * 90 - 45}deg)`,
-            }}
-          >
-            {
-              [
-                "function()",
-                "const data = []",
-                "for(let i=0;)",
-                "if(isValid)",
-                "return result",
-                "{ }",
-                "=> {}",
-                "import",
-                "export",
-                "class",
-              ][Math.floor(Math.random() * 10)]
-            }
-          </div>
-        ))}
-      </div>
+      <CodeParticles />
 
       {/* Main content */}
       <div className="flex flex-col items-center justify-center h-screen px-4">
@@ -62,7 +35,7 @@ export default function Login() {
                 <div className="flex flex-col items-center space-y-4">
                   <button className="transition-transform hover:scale-105 focus:outline-none">
                     <a
-                      href="http://localhost:8080/oauth2/authorization/kakao?redirectUrl=http://localhost:3000"
+                      href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/oauth2/authorization/kakao?redirectUrl=${process.env.NEXT_PUBLIC_REDIRECT_URL}`}
                       className="block"
                     >
                       <img
@@ -188,8 +161,8 @@ export default function Login() {
               </h2>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 mb-8">
-                <span className="font-semibold">{loginMember.nickname}</span>님,
-                오늘도 멋진 하루 되세요.
+                <span className="font-semibold">{loginMember?.nickname}</span>
+                님, 오늘도 멋진 하루 되세요.
               </p>
 
               <div className="flex flex-col space-y-4">

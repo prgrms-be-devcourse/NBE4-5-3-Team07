@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { components } from "@/lib/backend/apiV1/schema";
 import { useRouter } from "next/navigation";
+import CodeParticles from "../components/common/CodeParticles";
 
 type Note = components["schemas"]["BookmarkResponseDto"];
 type Comment = components["schemas"]["MyPageInterviewCommentResponseDto"];
@@ -76,10 +77,13 @@ const ClientPage = () => {
   // API functions remain unchanged
   const fetchNoteList = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/interview/bookmark`, {
-        method: "GET",
-        credentials: "include",
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/interview/bookmark`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
 
       const responseData: Note[] = await response.json();
 
@@ -103,7 +107,7 @@ const ClientPage = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/interview/bookmark/${selectedNoteItem.contentId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/interview/bookmark/${selectedNoteItem.contentId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -125,7 +129,7 @@ const ClientPage = () => {
   const fetchStudyMemo = async (category: string) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/studyMemo?category=${category}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/studyMemo?category=${category}`,
         {
           method: "GET",
           credentials: "include",
@@ -167,7 +171,7 @@ const ClientPage = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/studyMemo/${selectedMemoItem.memoId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/studyMemo/${selectedMemoItem.memoId}`,
         {
           method: "PATCH",
           headers: {
@@ -209,7 +213,7 @@ const ClientPage = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/studyMemo/${selectedMemoItem.memoId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/studyMemo/${selectedMemoItem.memoId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -239,7 +243,7 @@ const ClientPage = () => {
   const fetchInterviewComment = async (category: string) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/interview/comment?category=${category}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/interview/comment?category=${category}`,
         {
           method: "GET",
           credentials: "include",
@@ -275,7 +279,7 @@ const ClientPage = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/interview/comment/${selectedCommentItem.commentId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/interview/comment/${selectedCommentItem.commentId}`,
         {
           method: "PATCH",
           headers: {
@@ -322,7 +326,7 @@ const ClientPage = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/interview/comment/${selectedCommentItem.commentId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/interview/comment/${selectedCommentItem.commentId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -353,7 +357,7 @@ const ClientPage = () => {
   const fetchMyPosts = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/community/post/my?page=0&size=10`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/community/post/my?page=0&size=10`,
         {
           method: "GET",
           credentials: "include",
@@ -369,7 +373,7 @@ const ClientPage = () => {
   const fetchPostDetails = async (postId: number) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/community/article?id=${postId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/community/article?id=${postId}`,
         {
           credentials: "include",
         }
@@ -393,7 +397,7 @@ const ClientPage = () => {
     };
     try {
       const response = await fetch(
-        `http://localhost:8080/community/article/edit`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/community/article/edit`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -414,7 +418,7 @@ const ClientPage = () => {
     if (!confirmed) return;
     try {
       const response = await fetch(
-        `http://localhost:8080/community/article/delete?postId=${postId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/community/article/delete?postId=${postId}`,
         {
           method: "POST",
           credentials: "include",
@@ -782,35 +786,7 @@ const ClientPage = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full bg-purple-300 dark:bg-purple-700 blur-3xl"></div>
       </div>
 
-      {/* 코드 파티클 배경 */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute text-gray-800 dark:text-gray-200 text-opacity-30 font-mono text-sm"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              transform: `rotate(${Math.random() * 90 - 45}deg)`,
-            }}
-          >
-            {
-              [
-                "function()",
-                "const data = []",
-                "for(let i=0;)",
-                "if(isValid)",
-                "return result",
-                "{ }",
-                "=> {}",
-                "import",
-                "export",
-                "class",
-              ][Math.floor(Math.random() * 10)]
-            }
-          </div>
-        ))}
-      </div>
+      <CodeParticles />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-16 relative z-10">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 text-transparent bg-clip-text mb-8">

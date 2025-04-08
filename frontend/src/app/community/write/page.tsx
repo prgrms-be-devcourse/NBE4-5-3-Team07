@@ -26,7 +26,7 @@ const CommunityWritePage: React.FC = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/community/article/post",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/community/article/post`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
