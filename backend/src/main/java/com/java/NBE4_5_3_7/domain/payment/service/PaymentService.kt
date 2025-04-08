@@ -22,11 +22,11 @@ import java.time.LocalDateTime
 @Service
 @Transactional
 @RequiredArgsConstructor
-open class PaymentService {
-    private val orderRepository: OrderRepository? = null
-    private val memberService: MemberService? = null
-    private var iamportClient: IamportClient? = null
-
+class PaymentService(
+    private val orderRepository: OrderRepository,
+    private val memberService: MemberService,
+    private var iamportClient: IamportClient
+) {
     @Value("\${imp.key}")
     private val apiKey: String? = null
 
@@ -40,18 +40,18 @@ open class PaymentService {
 
     // 결제 검증 (DB 저장은 하지 않음)
     @Transactional
-    open fun verifyPayment(requestDto: PaymentRequestDto): PaymentResponseDto {
-        val member = memberService!!.getMemberFromRq()
+    fun verifyPayment(requestDto: PaymentRequestDto): PaymentResponseDto {
+        val member = memberService.getMemberFromRq()
         try {
             val impUid: String? = requestDto.imp_uid
-            val paymentResponse = iamportClient!!.paymentByImpUid(impUid)
+            val paymentResponse = iamportClient.paymentByImpUid(impUid)
 
             if (paymentResponse == null || paymentResponse.response == null) {
                 throw RuntimeException("결제 정보를 가져올 수 없습니다.")
             }
 
             val payment = paymentResponse.response
-            val responseDto = PaymentResponseDto(payment!!, member)
+            val responseDto = PaymentResponseDto(payment, member)
             saveOrder(responseDto, member)
 
             return responseDto
@@ -61,8 +61,8 @@ open class PaymentService {
     }
 
     @Transactional
-    open fun saveOrder(paymentResponseDto: PaymentResponseDto, member: Member?) {
-        val order = orderRepository!!.findByMemberAndStatus(member, "cancelled")
+    fun saveOrder(paymentResponseDto: PaymentResponseDto, member: Member?) {
+        val order = orderRepository.findByMemberAndStatus(member, "cancelled")
         if (order.isPresent) {
             order.get().createdAt = LocalDateTime.now() // 결제 검증 시간
             order.get().merchantUid = paymentResponseDto.merchantUid
@@ -91,7 +91,7 @@ open class PaymentService {
 
     // 결제 상태 업데이트
     fun updatePaymentStatus(payment: Payment) {
-        val orderOptional = orderRepository!!.findByImpUid(payment.impUid)
+        val orderOptional = orderRepository.findByImpUid(payment.impUid)
 
         if (orderOptional.isPresent) {
             val orderEntity = orderOptional.get()
@@ -119,7 +119,7 @@ open class PaymentService {
     // 아임포트 결제 정보 조회
     fun getPaymentData(impUid: String?): IamportResponse<Payment>? {
         try {
-            return iamportClient!!.paymentByImpUid(impUid)
+            return iamportClient.paymentByImpUid(impUid)
         } catch (e: IamportResponseException) {
             println("아임포트 API 호출 실패: " + e.message)
             return null
@@ -132,7 +132,7 @@ open class PaymentService {
     // 구독 취소 기능
     fun cancelSubscription() {
         // 1. 회원 정보 조회
-        val member = memberService!!.getMemberFromRq()
+        val member = memberService.getMemberFromRq()
 
         requireNotNull(member) { "존재하지 않는 회원입니다." }
 

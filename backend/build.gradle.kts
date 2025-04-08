@@ -81,6 +81,12 @@ dependencies {
 	testImplementation("io.mockk:mockk:1.13.10")
 //	testImplementation("io.mockk:mockk-spring:3.0.1")
 	testImplementation("org.jetbrains.kotlin:kotlin-test")
+	testImplementation("org.testcontainers:junit-jupiter:1.19.0")
+	testImplementation("org.testcontainers:postgresql:1.19.0")
+	testImplementation("org.testcontainers:mysql:1.19.3")
+	testImplementation("io.rest-assured:rest-assured:5.3.1")
+
+	testImplementation("com.h2database:h2")
 }
 
 tasks.test {

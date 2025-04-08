@@ -66,7 +66,11 @@ const News = () => {
                                                 {item.title}
                                             </ReactMarkdown>
                                         </h3>
-                                        <p>{item.description}</p>
+                                        <p>
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                                                {item.description}
+                                            </ReactMarkdown>
+                                        </p>
                                     </a>
                                 </li>
                             ))}

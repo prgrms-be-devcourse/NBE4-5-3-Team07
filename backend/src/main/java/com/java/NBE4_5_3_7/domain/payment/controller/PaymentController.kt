@@ -12,24 +12,24 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/payments")
-class PaymentController {
-    private val paymentService: PaymentService? = null
-
+class PaymentController(
+    private val paymentService: PaymentService
+) {
     @PostMapping("/verify")
     fun verifyPayment(@RequestBody requestDto: PaymentRequestDto): ResponseEntity<PaymentResponseDto> {
-        return ResponseEntity.ok(paymentService!!.verifyPayment(requestDto))
+        return ResponseEntity.ok(paymentService.verifyPayment(requestDto))
     }
 
     @PostMapping("/webhook")
     @Throws(InterruptedException::class)
     fun handleWebhook(@RequestBody payload: Map<String?, Any?>): ResponseEntity<String> {
-        paymentService!!.handleWebhook(payload)
+        paymentService.handleWebhook(payload)
         return ResponseEntity.ok("웹훅 조회 성공")
     }
 
     @PostMapping("/cancel")
     fun cancelledPayments(): ResponseEntity<Map<String, String>> {
-        paymentService!!.cancelSubscription()
+        paymentService.cancelSubscription()
         val response: MutableMap<String, String> = HashMap()
         response["message"] = "구독 취소 성공"
         return ResponseEntity.ok(response)

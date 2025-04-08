@@ -15,13 +15,13 @@ import org.springframework.web.client.RestTemplate
 @Service
 class NewsService {
     @Value("\${naver.key}")
-    private val client_key: String? = null
+    protected val client_key: String? = null
 
     @Value("\${naver.secret}")
-    private val client_secret: String? = null
+    protected val client_secret: String? = null
 
     @Value("\${publicData.key}")
-    private val public_data_key: String? = null
+    protected val public_data_key: String? = null
 
     fun getNaverNews(keyWord: String, page: Int): NewResponseDto? {
         val restTemplate = RestTemplate()
