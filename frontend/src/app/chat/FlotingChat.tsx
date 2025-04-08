@@ -1,3 +1,5 @@
+// 채팅 영역 수정 필요.
+
 "use client";
 
 import { useEffect, useState, useRef } from "react";
