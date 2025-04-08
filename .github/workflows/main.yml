@@ -14,30 +14,37 @@ jobs:
     ### 1. 백엔드 환경변수 파일 생성 (application-secret.yml)
     - name: Create application-secret.yml
       run: |
-        echo "${{ secrets.BACKEND_SECRET_YML }}" > ./backend/application-secret.yml
+        echo "${{ secrets.BACKEND_SECRET_YML }}" > ./backend/src/main/resources/application-secret.yml
 
     ### 2. 프론트엔드 환경변수 파일 생성 (.env.production)
     - name: Create .env.production
       run: |
         echo "${{ secrets.FRONTEND_ENV }}" > ./frontend/.env.production
 
-    ### 3. Docker Hub 로그인
+    ### 3. 백엔드 JAR 빌드
+    - name: Build backend JAR
+      working-directory: ./backend
+      run: |
+        chmod +x ./gradlew
+        ./gradlew clean build -x test
+
+    ### 4. Docker Hub 로그인
     - name: Docker login
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-    ### 4. 백엔드 Docker 이미지 빌드 & 푸시
+    ### 5. 백엔드 Docker 이미지 빌드 & 푸시
     - name: Docker build & push - Backend
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/backend-app ./backend
         docker push ${{ secrets.DOCKER_USERNAME }}/backend-app
 
-    ### 5. 프론트엔드 Docker 이미지 빌드 & 푸시
+    ### 6. 프론트엔드 Docker 이미지 빌드 & 푸시
     - name: Docker build & push - Frontend
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/frontend-app ./frontend
         docker push ${{ secrets.DOCKER_USERNAME }}/frontend-app
 
-    ### 6. EC2 접속 및 컨테이너 실행
+    ### 7. EC2 접속 및 컨테이너 실행
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
       with:
