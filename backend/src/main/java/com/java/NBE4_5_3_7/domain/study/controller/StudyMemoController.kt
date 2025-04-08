@@ -23,7 +23,6 @@ class StudyMemoController(
         @RequestBody requestDto: StudyMemoCreateRequestDto,
         @PathVariable studyContentId: Long
     ): ResponseEntity<String> {
-        println(requestDto.isPublished)
         studyMemoService.createStudyMemo(requestDto, studyContentId)
         return ResponseEntity.ok("create success")
     }
