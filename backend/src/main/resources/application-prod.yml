@@ -106,3 +106,6 @@ naver:
 
 publicData:
   key: ${publicData.secret-key}
+
+front:
+  url: https://www.devprep.shop

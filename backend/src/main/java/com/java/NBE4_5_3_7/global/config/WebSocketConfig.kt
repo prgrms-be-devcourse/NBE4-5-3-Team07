@@ -1,6 +1,7 @@
 package com.java.NBE4_5_3_7.global.config
 
-import com.java.NBE4_5_3_7.global.app.AppConfig.Companion.siteFrontUrl
+
+import com.java.NBE4_5_3_7.global.app.AppConfig
 import org.springframework.context.annotation.Configuration
 import org.springframework.messaging.simp.config.MessageBrokerRegistry
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker
@@ -11,7 +12,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 class WebSocketConfig : WebSocketMessageBrokerConfigurer {
 	override fun registerStompEndpoints(registry: StompEndpointRegistry) {
-		registry.addEndpoint("/ws/chat").setAllowedOrigins(siteFrontUrl).withSockJS()
+		registry.addEndpoint("/ws/chat").setAllowedOrigins(AppConfig.SITE_FRONT_URL).withSockJS()
 	}
 
 	override fun configureMessageBroker(registry: MessageBrokerRegistry) {
