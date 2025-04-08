@@ -53,18 +53,18 @@ jobs:
         key: ${{ secrets.EC2_KEY }}
         script: |
           # Docker Hub 로그인
-          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
           # 기존 컨테이너 중지 및 삭제
-          docker stop backend || true && docker rm backend || true
-          docker stop frontend || true && docker rm frontend || true
+          sudo docker stop backend || true && docker rm backend || true
+          sudo docker stop frontend || true && docker rm frontend || true
 
           # 최신 이미지 Pull
-          docker pull ${{ secrets.DOCKER_USERNAME }}/backend-app:latest
-          docker pull ${{ secrets.DOCKER_USERNAME }}/frontend-app:latest
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend-app:latest
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/frontend-app:latest
 
           # 백엔드 실행
-          docker run -d --name backend \
+          sudo docker run -d --name backend \
             -p 8080:8080 \
             --memory="512m" \
             --memory-swap="1g" \
@@ -73,10 +73,10 @@ jobs:
             --spring.config.additional-location=classpath:/application.yml,/app/config/application-secret.yml
 
           # 프론트엔드 실행
-          docker run -d --name frontend \
+          sudo docker run -d --name frontend \
             -p 3000:3000 \
             ${{ secrets.DOCKER_USERNAME }}/frontend-app
 
           # 정리
-          docker container prune -f
-          docker image prune -a -f
+          sudo docker container prune -f
+          sudo docker image prune -a -f
