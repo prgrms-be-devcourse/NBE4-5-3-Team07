@@ -1,7 +1,6 @@
-package com.java.NBE4_5_3_7.domain.chat
+package com.java.NBE4_5_3_7.domain.chat.service
 
 import com.java.NBE4_5_3_7.domain.chat.model.Message
-import com.java.NBE4_5_3_7.domain.chat.service.ChatService
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

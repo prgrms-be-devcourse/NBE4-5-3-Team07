@@ -1,6 +1,5 @@
-package com.java.NBE4_5_3_7.domain.chat
+package com.java.NBE4_5_3_7.domain.chat.service
 
-import com.java.NBE4_5_3_7.domain.chat.service.ChatSubscriber
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test

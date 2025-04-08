@@ -50,7 +50,7 @@ class ChatController(
         return chatService.allMessages()
     }
 
-    /**  메시지 조회 */
+    /** 특정 채팅방 메시지 조회 */
     @GetMapping("/chat/messages/{roomId}")
     fun getMessage(@PathVariable roomId: Long): List<Message> {
         return chatService.getMessage(roomId)
