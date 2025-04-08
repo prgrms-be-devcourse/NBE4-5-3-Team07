@@ -91,7 +91,7 @@ export default function TechInterviewChat() {
   const startInterview = async (type: "CS" | "프로젝트") => {
     setInterviewType(type);
     try {
-      const res = await fetch("/api/techInterview/start", {
+      const res = await fetch("/ai/techInterview/start", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ interviewType: type }),
@@ -118,7 +118,7 @@ export default function TechInterviewChat() {
     const userMessage: Message = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
     try {
-      const res = await fetch("/api/techInterview/next", {
+      const res = await fetch("/ai/techInterview/next", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answer: input, interviewType }),
@@ -149,7 +149,7 @@ export default function TechInterviewChat() {
     }
     setIsEvaluating(true);
     try {
-      const res = await fetch("/api/techInterview/evaluation", {
+      const res = await fetch("/ai/techInterview/evaluation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversation: messages }),

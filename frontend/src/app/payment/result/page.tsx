@@ -134,7 +134,7 @@ export default function PaymentResultPage() {
                   홈으로 이동
                 </button>
                 <button
-                  onClick={() => router.push("/api/techInterview")}
+                  onClick={() => router.push("/ai/techInterview")}
                   className="rounded-full bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 border border-indigo-200 dark:border-indigo-700 text-indigo-600 dark:text-indigo-300 py-3 px-8 font-medium text-lg transition-all flex items-center justify-center gap-2 shadow-lg"
                 >
                   <svg
