@@ -31,7 +31,7 @@ COPY --from=builder /app/package.json ./
 COPY --from=builder /app/package-lock.json ./
 
 # next.config.ts 파일 복사
-COPY --from=builder /app/next.config.js ./
+COPY --from=builder /app/next.config.ts ./
 
 # 빌드 결과물 복사
 COPY --from=builder /app/.next ./.next
