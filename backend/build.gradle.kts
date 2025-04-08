@@ -89,7 +89,7 @@ dependencies {
 
 	testImplementation("io.rest-assured:kotlin-extensions:5.4.0")
 	testImplementation("org.testcontainers:junit-jupiter:1.19.1")
-	testImplementation("org.testcontainers:redis:1.19.1")
+	testImplementation("org.testcontainers:redis:1.19.5")
 	testImplementation("org.hamcrest:hamcrest:2.2")
 
 	// WebSocket 테스트
