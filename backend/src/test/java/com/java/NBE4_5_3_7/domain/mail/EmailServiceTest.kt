@@ -7,7 +7,7 @@ import org.springframework.test.context.ActiveProfiles
 import java.time.Instant
 
 @SpringBootTest
-@ActiveProfiles("dev")
+@ActiveProfiles("local")
 class EmailServiceTest {
 
     @Autowired

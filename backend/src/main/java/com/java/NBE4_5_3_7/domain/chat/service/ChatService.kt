@@ -127,7 +127,7 @@ class ChatService(
         }
     }
 
-    private fun generateUniqueGuestId(): Long {
+    fun generateUniqueGuestId(): Long {
         val keys = redisTemplate.keys("chat:*")
         val usedGuestIds = keys.stream()
             .map { key: String ->
