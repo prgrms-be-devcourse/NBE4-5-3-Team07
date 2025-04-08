@@ -1453,49 +1453,38 @@ export interface components {
             message?: string;
         };
         PagePostListResponseDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
-<<<<<<< HEAD
-=======
+            /** Format: int32 */
+            totalPages?: number;
             first?: boolean;
             last?: boolean;
-            pageable?: components["schemas"]["PageableObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
->>>>>>> a2b47d8 (하드코딩 된 url 환경변수로 변경)
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PostListResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-<<<<<<< HEAD
-            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
-=======
->>>>>>> a2b47d8 (하드코딩 된 url 환경변수로 변경)
+            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageableObject: {
+            /** Format: int64 */
+            offset?: number;
+            sort?: components["schemas"]["SortObject"];
             unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            /** Format: int64 */
-            offset?: number;
-            sort?: components["schemas"]["SortObject"];
         };
         SortObject: {
+            empty?: boolean;
             unsorted?: boolean;
             sorted?: boolean;
-            empty?: boolean;
         };
         ChatRoom: {
             /** Format: int64 */
@@ -1504,32 +1493,21 @@ export interface components {
             role?: string;
         };
         PageStudyContentDetailDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
-<<<<<<< HEAD
-=======
+            /** Format: int32 */
+            totalPages?: number;
             first?: boolean;
             last?: boolean;
-            pageable?: components["schemas"]["PageableObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
->>>>>>> a2b47d8 (하드코딩 된 url 환경변수로 변경)
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["StudyContentDetailDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-<<<<<<< HEAD
-            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
-=======
->>>>>>> a2b47d8 (하드코딩 된 url 환경변수로 변경)
+            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         NewResponseDto: {
@@ -1656,32 +1634,21 @@ export interface components {
             public?: boolean;
         };
         PageInterviewContentAdminResponseDto: {
-            /** Format: int32 */
-            totalPages?: number;
             /** Format: int64 */
             totalElements?: number;
-<<<<<<< HEAD
-=======
+            /** Format: int32 */
+            totalPages?: number;
             first?: boolean;
             last?: boolean;
-            pageable?: components["schemas"]["PageableObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
->>>>>>> a2b47d8 (하드코딩 된 url 환경변수로 변경)
             /** Format: int32 */
             size?: number;
             content?: components["schemas"]["InterviewContentAdminResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-<<<<<<< HEAD
-            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            first?: boolean;
-            last?: boolean;
-=======
->>>>>>> a2b47d8 (하드코딩 된 url 환경변수로 변경)
+            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         Empty: Record<string, never>;

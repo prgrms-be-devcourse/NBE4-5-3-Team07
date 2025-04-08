@@ -3,6 +3,9 @@ FROM gradle:8.5-jdk21-alpine AS builder
 
 WORKDIR /app
 
+# Gradle Wrapper 실행 권한 부여
+RUN chmod +x ./gradlew
+
 # 캐시 최적화를 위해 의존성 먼저 복사
 COPY build.gradle.kts settings.gradle.kts ./
 COPY gradle ./gradle
