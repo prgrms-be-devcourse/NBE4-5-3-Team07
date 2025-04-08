@@ -180,20 +180,24 @@ const SubscriptionPayment = () => {
           취업 역량 강화와 학습 효율을 높이는 최적의 구독 플랜을 선택하세요.
           언제든지 플랜을 변경하거나 취소할 수 있습니다.
         </p>
-        <p
-          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-center
-        bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-400 dark:to-gray-600
-        text-transparent bg-clip-text
-        tracking-wide p-3 mb-4"
-        >
-          {member?.nickname} 님의 구독 현황 : {member?.subscriptPlan}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg mb-10 max-w-xl mx-auto text-center">
+          <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-400 mb-2">
+            구독 현황
+          </h3>
+          <p className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 text-transparent bg-clip-text">
+            {member?.nickname} 님은 현재{" "}
+            <span className="underline decoration-2 decoration-indigo-500/30">
+              {member?.subscriptPlan}
+            </span>{" "}
+            이용 중 입니다
+          </p>
           {member?.subscriptPlan === "PREMIUM" && (
-            <p className="text-gray-600 dark:text-gray-300 text-sm mt-2">
+            <p className="text-gray-600 dark:text-gray-300 text-sm mt-3 inline-block bg-indigo-50 dark:bg-indigo-900/30 px-4 py-2 rounded-full">
               구독 종료일:{" "}
               <span className="font-medium">{member?.subscribeEndDate}</span>
             </p>
           )}
-        </p>
+        </div>
 
         <div className="grid md:grid-cols-2 gap-8 mb-12">
           {plans.map((plan) => (
@@ -254,25 +258,30 @@ const SubscriptionPayment = () => {
                     ))}
                   </ul>
                 </div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (member?.subscriptPlan !== "PREMIUM") {
-                      setShowPaymentModal(true);
-                    }
-                  }}
-                  disabled={member?.subscriptPlan === "PREMIUM"}
-                  className={`w-full rounded-full py-3 px-6 font-medium transition-all shadow-lg
-    ${
-      plan.price === 0
-        ? "bg-gray-200 text-gray-800 hover:bg-gray-300"
-        : member?.subscriptPlan === "PREMIUM"
-        ? "bg-gray-400 text-gray-700 opacity-50 cursor-not-allowed" // 비활성화된 상태
-        : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"
-    }`}
-                >
-                  {plan.price === 0 ? "무료 이용하기" : "구독하기"}
-                </button>
+                {/* 버튼 부분 수정 */}
+                {plan.price > 0 ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (member?.subscriptPlan !== "PREMIUM") {
+                        setShowPaymentModal(true);
+                      }
+                    }}
+                    disabled={member?.subscriptPlan === "PREMIUM"}
+                    className={`w-full rounded-full py-3 px-6 font-medium transition-all shadow-lg
+      ${
+        member?.subscriptPlan === "PREMIUM"
+          ? "bg-gray-400 text-gray-700 opacity-50 cursor-not-allowed" // 비활성화된 상태
+          : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"
+      }`}
+                  >
+                    구독하기
+                  </button>
+                ) : (
+                  <div className="w-full rounded-full py-3 px-6 font-medium transition-all shadow-lg bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-center border border-green-200 dark:border-green-800">
+                    현재 이용 중인 플랜입니다
+                  </div>
+                )}
               </div>
             </div>
           ))}

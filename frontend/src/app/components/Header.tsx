@@ -417,7 +417,7 @@ export default function Header() {
                       랜덤으로 질문 보기
                     </Link>
                     <Link
-                      href="/a\i/techInterview"
+                      href="/ai/techInterview"
                       className="flex items-center justify-center px-3 py-3 rounded-md text-base text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
                       실전 면접 대비 : 가상 면접
