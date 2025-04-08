@@ -41,7 +41,7 @@ jobs:
     ### 6. 프론트엔드 Docker 이미지 빌드 & 푸시
     - name: Docker build & push - Frontend
       run: |
-        docker build -t ${{ secrets.DOCKER_USERNAME }}/frontend-app ./frontend
+        docker build --no-cache -t ${{ secrets.DOCKER_USERNAME }}/frontend-app ./frontend
         docker push ${{ secrets.DOCKER_USERNAME }}/frontend-app
 
     ### 7. EC2 접속 및 컨테이너 실행
