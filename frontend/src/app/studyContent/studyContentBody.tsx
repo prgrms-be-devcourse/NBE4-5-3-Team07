@@ -30,9 +30,11 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
   useEffect(() => {
     if (selectedCategory) {
       setCategory(selectedCategory);
+      setMemo("")
       setPage(0);
     } else {
       setCategory(DEFAULT_CATEGORY);
+      setMemo("")
       setPage(0);
     }
   }, [selectedCategory]);
@@ -59,11 +61,17 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
   }, [category, page]);
 
   const handleNextPage = () => {
-    if (page < totalPages - 1) setPage(page + 1);
+    if (page < totalPages - 1) {
+      setMemo("")
+      setPage(page + 1);
+    }
   };
 
   const handlePreviousPage = () => {
-    if (page > 0) setPage(page - 1);
+    if (page > 0) {
+      setMemo("")
+      setPage(page - 1);
+    }
   };
 
   const handleMemoChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
