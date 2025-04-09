@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/admin/interview`;
+const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/admin/interview`;
 
 interface InterviewDeleteModalProps {
   interview: { id: number; question: string };
