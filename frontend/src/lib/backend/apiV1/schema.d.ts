@@ -1472,29 +1472,26 @@ export interface components {
             empty?: boolean;
         };
         PageableObject: {
+
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
+
             unpaged?: boolean;
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
-        };
-        SortObject: {
-<<<<<<< HEAD
+
             empty?: boolean;
             sorted?: boolean;
             unsorted?: boolean;
-<<<<<<< HEAD
-=======
-=======
+
             sorted?: boolean;
             unsorted?: boolean;
             empty?: boolean;
->>>>>>> fc827fc (대댓글 삭제 수정 - Comment 연관관계 매핑에서 부모 Comment 에서도 해당 Comment삭제 로직 추가)
->>>>>>> cacf1f9 (댓글, 대댓글 Bug Fix (#47))
+
         };
         ChatRoom: {
             /** Format: int64 */
