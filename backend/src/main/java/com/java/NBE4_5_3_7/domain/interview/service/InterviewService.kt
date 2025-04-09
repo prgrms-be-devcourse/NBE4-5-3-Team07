@@ -105,7 +105,7 @@ class InterviewService(
 
     // 4-1. 특정 카테고리 머리질문 순서대로 머리질문의 id 값 list 를 반환.
     fun categoryHeadQuestion(category: InterviewCategory?): List<Long> {
-        return interviewRepository.findInterviewContentIdsByCategoryAndHeadTrueAndHeadIdIsNull(category)
+        return interviewRepository.findInterviewContentIdsByCategory(category)
     }
 
     // 키워드 목록 조회
