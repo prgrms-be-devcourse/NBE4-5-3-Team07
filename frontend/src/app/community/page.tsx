@@ -99,6 +99,7 @@ const CommunityListPage: React.FC = () => {
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "Asia/Seoul",
     }).format(date);
   };
 
@@ -264,11 +265,10 @@ const CommunityListPage: React.FC = () => {
 
           <div className="flex justify-between mt-6">
             <button
-              className={`px-5 py-2 flex items-center rounded-full border transition-colors duration-200 ${
-                page > 0
+              className={`px-5 py-2 flex items-center rounded-full border transition-colors duration-200 ${page > 0
                   ? "border-indigo-600 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-gray-700"
                   : "border-gray-300 text-gray-400 cursor-not-allowed"
-              }`}
+                }`}
               onClick={() => setPage(page - 1)}
               disabled={page === 0}
             >
