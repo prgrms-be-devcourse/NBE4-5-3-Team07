@@ -1,11 +1,11 @@
 services:
   frontend:
-    image: ${{ secrets.DOCKER_USERNAME }}/frontend-app
+    image: cjw0324/frontend-app
     ports:
       - "3000:3000"
 
   backend:
-    image: ${{ secrets.DOCKER_USERNAME }}/backend-app
+    image: cjw0324/backend-app
     ports:
       - "8080:8080"
     command: "--spring.profiles.active=prod"
