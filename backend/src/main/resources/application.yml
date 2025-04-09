@@ -5,3 +5,5 @@ spring:
     active: local
   config:
     import: application-secret.yml
+  jackson:
+    time-zone: Asia/Seoul

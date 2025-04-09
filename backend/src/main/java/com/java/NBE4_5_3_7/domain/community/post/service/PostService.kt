@@ -71,7 +71,7 @@ class PostService(
         val post = postRepository.findById(editPostRequestDto.postId ?: 0).orElseThrow { RuntimeException("해당 게시글을 찾을 수 없습니다.") }
 
         // isAdmin 및 author.id 확인 (리플렉션 사용)
-        val isAdmin = getMemberField(user, "isAdmin") as? Boolean ?: false
+        val isAdmin = user.isAdmin
         val authorId = getMemberField(post.author, "id") as? Long
 
         if (!isAdmin && authorId != memberId) {
@@ -96,8 +96,9 @@ class PostService(
         val post = postRepository.findById(postId).orElseThrow { RuntimeException("해당 게시글을 찾을 수 없습니다.") }
 
         // isAdmin 및 author.id 확인 (리플렉션 사용)
-        val isAdmin = getMemberField(user, "isAdmin") as? Boolean ?: false
+        val isAdmin = user.isAdmin
         val authorId = getMemberField(post.author, "id") as? Long
+
 
         if (!isAdmin && authorId != memberId) {
             throw RuntimeException("삭제 권한이 없습니다.")
@@ -188,8 +189,11 @@ class PostService(
         val comment = commentRepository.findById(dto.commentId ?: 0).orElseThrow { RuntimeException("해당 댓글을 찾을 수 없습니다.") }
 
         // isAdmin 및 author.id 확인 (리플렉션 사용)
-        val isAdmin = getMemberField(user, "isAdmin") as? Boolean ?: false
-        val authorId = getMemberField(comment.author, "id") as? Long
+//        val isAdmin = getMemberField(user, "isAdmin") as? Boolean ?: false
+//        val authorId = getMemberField(comment.author, "id") as? Long
+
+        val isAdmin = user.isAdmin
+        val authorId = comment.author?.id
 
         if (!isAdmin && authorId != memberId) {
             throw RuntimeException("수정 권한이 없습니다.")
@@ -213,9 +217,8 @@ class PostService(
         val user = memberRepository.findById(memberId).orElseThrow { RuntimeException("해당 멤버를 찾을 수 없습니다.") }
         val comment = commentRepository.findById(commentId).orElseThrow { RuntimeException("해당 댓글을 찾을 수 없습니다.") }
 
-        // isAdmin 및 author.id 확인 (리플렉션 사용)
-        val isAdmin = getMemberField(user, "isAdmin") as? Boolean ?: false
-        val authorId = getMemberField(comment.author, "id") as? Long
+        val isAdmin = user.isAdmin
+        val authorId = comment.author?.id
 
         if (!isAdmin && authorId != memberId) {
             throw RuntimeException("삭제 권한이 없습니다.")

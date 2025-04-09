@@ -1397,9 +1397,9 @@ export interface components {
             content?: string;
         };
         StudyMemoRequestDto: {
+            memoContent?: string;
             /** Format: int64 */
             memoId?: number;
-            memoContent?: string;
         };
         StudyMemoResponseDto: {
             /** Format: int64 */
@@ -1474,17 +1474,17 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
-            sorted?: boolean;
             unsorted?: boolean;
+            sorted?: boolean;
         };
         ChatRoom: {
             /** Format: int64 */
