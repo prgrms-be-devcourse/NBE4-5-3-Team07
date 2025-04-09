@@ -10,4 +10,7 @@ interface PostLikeRepository : JpaRepository<PostLike?, Long?> {
     fun countByPostPostId(postId: Long?): Int?
 
     fun findByPostAndMember(post: Post?, member: Member?): Optional<PostLike>
+
+    // Member 엔티티에 필드명이 "id"일 경우
+    fun existsByPostPostIdAndMemberId(postId: Long, memberId: Long): Boolean
 }

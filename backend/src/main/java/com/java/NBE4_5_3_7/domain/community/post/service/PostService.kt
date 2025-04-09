@@ -32,6 +32,10 @@ class PostService(
     fun showPost(postId: Long, currentMemberId: Long?): PostResponseDto {
         val post = postRepository.findById(postId).orElseThrow { RuntimeException("해당 게시글을 찾을 수 없습니다.") }
 
+        val likedByCurrentUser = currentMemberId?.let {
+            likeRepository.existsByPostPostIdAndMemberId(postId, it)
+        } ?: false // 로그인 안 된 경우 false 처리
+
         return PostResponseDto(
             id = post.postId,
             authorName = maskLastCharacter(getMemberField(post.author, "nickname") as? String),
@@ -39,6 +43,7 @@ class PostService(
             title = post.title,
             content = post.content,
             like = likeRepository.countByPostPostId(postId) ?: 0,
+            likedByCurrentUser = likedByCurrentUser,
             comments = getComments(post, currentMemberId)
         )
     }
@@ -62,6 +67,7 @@ class PostService(
             title = savedPost.title,
             content = savedPost.content,
             like = 0,
+            likedByCurrentUser = false,
             comments = emptyList()
         )
     }
@@ -80,13 +86,19 @@ class PostService(
 
         post.update(editPostRequestDto)
 
+        val likeCount = likeRepository.countByPostPostId(post.postId) ?: 0
+
+        val postId = post.postId ?: throw IllegalStateException("게시글 ID가 존재하지 않습니다.")
+        val likedByCurrentUser = likeRepository.existsByPostPostIdAndMemberId(postId, memberId)
+
         return PostResponseDto(
             id = post.postId,
             authorName = maskLastCharacter(getMemberField(user, "nickname") as? String),
             postTime = post.updatedAt,
             title = post.title,
             content = post.content,
-            like = likeRepository.countByPostPostId(post.postId) ?: 0,
+            like = likeCount,
+            likedByCurrentUser = likedByCurrentUser,
             comments = getComments(post, memberId)
         )
     }

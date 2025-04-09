@@ -23,6 +23,7 @@ interface PostResponseDto {
   title: string;
   content: string;
   like: number;
+  likedByCurrentUser?: boolean;
   comments: CommentResponseDto[];
   myPost?: boolean;
 }
@@ -154,8 +155,21 @@ const CommunityDetailPage: React.FC = () => {
       if (!response.ok) {
         throw new Error("좋아요에 실패했습니다.");
       }
-      const data = await response.json();
+
+      const data = await response.json(); // likeCount만 내려옴
+
+      // 좋아요 수 갱신
       setLike(data.likeCount);
+
+      // ✅ 좋아요 여부는 이전 상태 반전
+      setPost((prev) =>
+        prev
+          ? {
+              ...prev,
+              likedByCurrentUser: !prev.likedByCurrentUser, // 상태 반전
+            }
+          : null
+      );
     } catch (error) {
       console.error(error);
     }
@@ -731,7 +745,9 @@ const CommunityDetailPage: React.FC = () => {
                     >
                       <svg
                         className="w-5 h-5 text-red-500"
-                        fill={like > 0 ? "currentColor" : "none"}
+                        fill={
+                          post?.likedByCurrentUser ? "currentColor" : "none"
+                        }
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                         xmlns="http://www.w3.org/2000/svg"
@@ -741,8 +757,9 @@ const CommunityDetailPage: React.FC = () => {
                           strokeLinejoin="round"
                           strokeWidth="2"
                           d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                        ></path>
+                        />
                       </svg>
+
                       <span className="font-medium text-gray-800 dark:text-gray-200">
                         {like}
                       </span>

@@ -1307,6 +1307,7 @@ export interface components {
             content?: string;
             /** Format: int32 */
             like?: number;
+            likedByCurrentUser?: boolean;
             comments?: components["schemas"]["CommentResponseDto"][];
         };
         EditPostRequestDto: {
@@ -1483,8 +1484,8 @@ export interface components {
         };
         SortObject: {
             empty?: boolean;
-            sorted?: boolean;
             unsorted?: boolean;
+            sorted?: boolean;
         };
         ChatRoom: {
             /** Format: int64 */
