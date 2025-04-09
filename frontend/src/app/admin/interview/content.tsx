@@ -6,7 +6,7 @@ import InterviewDetailModal from "./modal/interviewDetailModal";
 import InterviewEditModal from "./modal/interviewEditModal";
 import InterviewDeleteModal from "./modal/interviewDeleteModal";
 
-const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/admin/interview`;
+const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/admin/interview`;
 
 interface InterviewContentDetail {
   id: number;

@@ -258,8 +258,7 @@ const SubscriptionPayment = () => {
                     ))}
                   </ul>
                 </div>
-                {/* 버튼 부분 수정 */}
-                {plan.price > 0 ? (
+                {plan.price > 0 && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -271,16 +270,12 @@ const SubscriptionPayment = () => {
                     className={`w-full rounded-full py-3 px-6 font-medium transition-all shadow-lg
       ${
         member?.subscriptPlan === "PREMIUM"
-          ? "bg-gray-400 text-gray-700 opacity-50 cursor-not-allowed" // 비활성화된 상태
+          ? "bg-gray-400 text-gray-700 opacity-50 cursor-not-allowed"
           : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"
       }`}
                   >
                     구독하기
                   </button>
-                ) : (
-                  <div className="w-full rounded-full py-3 px-6 font-medium transition-all shadow-lg bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 text-center border border-green-200 dark:border-green-800">
-                    현재 이용 중인 플랜입니다
-                  </div>
                 )}
               </div>
             </div>
