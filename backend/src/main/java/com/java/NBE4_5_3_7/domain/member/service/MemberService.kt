@@ -62,13 +62,14 @@ class MemberService(
         val username = payload["username"] as String?
         val nickname = payload["nickname"] as String?
 
-        return Optional.of(
-            Member(
-                id,
-                username!!,
-                nickname!!
-            )
-        )
+//        return Optional.of(
+//            Member(
+//                id,
+//                username!!,
+//                nickname!!
+//            )
+//        )
+        return memberRepository.findById(id)
     }
 
     fun getRefreshPayload(refreshToken: String): Map<String, Any>? {
@@ -95,10 +96,8 @@ class MemberService(
 
         require(member.isAdmin) { "권한 변경 요청은 관리자만 가능합니다." }
 
-        member.role = when (member.role) {
-            Role.ADMIN -> Role.USER.also { "Member [$id] 의 권한을 USER 로 변경하였습니다." }
-            else -> Role.ADMIN.also { "Member [$id] 의 권한을 ADMIN 으로 변경하였습니다." }
-        }
+        member.role = if (member.role == Role.ADMIN) Role.USER
+            else Role.ADMIN
 
         return "Member [$id] 의 권한이 ${member.role} 로 변경되었습니다."
     }

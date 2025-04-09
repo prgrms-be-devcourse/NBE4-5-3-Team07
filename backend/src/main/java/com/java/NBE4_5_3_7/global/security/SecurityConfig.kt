@@ -29,24 +29,19 @@ class SecurityConfig(
             .authorizeHttpRequests { auth ->
                 auth
                     .requestMatchers(
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/member/**",
-                        "/api/v1/study/**",
-                        "/ws/chat/**",
-                        "/ws/**",
-                        "/chat/**",
-                        "/app/**",
-                        "/api/**",
-                        "/api/auth/user",
-                        "/api/v1/payments/webhook",
-                        "/api/v1/news/**"
-                    ).permitAll()
-                    .requestMatchers(
                         "/api/v1/admin/**",
                         "/app/chat/admin/**",
                         "/chat/admin/**"
                     ).hasRole("ADMIN")
+                    .requestMatchers(
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/member/**",
+                        "/ws/**",
+                        "/chat/**",
+                        "/app/**",
+                        "/api/**",
+                    ).permitAll()
                     .anyRequest().authenticated()
             }
             .cors(Customizer.withDefaults())
