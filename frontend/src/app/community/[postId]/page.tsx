@@ -248,13 +248,13 @@ const CommunityDetailPage: React.FC = () => {
       setPost((prevPost) =>
         prevPost
           ? {
-              ...prevPost,
-              comments: prevPost.comments.map((c) =>
-                c.commentId === parentId
-                  ? { ...c, reCommentCount: c.reCommentCount + 1 }
-                  : c
-              ),
-            }
+            ...prevPost,
+            comments: prevPost.comments.map((c) =>
+              c.commentId === parentId
+                ? { ...c, reCommentCount: c.reCommentCount + 1 }
+                : c
+            ),
+          }
           : null
       );
     } catch (error: any) {
@@ -292,11 +292,11 @@ const CommunityDetailPage: React.FC = () => {
       setPost((prevPost) =>
         prevPost
           ? {
-              ...prevPost,
-              comments: prevPost.comments.map((c) =>
-                c.commentId === commentId ? { ...c, comment: editingText } : c
-              ),
-            }
+            ...prevPost,
+            comments: prevPost.comments.map((c) =>
+              c.commentId === commentId ? { ...c, comment: editingText } : c
+            ),
+          }
           : null
       );
 
@@ -339,11 +339,11 @@ const CommunityDetailPage: React.FC = () => {
       setPost((prevPost) =>
         prevPost
           ? {
-              ...prevPost,
-              comments: prevPost.comments.filter(
-                (c) => c.commentId !== commentId
-              ),
-            }
+            ...prevPost,
+            comments: prevPost.comments.filter(
+              (c) => c.commentId !== commentId
+            ),
+          }
           : null
       );
 
@@ -399,6 +399,7 @@ const CommunityDetailPage: React.FC = () => {
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
+      timeZone: "Asia/Seoul",
     }).format(date);
   };
 
@@ -575,11 +576,10 @@ const CommunityDetailPage: React.FC = () => {
                       <button
                         onClick={() => handleAddReply(comment.commentId)}
                         disabled={!replyComment[comment.commentId]?.trim()}
-                        className={`absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1 rounded-full font-medium text-sm ${
-                          replyComment[comment.commentId]?.trim()
+                        className={`absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1 rounded-full font-medium text-sm ${replyComment[comment.commentId]?.trim()
                             ? "bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/20"
                             : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                        }`}
+                          }`}
                       >
                         게시
                       </button>
@@ -814,11 +814,10 @@ const CommunityDetailPage: React.FC = () => {
                       <button
                         onClick={handleAddComment}
                         disabled={!newComment.trim()}
-                        className={`absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1 rounded-full font-medium text-sm ${
-                          newComment.trim()
+                        className={`absolute right-2 top-1/2 transform -translate-y-1/2 px-3 py-1 rounded-full font-medium text-sm ${newComment.trim()
                             ? "bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-500/20"
                             : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                        }`}
+                          }`}
                       >
                         게시
                       </button>
