@@ -1461,31 +1461,40 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["PostListResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageableObject: {
-            /** Format: int64 */
-            offset?: number;
-            sort?: components["schemas"]["SortObject"];
-            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
+            unpaged?: boolean;
+            /** Format: int64 */
+            offset?: number;
+            sort?: components["schemas"]["SortObject"];
         };
         SortObject: {
+<<<<<<< HEAD
             empty?: boolean;
             sorted?: boolean;
             unsorted?: boolean;
+<<<<<<< HEAD
+=======
+=======
+            sorted?: boolean;
+            unsorted?: boolean;
+            empty?: boolean;
+>>>>>>> fc827fc (대댓글 삭제 수정 - Comment 연관관계 매핑에서 부모 Comment 에서도 해당 Comment삭제 로직 추가)
+>>>>>>> cacf1f9 (댓글, 대댓글 Bug Fix (#47))
         };
         ChatRoom: {
             /** Format: int64 */
@@ -1501,14 +1510,14 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["StudyContentDetailDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         NewResponseDto: {
@@ -1642,14 +1651,14 @@ export interface components {
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
+            numberOfElements?: number;
+            pageable?: components["schemas"]["PageableObject"];
+            /** Format: int32 */
             size?: number;
             content?: components["schemas"]["InterviewContentAdminResponseDto"][];
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
-            /** Format: int32 */
-            numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         Empty: Record<string, never>;
