@@ -36,31 +36,31 @@ class InterviewServiceTest {
     @Test
     @DisplayName("특정 카테고리 헤드 질문 ID 리스트 조회 성공")
     fun categoryHeadQuestion_success() {
+        // given
         val category = InterviewCategory.SPRING
-        val expectedIds = listOf(1L, 3L, 5L)
+        val expectedIds = listOf(1L, 2L)
 
-        every {
-            interviewRepository.findInterviewContentIdsByCategoryAndHeadTrueAndHeadIdIsNull(category)
-        } returns expectedIds
+        every { interviewRepository.findInterviewContentIdsByCategory(category) } returns expectedIds
 
+        // when
         val result = service.categoryHeadQuestion(category)
 
-        assertThat(result).isNotNull
-        assertThat(result).hasSize(3)
-        assertThat(result).containsExactlyElementsOf(expectedIds)
+        // then
+        assertThat(result).containsExactly(1L, 2L)
     }
 
     @Test
     @DisplayName("특정 카테고리 헤드 질문 ID 리스트 조회 - 빈 리스트")
     fun categoryHeadQuestion_emptyList() {
+        // given
         val category = InterviewCategory.DATABASE
 
-        every {
-            interviewRepository.findInterviewContentIdsByCategoryAndHeadTrueAndHeadIdIsNull(category)
-        } returns emptyList()
+        every { interviewRepository.findInterviewContentIdsByCategory(category) } returns emptyList()
 
+        // when
         val result = service.categoryHeadQuestion(category)
 
+        // then
         assertThat(result).isNotNull
         assertThat(result).isEmpty()
     }
