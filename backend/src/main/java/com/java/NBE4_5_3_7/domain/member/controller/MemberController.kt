@@ -4,7 +4,6 @@ import com.java.NBE4_5_3_7.domain.member.dto.MemberDto
 import com.java.NBE4_5_3_7.domain.member.entity.Member
 import com.java.NBE4_5_3_7.domain.member.service.MemberService
 import com.java.NBE4_5_3_7.global.Rq
-import com.java.NBE4_5_3_7.global.dto.Empty
 import com.java.NBE4_5_3_7.global.dto.RsData
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.bind.annotation.*
@@ -17,8 +16,8 @@ class MemberController(
 ) {
 
     @DeleteMapping("/logout")
-    fun logout(response: HttpServletResponse): RsData<Empty> {
-        return RsData("200-1", "로그아웃이 완료되었습니다.", Empty())
+    fun logout(response: HttpServletResponse): RsData<Unit> {
+        return RsData("200-1", "로그아웃이 완료되었습니다.")
     }
 
     @GetMapping("/me")
@@ -27,7 +26,7 @@ class MemberController(
 
         if (actor == null) {
             // 로그인되어 있지 않은 경우
-            return RsData("200-2", "로그인된 사용자가 없습니다.", null)
+            return RsData("200-2", "로그인된 사용자가 없습니다.")
         }
 
         val realActor: Member = rq.getRealActor(actor)

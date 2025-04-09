@@ -53,22 +53,11 @@ class MemberService(
         val payload = authTokenService.getPayload(accessToken)
             ?: return Optional.empty()
 
-//        val id = payload["id"] as Long
         val id = when (val rawId = payload["id"]) {
             is Int -> rawId.toLong()
             is Long -> rawId
             else -> throw IllegalArgumentException("Invalid id type in token payload: ${rawId?.javaClass}")
         }
-        val username = payload["username"] as String?
-        val nickname = payload["nickname"] as String?
-
-//        return Optional.of(
-//            Member(
-//                id,
-//                username!!,
-//                nickname!!
-//            )
-//        )
         return memberRepository.findById(id)
     }
 
