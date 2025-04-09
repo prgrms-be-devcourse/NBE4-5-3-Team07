@@ -20,13 +20,10 @@ class StudyMemoService(
     private val studyMemoRepository: StudyMemoRepository,
     private val studyContentRepository: StudyContentRepository,
     private val studyMemoLikeService: StudyMemoLikeService,
-    private val memberService: MemberService
 ) {
     // 멤버, 학습 컨텐츠 ID, 메모 내용 저장, 중복 작성 시 수정하게끔 변경
     @Transactional
-    fun createStudyMemo(requestDto: StudyMemoCreateRequestDto, studyContentId: Long) {
-        val member = memberService.getMemberFromRq()
-
+    fun createStudyMemo(requestDto: StudyMemoCreateRequestDto, studyContentId: Long, member: Member) {
         val studyContent = studyContentRepository.findById(studyContentId)
             .orElseThrow { RuntimeException("존재하지 않는 학습 컨텐츠 입니다.") }!!
 
@@ -43,13 +40,13 @@ class StudyMemoService(
     }
 
     // 메모 단건 조회
-    fun getStudyMemoByStudyMemberAndContentId(member: Member?, studyContent: StudyContent?): StudyMemoResponseDto {
+    fun getStudyMemoByStudyMemberAndContentId(member: Member, studyContent: StudyContent?): StudyMemoResponseDto {
         val studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContent)
-        val likeCount = studyMemoLikeService.getLikeCount(studyContent?.study_content_id)
+        val likeCount = studyMemoLikeService.getLikeCount(studyContent?.study_content_id!!)
         return StudyMemoResponseDto(studyMemo!!, likeCount)
     }
 
-    fun getStudyMemosByMemberAndCategory(member: Member?, category: FirstCategory?): List<StudyMemoResponseDto> {
+    fun getStudyMemosByMemberAndCategory(member: Member, category: FirstCategory): List<StudyMemoResponseDto> {
         val memos = studyMemoRepository.findByMemberAndStudyContentCategory(member, category)
 
         return memos!!.stream()
@@ -61,7 +58,7 @@ class StudyMemoService(
                     memo.studyContent!!.firstCategory!!.category,
                     memo.studyContent!!.title,
                     memo.studyContent!!.body,
-                    studyMemoLikeService.getLikeCount(memo.studyContent!!.study_content_id)
+                    studyMemoLikeService.getLikeCount(memo.studyContent?.study_content_id!!)
                 )
             }
             .collect(Collectors.toList())
@@ -85,7 +82,7 @@ class StudyMemoService(
             updatedMemo.studyContent!!.firstCategory!!.category,
             updatedMemo.studyContent!!.title,
             updatedMemo.studyContent!!.body,
-            studyMemoLikeService.getLikeCount(updatedMemo.studyContent!!.study_content_id)
+            studyMemoLikeService.getLikeCount(updatedMemo.studyContent?.study_content_id!!)
         )
     }
 

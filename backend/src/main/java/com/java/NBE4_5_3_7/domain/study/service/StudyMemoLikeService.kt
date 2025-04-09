@@ -1,5 +1,6 @@
 package com.java.NBE4_5_3_7.domain.study.service
 
+import com.java.NBE4_5_3_7.domain.member.entity.Member
 import com.java.NBE4_5_3_7.domain.member.service.MemberService
 import com.java.NBE4_5_3_7.domain.study.entity.StudyMemoLike
 import com.java.NBE4_5_3_7.domain.study.repository.StudyMemoLikeRepository
@@ -15,13 +16,12 @@ class StudyMemoLikeService(
     private val memberService: MemberService,
     private val redissonClient: RedissonClient
 ) {
-    fun getLikeCount(studyMemoId: Long?): Int {
+    fun getLikeCount(studyMemoId: Long): Int {
         return studyMemoLikeRepository.countByStudyMemoId(studyMemoId)
     }
 
-    fun memoLike(studyMemoId: Long): String {
+    fun memoLike(studyMemoId: Long, member: Member): String {
         val studyMemo = studyMemoRepository.findById(studyMemoId).orElse(null)
-        val member = memberService.getMemberFromRq()
 
         val lockKey = "lock:interview:like:$studyMemoId"
         val lock = redissonClient.getLock(lockKey)

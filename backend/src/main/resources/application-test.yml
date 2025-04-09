@@ -1,0 +1,85 @@
+spring:
+  datasource:
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # 테스트 후 DB 초기화
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+        use_sql_comments: true
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            client-id: ${security.kakao.client-id}
+            scope: profile_nickname, profile_image
+            client-name: Kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${mail.username}
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          debug: true
+          starttls:
+            enable: true
+
+  thymeleaf:
+    cache: false
+
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+
+  output:
+    ansi:
+      enabled: always
+
+redisson:
+  address: "redis://localhost:6379"
+
+custom:
+  jwt:
+    secret-key: ${security.jwt.secret-key}
+    expire-seconds: "#{60}"
+    refresh-expire-seconds: "#{3600}"
+
+# 테스트에서는 swagger 문서 생성 없이 실행되도록 설정 생략
+# 테스트에서도 swagger가 필요하면 아래 설정 추가
+# springdoc:
+#   api-docs:
+#     enabled: true
+#   swagger-ui:
+#     enabled: true
+
+# 외부 API 키들 생략 또는 Dummy 값 설정
+imp:
+  code: ${imp.code}
+  key: ${imp.api-key}
+  secret_key: ${imp.pg-secret-key}
+
+naver:
+  key: ${naver.client-id}
+  secret: ${naver.client-secret}
+
+publicData:
+  key: ${publicData.secret-key}

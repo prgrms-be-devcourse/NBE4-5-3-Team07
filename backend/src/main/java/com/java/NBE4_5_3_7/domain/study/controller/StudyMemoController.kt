@@ -23,7 +23,9 @@ class StudyMemoController(
         @RequestBody requestDto: StudyMemoCreateRequestDto,
         @PathVariable studyContentId: Long
     ): ResponseEntity<String> {
-        studyMemoService.createStudyMemo(requestDto, studyContentId)
+        val member = memberService.getMemberFromRq()
+
+        studyMemoService.createStudyMemo(requestDto, studyContentId, member)
         return ResponseEntity.ok("create success")
     }
 
