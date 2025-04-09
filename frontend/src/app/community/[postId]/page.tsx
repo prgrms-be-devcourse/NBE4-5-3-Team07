@@ -253,6 +253,7 @@ const CommunityDetailPage: React.FC = () => {
   const handleEditComment = async (commentId: number) => {
     if (!editingText.trim()) return;
     setErrorMsg(null);
+
     const dto: EditCommentRequestDto = {
       commentId,
       comment: editingText,
@@ -268,12 +269,36 @@ const CommunityDetailPage: React.FC = () => {
           body: JSON.stringify(dto),
         }
       );
+
       if (!response.ok) {
         throw new Error("댓글 수정에 실패했습니다.");
       }
+
+      // 댓글 영역에서 수정 반영
+      setPost((prevPost) =>
+        prevPost
+          ? {
+              ...prevPost,
+              comments: prevPost.comments.map((c) =>
+                c.commentId === commentId ? { ...c, comment: editingText } : c
+              ),
+            }
+          : null
+      );
+
+      // 대댓글 영역에서 수정 반영
+      setReplies((prev) => {
+        const updated = { ...prev };
+        for (const parentId in updated) {
+          updated[parentId] = updated[parentId].map((r) =>
+            r.commentId === commentId ? { ...r, comment: editingText } : r
+          );
+        }
+        return updated;
+      });
+
       setEditingCommentId(null);
       setEditingText("");
-      setRefresh((prev) => !prev);
     } catch (error: any) {
       console.error(error);
       setErrorMsg(error.message);
@@ -291,10 +316,33 @@ const CommunityDetailPage: React.FC = () => {
           credentials: "include",
         }
       );
+
       if (!response.ok) {
         throw new Error("댓글 삭제에 실패했습니다.");
       }
-      setRefresh((prev) => !prev);
+
+      // 댓글 목록에서 삭제
+      setPost((prevPost) =>
+        prevPost
+          ? {
+              ...prevPost,
+              comments: prevPost.comments.filter(
+                (c) => c.commentId !== commentId
+              ),
+            }
+          : null
+      );
+
+      // 대댓글 목록에서 삭제
+      setReplies((prev) => {
+        const updated = { ...prev };
+        for (const parentId in updated) {
+          updated[parentId] = updated[parentId].filter(
+            (r) => r.commentId !== commentId
+          );
+        }
+        return updated;
+      });
     } catch (error: any) {
       console.error(error);
       setErrorMsg(error.message);
