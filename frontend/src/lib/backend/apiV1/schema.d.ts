@@ -1484,8 +1484,8 @@ export interface components {
         };
         SortObject: {
             empty?: boolean;
-            unsorted?: boolean;
             sorted?: boolean;
+            unsorted?: boolean;
         };
         ChatRoom: {
             /** Format: int64 */
