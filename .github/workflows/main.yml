@@ -1,4 +1,4 @@
-name: CI/CD using GitHub Actions & Docker
+name: CI/CD using GitHub Actions & Docker Compose
 
 on:
   push:
@@ -9,76 +9,55 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - name: ✅ 코드 체크아웃
+      uses: actions/checkout@v4
 
-    ### 1. 백엔드 환경변수 파일 생성 (application-secret.yml)
-    - name: Create application-secret.yml
+    - name: 🔐 백엔드 application-secret.yml 생성
       run: |
         echo "${{ secrets.BACKEND_SECRET_YML }}" > ./backend/src/main/resources/application-secret.yml
 
-    ### 2. 프론트엔드 환경변수 파일 생성 (.env.production)
-    - name: Create .env.production
+    - name: 🔐 프론트엔드 .env.production 생성
       run: |
         echo "${{ secrets.FRONTEND_ENV }}" > ./frontend/.env.production
 
-    ### 3. 백엔드 JAR 빌드
-    - name: Build backend JAR
-      working-directory: ./backend
-      run: |
-        chmod +x ./gradlew
-        ./gradlew clean build -x test
-
-    ### 4. Docker Hub 로그인
-    - name: Docker login
+    - name: 🐳 DockerHub 로그인
       run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-    ### 5. 백엔드 Docker 이미지 빌드 & 푸시
-    - name: Docker build & push - Backend
+    - name: 🧱 백엔드 Docker 이미지 빌드 & 푸시
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/backend-app ./backend
         docker push ${{ secrets.DOCKER_USERNAME }}/backend-app
 
-    ### 6. 프론트엔드 Docker 이미지 빌드 & 푸시
-    - name: Docker build & push - Frontend
+    - name: 🧱 프론트엔드 Docker 이미지 빌드 & 푸시
       run: |
-        docker build --no-cache -t ${{ secrets.DOCKER_USERNAME }}/frontend-app ./frontend
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/frontend-app ./frontend
         docker push ${{ secrets.DOCKER_USERNAME }}/frontend-app
 
-    ### 7. EC2 접속 및 컨테이너 실행
-    - name: Deploy to EC2
+    - name: 🚀 EC2에 배포
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_KEY }}
         script: |
-          # Docker Hub 로그인
-          sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          # 클론 안 되어 있으면 clone, 있으면 pull
+          if [ ! -d "NBE4-5-3-Team07" ]; then
+            git clone https://github.com/prgrms-be-devcourse/NBE4-5-3-Team07.git
+          fi
 
-          # 기존 컨테이너 중지 및 삭제
-          sudo docker stop backend || true && docker rm backend || true
-          sudo docker stop frontend || true && docker rm frontend || true
+          cd NBE4-5-3-Team07
 
-          # 이미지 캐시 삭제
-          sudo docker rmi cjw0324/frontend-app
+          git fetch origin deploy
+          git checkout deploy
+          git pull origin deploy
 
-          # 최신 이미지 Pull
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend-app:latest
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/frontend-app:latest
+          # DockerHub 로그인
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
 
-          # 백엔드 실행
-          sudo docker run -d --name backend \
-            -p 8080:8080 \
-            --memory="512m" \
-            --memory-swap="1g" \
-            ${{ secrets.DOCKER_USERNAME }}/backend-app \
-            --spring.profiles.active=prod \
+          # docker-compose로 서비스 재시작
+          docker compose down
+          docker compose pull
+          docker compose up -d --remove-orphans
 
-          # 프론트엔드 실행
-          sudo docker run -d --name frontend \
-            -p 3000:3000 \
-            ${{ secrets.DOCKER_USERNAME }}/frontend-app
-
-          # 정리
-          sudo docker container prune -f
-          sudo docker image prune -a -f
+          # 안 쓰는 이미지/컨테이너/볼륨 정리
+          docker system prune -af --volumes
