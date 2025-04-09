@@ -83,3 +83,6 @@ naver:
 
 publicData:
   key: ${publicData.secret-key}
+
+front:
+  url: http://localhost:3000
