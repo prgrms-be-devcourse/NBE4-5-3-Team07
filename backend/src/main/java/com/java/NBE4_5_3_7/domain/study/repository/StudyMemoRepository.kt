@@ -14,8 +14,8 @@ interface StudyMemoRepository : JpaRepository<StudyMemo?, Long?> {
                 "WHERE c.member = :member AND ic.firstCategory = :category"
     )
     fun findByMemberAndStudyContentCategory(
-        @Param("member") member: Member?,
-        @Param("category") category: FirstCategory?
+        @Param("member") member: Member,
+        @Param("category") category: FirstCategory
     ): List<StudyMemo?>?
 
     @Query("SELECT s FROM StudyMemo s WHERE s.studyContent = :studyContent AND s.isPublished = true")
