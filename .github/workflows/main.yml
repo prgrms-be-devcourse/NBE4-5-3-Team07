@@ -59,6 +59,9 @@ jobs:
           sudo docker stop backend || true && docker rm backend || true
           sudo docker stop frontend || true && docker rm frontend || true
 
+          # 이미지 캐시 삭제
+          sudo docker rmi cjw0324/frontend-app
+
           # 최신 이미지 Pull
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend-app:latest
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/frontend-app:latest
