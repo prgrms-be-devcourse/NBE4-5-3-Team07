@@ -1,12 +1,18 @@
 package com.java.NBE4_5_3_7.domain.payment
 
-import org.springframework.boot.test.web.server.LocalServerPort
+import com.java.NBE4_5_3_7.domain.member.entity.Member
+import com.java.NBE4_5_3_7.domain.member.service.MemberService
 import com.java.NBE4_5_3_7.domain.payment.dto.reqestDto.PaymentRequestDto
+import io.mockk.impl.annotations.MockK
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.*
+import org.mockito.BDDMockito.given
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ActiveProfiles
 import org.testcontainers.junit.jupiter.Testcontainers
@@ -22,9 +28,20 @@ class PaymentServiceTest {
 
     private val basePath = "/api/v1/payments"
 
+    @MockBean
+    lateinit var memberService: MemberService
+
     @BeforeEach
     fun setUp() {
         RestAssured.port = port
+
+        val mockMember = Member().apply {
+            id = 1L
+            username = "test@example.com"
+            nickname = "TestUser"
+        }
+        given(memberService.getMemberFromRq()).willReturn(mockMember)
+
     }
 
     @Test
