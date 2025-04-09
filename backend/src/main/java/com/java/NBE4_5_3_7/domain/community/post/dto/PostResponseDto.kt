@@ -10,13 +10,16 @@ class PostResponseDto {
     var title: String? = null
     var content: String? = null
     var like: Int? = null
+    var likedByCurrentUser: Boolean? = null
     var comments: List<CommentResponseDto>? = null
+
 
     constructor()
 
     constructor(
         id: Long?, authorName: String?, postTime: LocalDateTime?,
         title: String?, content: String?, like: Int?,
+        likedByCurrentUser: Boolean?,
         comments: List<CommentResponseDto>?
     ) {
         this.id = id
@@ -25,6 +28,7 @@ class PostResponseDto {
         this.title = title
         this.content = content
         this.like = like
+        this.likedByCurrentUser = likedByCurrentUser
         this.comments = comments
     }
 }
