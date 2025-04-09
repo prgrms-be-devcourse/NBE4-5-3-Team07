@@ -1,0 +1,84 @@
+name: CI/CD using GitHub Actions & Docker
+
+on:
+  push:
+    branches: [ "deploy" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    ### 1. 백엔드 환경변수 파일 생성 (application-secret.yml)
+    - name: Create application-secret.yml
+      run: |
+        echo "${{ secrets.BACKEND_SECRET_YML }}" > ./backend/src/main/resources/application-secret.yml
+
+    ### 2. 프론트엔드 환경변수 파일 생성 (.env.production)
+    - name: Create .env.production
+      run: |
+        echo "${{ secrets.FRONTEND_ENV }}" > ./frontend/.env.production
+
+    ### 3. 백엔드 JAR 빌드
+    - name: Build backend JAR
+      working-directory: ./backend
+      run: |
+        chmod +x ./gradlew
+        ./gradlew clean build -x test
+
+    ### 4. Docker Hub 로그인
+    - name: Docker login
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+    ### 5. 백엔드 Docker 이미지 빌드 & 푸시
+    - name: Docker build & push - Backend
+      run: |
+        docker build -t ${{ secrets.DOCKER_USERNAME }}/backend-app ./backend
+        docker push ${{ secrets.DOCKER_USERNAME }}/backend-app
+
+    ### 6. 프론트엔드 Docker 이미지 빌드 & 푸시
+    - name: Docker build & push - Frontend
+      run: |
+        docker build --no-cache -t ${{ secrets.DOCKER_USERNAME }}/frontend-app ./frontend
+        docker push ${{ secrets.DOCKER_USERNAME }}/frontend-app
+
+    ### 7. EC2 접속 및 컨테이너 실행
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
+        script: |
+          # Docker Hub 로그인
+          sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+          # 기존 컨테이너 중지 및 삭제
+          sudo docker stop backend || true && docker rm backend || true
+          sudo docker stop frontend || true && docker rm frontend || true
+
+          # 이미지 캐시 삭제
+          sudo docker rmi cjw0324/frontend-app
+
+          # 최신 이미지 Pull
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend-app:latest
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/frontend-app:latest
+
+          # 백엔드 실행
+          sudo docker run -d --name backend \
+            -p 8080:8080 \
+            --memory="512m" \
+            --memory-swap="1g" \
+            ${{ secrets.DOCKER_USERNAME }}/backend-app \
+            --spring.profiles.active=prod \
+
+          # 프론트엔드 실행
+          sudo docker run -d --name frontend \
+            -p 3000:3000 \
+            ${{ secrets.DOCKER_USERNAME }}/frontend-app
+
+          # 정리
+          sudo docker container prune -f
+          sudo docker image prune -a -f
