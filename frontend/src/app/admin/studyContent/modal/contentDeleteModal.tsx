@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/admin/study`;
+const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/admin/study`;
 
 interface ContentDeleteModalProps {
   content: { id: number; title: string };
