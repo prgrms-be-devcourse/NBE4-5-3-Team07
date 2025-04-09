@@ -6,7 +6,7 @@ import ContentDetailModal from "./modal/contentDetailModal";
 import ContentEditModal from "./modal/contentEditModal";
 import ContentDeleteModal from "./modal/contentDeleteModal";
 
-const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/v1/admin/study`;
+const API_URL = `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/admin/study`;
 
 interface StudyContentDetailDto {
   id: number;
