@@ -12,8 +12,8 @@ interface InterviewContentRepository : JpaRepository<InterviewContent, Long> {
     @Query("select ic.interviewContentId from InterviewContent ic where ic.isHead = true and ic.headId is null")
     fun findInterviewContentIdsByHeadTrueAndHeadIdIsNull(): List<Long>
 
-    @Query("select ic.interviewContentId from InterviewContent ic where ic.category = :category and ic.isHead = true and ic.headId is null")
-    fun findInterviewContentIdsByCategoryAndHeadTrueAndHeadIdIsNull(
+    @Query("select ic.interviewContentId from InterviewContent ic where ic.category = :category")
+    fun findInterviewContentIdsByCategory(
         @Param("category") category: InterviewCategory?
     ): List<Long>
 
