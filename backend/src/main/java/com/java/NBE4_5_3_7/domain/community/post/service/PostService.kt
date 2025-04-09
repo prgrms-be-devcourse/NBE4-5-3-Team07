@@ -224,6 +224,7 @@ class PostService(
             throw RuntimeException("삭제 권한이 없습니다.")
         }
 
+        comment.parent?.children?.remove(comment)
         commentRepository.delete(comment)
     }
 

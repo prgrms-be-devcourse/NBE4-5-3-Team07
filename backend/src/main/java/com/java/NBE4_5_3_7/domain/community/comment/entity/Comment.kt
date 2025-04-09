@@ -41,9 +41,10 @@ class Comment {
     var parent: Comment? = null
         private set
 
-    @OneToMany(mappedBy = "parent", cascade = [CascadeType.ALL])
-    var children: List<Comment>? = null
+    @OneToMany(mappedBy = "parent", cascade = [CascadeType.ALL], orphanRemoval = true)
+    var children: MutableList<Comment> = mutableListOf()
         private set
+
 
     @ManyToOne
     @JoinColumn(name = "member_id")
@@ -53,18 +54,15 @@ class Comment {
     // 기본 생성자 (JPA 필수)
     constructor()
 
-    // 전체 필드 생성자
     constructor(
-        id: Long?, comment: String?, createdDate: LocalDateTime?, modifiedDate: LocalDateTime?,
-        post: Post?, parent: Comment?, children: List<Comment>?, author: Member?
+        comment: String,
+        post: Post,
+        parent: Comment? = null,
+        author: Member
     ) {
-        this.id = id
         this.comment = comment
-        this.createdDate = createdDate
-        this.modifiedDate = modifiedDate
         this.post = post
         this.parent = parent
-        this.children = children
         this.author = author
     }
 
