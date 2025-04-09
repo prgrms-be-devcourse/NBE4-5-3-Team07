@@ -115,16 +115,19 @@ const JobDetailPage = () => {
             </p>
           </div>
 
-          <div className="mt-8 flex justify-end">
-            <a
-              href={jobDetail.srcUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-500 font-semibold transition-all"
-            >
-              채용 공고 보기
-            </a>
-          </div>
+          {jobDetail.srcUrl.startsWith("http") && (
+              <div className="mt-8 flex justify-end">
+                <a
+                    href={jobDetail.srcUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-500 font-semibold transition-all"
+                >
+                  채용 공고 보기
+                </a>
+              </div>
+          )}
+
 
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-10">
             <div className="absolute top-10 right-20 w-64 h-64 rounded-full bg-blue-300 dark:bg-blue-600 blur-3xl"></div>
