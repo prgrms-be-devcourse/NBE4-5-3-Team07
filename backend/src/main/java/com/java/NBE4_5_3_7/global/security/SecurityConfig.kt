@@ -41,6 +41,7 @@ class SecurityConfig(
                         "/chat/**",
                         "/app/**",
                         "/api/**",
+                        "/actuator/**"
                     ).permitAll()
                     .anyRequest().authenticated()
             }

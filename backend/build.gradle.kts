@@ -96,6 +96,9 @@ dependencies {
 	testImplementation("org.springframework:spring-messaging")
 	testImplementation("org.springframework.boot:spring-boot-starter-websocket")
 	testImplementation("org.java-websocket:Java-WebSocket:1.5.3")
+
+	implementation ("io.micrometer:micrometer-registry-prometheus")
+
 }
 
 tasks.test {
