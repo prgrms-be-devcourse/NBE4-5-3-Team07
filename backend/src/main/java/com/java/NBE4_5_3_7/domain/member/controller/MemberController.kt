@@ -5,6 +5,7 @@ import com.java.NBE4_5_3_7.domain.member.entity.Member
 import com.java.NBE4_5_3_7.domain.member.service.MemberService
 import com.java.NBE4_5_3_7.global.Rq
 import com.java.NBE4_5_3_7.global.dto.RsData
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.web.bind.annotation.*
 
@@ -15,10 +16,31 @@ class MemberController(
     private val memberService: MemberService
 ) {
 
+//    @DeleteMapping("/logout")
+//    fun logout(response: HttpServletResponse): RsData<Unit> {
+//        return RsData("200-1", "로그아웃이 완료되었습니다.")
+//    }
+
     @DeleteMapping("/logout")
     fun logout(response: HttpServletResponse): RsData<Unit> {
+        val accessTokenCookie = Cookie("accessToken", null)
+        accessTokenCookie.maxAge = 0
+        accessTokenCookie.path = "/"
+        accessTokenCookie.isHttpOnly = true
+        accessTokenCookie.secure = true // HTTPS일 경우
+
+        val refreshTokenCookie = Cookie("refreshToken", null)
+        refreshTokenCookie.maxAge = 0
+        refreshTokenCookie.path = "/"
+        refreshTokenCookie.isHttpOnly = true
+        refreshTokenCookie.secure = true
+
+        response.addCookie(accessTokenCookie)
+        response.addCookie(refreshTokenCookie)
+
         return RsData("200-1", "로그아웃이 완료되었습니다.")
     }
+
 
     @GetMapping("/me")
     fun me(): RsData<MemberDto?> {
