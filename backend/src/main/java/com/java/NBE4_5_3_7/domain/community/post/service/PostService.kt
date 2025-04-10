@@ -16,6 +16,7 @@ import org.redisson.api.RedissonClient
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.lang.reflect.Field
 import java.util.concurrent.TimeUnit
@@ -36,13 +37,20 @@ class PostService(
             likeRepository.existsByPostPostIdAndMemberId(postId, it)
         } ?: false // 로그인 안 된 경우 false 처리
 
+        // Redis 캐시에 저장된 좋아요 카운트 사용 (없으면 DB count로 대체)
+        val redisKey = "post:like:$postId"
+        val atomicLong = redissonClient.getAtomicLong(redisKey)
+        val likeCount = if (atomicLong.isExists) atomicLong.get().toInt()
+        else likeRepository.countByPostPostId(postId) ?: 0
+
+
         return PostResponseDto(
             id = post.postId,
             authorName = maskLastCharacter(getMemberField(post.author, "nickname") as? String),
             postTime = post.createdAt,
             title = post.title,
             content = post.content,
-            like = likeRepository.countByPostPostId(postId) ?: 0,
+            like = likeCount,
             likedByCurrentUser = likedByCurrentUser,
             comments = getComments(post, currentMemberId)
         )
@@ -258,11 +266,45 @@ class PostService(
         } ?: emptyList()
     }
 
+//    fun postLike(memberId: Long, postId: Long): LikeResponseDto {
+//        val post = postRepository.findById(postId).orElseThrow { RuntimeException("해당 게시글을 찾을 수 없습니다.") }
+//        val member = memberRepository.findById(memberId).orElseThrow { RuntimeException("해당 멤버를 찾을 수 없습니다.") }
+//        val lockKey = "lock:post:like$postId"
+//        val lock = redissonClient.getLock(lockKey)
+//
+//        var isLocked = false
+//        try {
+//            isLocked = lock.tryLock(5, 10, TimeUnit.SECONDS)
+//            if (!isLocked) throw RuntimeException("시스템이 바빠 요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요.")
+//
+//            val existingLike = likeRepository.findByPostAndMember(post, member)
+//            return if (existingLike != null && existingLike.isPresent) {
+//                likeRepository.delete(existingLike.get())
+//                LikeResponseDto(postId, likeRepository.countByPostPostId(postId) ?: 0, "좋아요 취소")
+//            } else {
+//                val newLike = PostLike(null, post, member)
+//                likeRepository.save(newLike)
+//                LikeResponseDto(postId, likeRepository.countByPostPostId(postId) ?: 0, "좋아요 추가")
+//            }
+//        } catch (e: InterruptedException) {
+//            Thread.currentThread().interrupt()
+//            throw RuntimeException("락 획득 중 인터럽트 발생")
+//        } finally {
+//            if (isLocked && lock.isHeldByCurrentThread) lock.unlock()
+//        }
+//    }
+
+    /**
+     * 좋아요 처리에 캐시(Redis)를 적용한 메서드.
+     * 기존처럼 DB에서 like 레코드 여부를 확인하지만, 이후의 좋아요 카운트는 Redis AtomicLong으로 관리.
+     */
     fun postLike(memberId: Long, postId: Long): LikeResponseDto {
         val post = postRepository.findById(postId).orElseThrow { RuntimeException("해당 게시글을 찾을 수 없습니다.") }
         val member = memberRepository.findById(memberId).orElseThrow { RuntimeException("해당 멤버를 찾을 수 없습니다.") }
         val lockKey = "lock:post:like$postId"
         val lock = redissonClient.getLock(lockKey)
+        val redisKey = "post:likes:$postId"
+        val redis = redissonClient.getBucket<Int>(redisKey)
 
         var isLocked = false
         try {
@@ -270,13 +312,17 @@ class PostService(
             if (!isLocked) throw RuntimeException("시스템이 바빠 요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요.")
 
             val existingLike = likeRepository.findByPostAndMember(post, member)
+            val currentLikes = redis.get() ?: likeRepository.countByPostPostId(postId) ?: 0
+
             return if (existingLike != null && existingLike.isPresent) {
                 likeRepository.delete(existingLike.get())
-                LikeResponseDto(postId, likeRepository.countByPostPostId(postId) ?: 0, "좋아요 취소")
+                redis.set(currentLikes - 1)
+                LikeResponseDto(postId, currentLikes - 1, "좋아요 취소")
             } else {
                 val newLike = PostLike(null, post, member)
                 likeRepository.save(newLike)
-                LikeResponseDto(postId, likeRepository.countByPostPostId(postId) ?: 0, "좋아요 추가")
+                redis.set(currentLikes + 1)
+                LikeResponseDto(postId, currentLikes + 1, "좋아요 추가")
             }
         } catch (e: InterruptedException) {
             Thread.currentThread().interrupt()
@@ -285,6 +331,7 @@ class PostService(
             if (isLocked && lock.isHeldByCurrentThread) lock.unlock()
         }
     }
+
 
     fun myPost(memberId: Long, page: Int, size: Int): List<PostListResponseDto> {
         val member = memberRepository.findById(memberId).orElseThrow { RuntimeException("해당 멤버를 찾을 수 없습니다.") }
@@ -374,6 +421,26 @@ class PostService(
         fun maskLastCharacter(word: String?): String? {
             if (word.isNullOrEmpty()) return word
             return word.dropLast(1) + "*"
+        }
+    }
+
+    /**
+     * 3분마다 Redis에 저장된 좋아요 카운트를 DB에 반영하는 스케줄러.
+     * 각 키명은 "post:like:{postId}"로 구성되며, 필요에 따라 Post 엔티티의
+     * 좋아요 카운트 컬럼(예: likeCount)에 업데이트 할 수 있습니다.
+     */
+    @Scheduled(fixedRate = 180000)
+    fun flushLikeCountsToDB() {
+        // Redisson의 keys 기능을 통해 관련 키들 조회 (패턴: "post:like:*")
+        val keys = redissonClient.keys.getKeysByPattern("post:like:*")
+        for (key in keys) {
+            val postIdStr = key.substringAfter("post:like:")
+            val postId = postIdStr.toLongOrNull() ?: continue
+            val atomicLong = redissonClient.getAtomicLong(key)
+            val redisCount = atomicLong.get()
+            // DB에 반영하는 로직 구현 (예: Post 엔티티의 likeCount 업데이트)
+            // 예시) postRepository.updateLikeCount(postId, redisCount)
+            println("Flushing postId $postId with likeCount $redisCount to DB")
         }
     }
 }
