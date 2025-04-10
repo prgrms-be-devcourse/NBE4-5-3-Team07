@@ -11,6 +11,9 @@ config.autoAddCss = false;
 export const metadata: Metadata = {
   title: "DevPrep",
   description: "개발자의 꿈을 현실로",
+  icons: {
+    icon: "/devprep.png",
+  },
 };
 
 const pretendard = localFont({
