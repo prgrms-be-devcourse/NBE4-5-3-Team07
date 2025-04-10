@@ -34,6 +34,7 @@ class JobsDetailDto {
     var decimalDay: Int = 0
     var files: List<Files>? = null
     var steps: List<Steps>? = null
+    var errorMessage: String? = null
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     class Files {
