@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 class JobResponseDto {
     var totalCount = 0
     var result: List<Job>? = null
+    var errorMessage: String? = null
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     class Job {

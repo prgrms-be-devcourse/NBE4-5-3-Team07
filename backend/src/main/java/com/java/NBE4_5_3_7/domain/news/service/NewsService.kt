@@ -5,10 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.JobResponseDto
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.JobsDetailDto
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.NewResponseDto
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
+import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
@@ -23,6 +22,7 @@ class NewsService {
     @Value("\${publicData.key}")
     protected val public_data_key: String? = null
 
+    @CircuitBreaker(name = "naverNews", fallbackMethod = "naverNewsFallback")
     fun getNaverNews(keyWord: String, page: Int): NewResponseDto? {
         val restTemplate = RestTemplate()
         val headers = HttpHeaders()
@@ -56,6 +56,14 @@ class NewsService {
         return newsResponse
     }
 
+    fun naverNewsFallback(keyWord: String, page: Int, t: Throwable): ResponseEntity<NewResponseDto> {
+        val fallbackDto = NewResponseDto().apply {
+            errorMessage = "현재 채용공고 호출이 불가능합니다. 잠시 후 다시 시도해주세요."
+        }
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(fallbackDto)
+    }
+
+    @CircuitBreaker(name = "jobList", fallbackMethod = "jobListFallback")
     fun getJobList(ncsCdLst: String, page: Int): JobResponseDto? {
         val restTemplate = RestTemplate()
         val objectMapper = ObjectMapper()
@@ -89,12 +97,21 @@ class NewsService {
 
             return jobResponseDto
         } catch (e: Exception) {
-            e.printStackTrace()
-            return null
+            throw RuntimeException("채용 공고 데이터 호출 실패", e)
         }
     }
 
+    fun jobListFallback(ncsCdLst: String, page: Int, t: Throwable): ResponseEntity<JobResponseDto> {
+        val fallbackDto = JobResponseDto().apply {
+            totalCount = 0
+            result = emptyList()
+            errorMessage = "현재 채용공고 호출이 불가능합니다. 잠시 후 다시 시도해주세요."
+        }
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(fallbackDto)
+    }
 
+
+    @CircuitBreaker(name = "jobDetail", fallbackMethod = "jobDetailFallback")
     fun getJobDetail(recrutPblntSn: String): JobsDetailDto? {
         val restTemplate = RestTemplate()
         val objectMapper = ObjectMapper()
@@ -123,5 +140,12 @@ class NewsService {
             e.printStackTrace()
             return null
         }
+    }
+
+    fun jobDetailFallback(recrutPblntSn: String, t: Throwable): ResponseEntity<JobsDetailDto> {
+        val fallbackDto = JobsDetailDto().apply {
+            errorMessage = "현재 채용공고 호출이 불가능합니다. 잠시 후 다시 시도해주세요."
+        }
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(fallbackDto)
     }
 }
