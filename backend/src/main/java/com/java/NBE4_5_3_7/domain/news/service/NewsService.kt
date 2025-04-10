@@ -56,11 +56,8 @@ class NewsService {
         return newsResponse
     }
 
-    fun naverNewsFallback(keyWord: String, page: Int, t: Throwable): ResponseEntity<NewResponseDto> {
-        val fallbackDto = NewResponseDto().apply {
-            errorMessage = "현재 채용공고 호출이 불가능합니다. 잠시 후 다시 시도해주세요."
-        }
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(fallbackDto)
+    fun naverNewsFallback(keyWord: String, page: Int, t: Throwable): NewResponseDto {
+        return NewResponseDto().apply { errorMessage = "(FallBack) 뉴스 정보를 불러올 수 없습니다. 잠시 후에 시도해주세요." }
     }
 
     @CircuitBreaker(name = "jobList", fallbackMethod = "jobListFallback")
@@ -101,13 +98,8 @@ class NewsService {
         }
     }
 
-    fun jobListFallback(ncsCdLst: String, page: Int, t: Throwable): ResponseEntity<JobResponseDto> {
-        val fallbackDto = JobResponseDto().apply {
-            totalCount = 0
-            result = emptyList()
-            errorMessage = "현재 채용공고 호출이 불가능합니다. 잠시 후 다시 시도해주세요."
-        }
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(fallbackDto)
+    fun jobListFallback(ncsCdLst: String, page: Int, t: Throwable): JobResponseDto {
+        return JobResponseDto().apply { errorMessage = "(FallBack) 채용 정보를 불러올 수 없습니다. 잠시 후에 시도해주세요." }
     }
 
 
@@ -142,10 +134,7 @@ class NewsService {
         }
     }
 
-    fun jobDetailFallback(recrutPblntSn: String, t: Throwable): ResponseEntity<JobsDetailDto> {
-        val fallbackDto = JobsDetailDto().apply {
-            errorMessage = "현재 채용공고 호출이 불가능합니다. 잠시 후 다시 시도해주세요."
-        }
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(fallbackDto)
+    fun jobDetailFallback(recrutPblntSn: String, t: Throwable): JobsDetailDto {
+        return JobsDetailDto().apply { errorMessage = "(FallBack) 채용 상세 정보를 불러올 수 없습니다. 잠시 후에 시도해주세요." }
     }
 }

@@ -15,5 +15,6 @@ class PaymentResponseDto(payment: Payment, member: Member) {
     var success = true
     var card_name: String? = payment.cardName
     var item_name: String? = payment.name
+    var errorMessage: String? = null
 }
 
