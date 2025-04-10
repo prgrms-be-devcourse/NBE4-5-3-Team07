@@ -1,6 +1,7 @@
 package com.java.NBE4_5_3_7.global.security
 
 import com.java.NBE4_5_3_7.global.app.AppConfig
+import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -55,16 +56,33 @@ class SecurityConfig(
             }
             .anonymous { it.disable() }
             .logout { it.disable() }
-//            .logout { logout ->
-//                logout
-//                    .logoutUrl("/member/logout")
-//                    .logoutRequestMatcher(AntPathRequestMatcher("/member/logout", "DELETE"))
-//                    .invalidateHttpSession(true)
-//                    .deleteCookies("accessToken", "apiKey", "refreshToken", "JSESSIONID")
-//                    .logoutSuccessHandler { _, response, _ ->
-//                        response.status = HttpServletResponse.SC_OK
-//                    }
-//            }
+            .logout { logout ->
+                logout
+                    .logoutUrl("/member/logout")
+                    .logoutRequestMatcher(AntPathRequestMatcher("/member/logout", "DELETE"))
+                    .invalidateHttpSession(true)
+                    // 혹시 몰라 남겨둠
+                    .deleteCookies("accessToken", "apiKey", "refreshToken", "JSESSIONID")
+                    .logoutSuccessHandler { request, response, _ ->
+                        val cookieNames = listOf("accessToken", "refreshToken", "apiKey", "JSESSIONID")
+                        for (name in cookieNames) {
+                            val cookie = Cookie(name, null).apply {
+                                path = "/"
+                                maxAge = 0
+                                isHttpOnly = true
+                                secure = true
+                                setAttribute("SameSite", "Strict")
+
+                                val serverName = request.serverName
+                                if (!serverName.equals("localhost", ignoreCase = true)) {
+                                    domain = "www.devprep.shop"
+                                }
+                            }
+                            response.addCookie(cookie)
+                        }
+                        response.status = HttpServletResponse.SC_OK
+                    }
+            }
             .exceptionHandling { exceptions ->
                 exceptions
                     .authenticationEntryPoint { _, response, _ ->
