@@ -18,9 +18,7 @@ class MemberController(
 
     @PostMapping("/logout")
     fun logout(): RsData<Unit> {
-        rq.deleteCookie("accessToken")
-        rq.deleteCookie("refreshToken")
-        rq.deleteCookie("apiKey")
+        // SecurityConfig에서 로그아웃 처리가 이루어지므로 여기서는 최소한의 처리만
         return RsData("200-1", "로그아웃이 완료되었습니다.")
     }
 

@@ -59,9 +59,9 @@ class SecurityConfig(
             .logout { logout ->
                 logout
                     .logoutUrl("/member/logout")
-                    .logoutRequestMatcher(AntPathRequestMatcher("/member/logout", "DELETE"))
+                    // POST 메소드 사용으로 변경
+                    .logoutRequestMatcher(AntPathRequestMatcher("/member/logout", "POST"))
                     .invalidateHttpSession(true)
-                    // 혹시 몰라 남겨둠
                     .deleteCookies("accessToken", "apiKey", "refreshToken", "JSESSIONID")
                     .logoutSuccessHandler { request, response, _ ->
                         val cookieNames = listOf("accessToken", "refreshToken", "apiKey", "JSESSIONID")
@@ -71,7 +71,8 @@ class SecurityConfig(
                                 maxAge = 0
                                 isHttpOnly = true
                                 secure = true
-                                setAttribute("SameSite", "Strict")
+                                // SameSite 설정 통일
+                                setAttribute("SameSite", "None")
 
                                 val serverName = request.serverName
                                 if (!serverName.equals("localhost", ignoreCase = true)) {

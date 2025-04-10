@@ -16,15 +16,25 @@ export default function Header() {
 
   async function handleLogout(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    const response = await client.POST("/member/logout", {
-      credentials: "include",
-    });
-    if (response.error) {
-      alert(response.error.msg);
-      return;
+    try {
+      const response = await client.POST("/member/logout", {
+        credentials: "include",
+      });
+
+      if (response.error) {
+        alert(response.error.msg);
+        return;
+      }
+
+      // 로컬 상태 초기화
+      removeLoginMember();
+
+      // 페이지 새로고침을 통한 전체 상태 초기화
+      window.location.href = "/";
+    } catch (error) {
+      console.error("로그아웃 중 오류가 발생했습니다:", error);
+      alert("로그아웃 중 오류가 발생했습니다.");
     }
-    removeLoginMember();
-    router.replace("/");
   }
 
   return (
