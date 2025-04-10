@@ -83,6 +83,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/member/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/interview/random": {
         parameters: {
             query?: never;
@@ -1143,22 +1159,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/member/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: operations["logout"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/interview/bookmark/{noteId}": {
         parameters: {
             query?: never;
@@ -1240,6 +1240,10 @@ export interface components {
             code?: string;
             msg?: string;
             data?: string;
+        };
+        RsDataUnit: {
+            code?: string;
+            msg?: string;
         };
         RandomRequestDto: {
             indexList?: number[];
@@ -1656,10 +1660,6 @@ export interface components {
             pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
-        RsDataUnit: {
-            code?: string;
-            msg?: string;
-        };
     };
     responses: never;
     parameters: never;
@@ -1918,6 +1918,35 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["RsDataString"];
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataVoid"];
+                };
+            };
+        };
+    };
+    logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataUnit"];
                 };
             };
             /** @description Internal Server Error */
@@ -4120,35 +4149,6 @@ export interface operations {
                 };
                 content: {
                     "text/plain;charset=UTF-8": string;
-                };
-            };
-            /** @description Internal Server Error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["RsDataVoid"];
-                };
-            };
-        };
-    };
-    logout: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "*/*": components["schemas"]["RsDataUnit"];
                 };
             };
             /** @description Internal Server Error */

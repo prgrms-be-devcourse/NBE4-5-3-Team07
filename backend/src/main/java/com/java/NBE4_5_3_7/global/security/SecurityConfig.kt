@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import kotlin.math.log
 
 @Configuration
 @Profile("!test")
@@ -54,16 +55,17 @@ class SecurityConfig(
                 session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             }
             .anonymous { it.disable() }
-            .logout { logout ->
-                logout
-                    .logoutUrl("/member/logout")
-                    .logoutRequestMatcher(AntPathRequestMatcher("/member/logout", "DELETE"))
-                    .invalidateHttpSession(true)
-                    .deleteCookies("accessToken", "apiKey", "refreshToken", "JSESSIONID")
-                    .logoutSuccessHandler { _, response, _ ->
-                        response.status = HttpServletResponse.SC_OK
-                    }
-            }
+            .logout { logout -> logout.disable() }
+//            .logout { logout ->
+//                logout
+//                    .logoutUrl("/member/logout")
+//                    .logoutRequestMatcher(AntPathRequestMatcher("/member/logout", "DELETE"))
+//                    .invalidateHttpSession(true)
+//                    .deleteCookies("accessToken", "apiKey", "refreshToken", "JSESSIONID")
+//                    .logoutSuccessHandler { _, response, _ ->
+//                        response.status = HttpServletResponse.SC_OK
+//                    }
+//            }
             .exceptionHandling { exceptions ->
                 exceptions
                     .authenticationEntryPoint { _, response, _ ->

@@ -16,7 +16,7 @@ export default function Header() {
 
   async function handleLogout(e: React.MouseEvent<HTMLButtonElement>) {
     e.preventDefault();
-    const response = await client.DELETE("/member/logout", {
+    const response = await client.POST("/member/logout", {
       credentials: "include",
     });
     if (response.error) {

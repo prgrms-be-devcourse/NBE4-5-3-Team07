@@ -16,7 +16,7 @@ class MemberController(
     private val memberService: MemberService
 ) {
 
-    @DeleteMapping("/logout")
+    @PostMapping("/logout")
     fun logout(): RsData<Unit> {
         rq.deleteCookie("accessToken")
         rq.deleteCookie("refreshToken")
