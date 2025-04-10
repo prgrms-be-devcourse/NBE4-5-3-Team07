@@ -16,39 +16,15 @@ class MemberController(
     private val memberService: MemberService
 ) {
 
-//    @DeleteMapping("/logout")
-//    fun logout(response: HttpServletResponse): RsData<Unit> {
-//        return RsData("200-1", "로그아웃이 완료되었습니다.")
-//    }
-
     @DeleteMapping("/logout")
-    fun logout(response: HttpServletResponse): RsData<Unit> {
-        val domain = "devprep.shop"
-        val isProd = System.getenv("SPRING_PROFILES_ACTIVE") == "prod"
-
-        val accessTokenCookie = Cookie("accessToken", "")
-        accessTokenCookie.maxAge = 0
-        accessTokenCookie.path = "/"
-        accessTokenCookie.isHttpOnly = true
-
-        val refreshTokenCookie = Cookie("refreshToken", "")
-        refreshTokenCookie.maxAge = 0
-        refreshTokenCookie.path = "/"
-        refreshTokenCookie.isHttpOnly = true
-
-        if (isProd) {
-            accessTokenCookie.secure = true
-            accessTokenCookie.domain = domain
-
-            refreshTokenCookie.secure = true
-            refreshTokenCookie.domain = domain
-        }
-
-        response.addCookie(accessTokenCookie)
-        response.addCookie(refreshTokenCookie)
-
+    fun logout(): RsData<Unit> {
+        rq.deleteCookie("accessToken")
+        rq.deleteCookie("refreshToken")
+        rq.deleteCookie("apiKey")
         return RsData("200-1", "로그아웃이 완료되었습니다.")
     }
+
+
 
 
 
