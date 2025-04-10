@@ -85,7 +85,8 @@ dependencies {
 	testImplementation("org.testcontainers:mysql:1.19.3")
 	testImplementation("io.rest-assured:rest-assured:5.3.1")
 
-	testImplementation("com.h2database:h2")
+	implementation ("com.h2database:h2")
+	testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.3")
 
 	testImplementation("io.rest-assured:kotlin-extensions:5.4.0")
 	testImplementation("org.testcontainers:junit-jupiter:1.19.1")
