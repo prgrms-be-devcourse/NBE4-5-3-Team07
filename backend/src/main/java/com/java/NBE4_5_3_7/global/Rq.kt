@@ -100,7 +100,7 @@ class Rq(
 
         // 배포 환경인 경우에만 domain 설정
         if (!serverName.equals("localhost", ignoreCase = true)) {
-            cookie.domain = ".devprep.shop"  // 서브도메인 공유도 가능하게 하려면 앞에 '.' 붙이기
+            cookie.domain = "www.devprep.shop"  // 서브도메인 공유도 가능하게 하려면 앞에 '.' 붙이기
         }
 
         response.addCookie(cookie)
