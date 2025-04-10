@@ -1334,6 +1334,7 @@ export interface components {
             success?: boolean;
             card_name?: string;
             item_name?: string;
+            errorMessage?: string;
         };
         InterviewCommentRequestDto: {
             isPublic?: boolean;
@@ -1454,10 +1455,10 @@ export interface components {
             message?: string;
         };
         PagePostListResponseDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -1466,21 +1467,21 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         PageableObject: {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
-            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
+            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -1494,10 +1495,10 @@ export interface components {
             role?: string;
         };
         PageStudyContentDetailDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -1506,9 +1507,9 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         NewResponseDto: {
@@ -1520,6 +1521,7 @@ export interface components {
             /** Format: int32 */
             display?: number;
             items?: components["schemas"]["NewsItem"][];
+            errorMessage?: string;
         };
         NewsItem: {
             title?: string;
@@ -1565,6 +1567,7 @@ export interface components {
             /** Format: int32 */
             totalCount?: number;
             result?: components["schemas"]["Job"][];
+            errorMessage?: string;
         };
         Files: {
             /** Format: int32 */
@@ -1608,6 +1611,7 @@ export interface components {
             decimalDay?: number;
             files?: components["schemas"]["Files"][];
             steps?: components["schemas"]["Steps"][];
+            errorMessage?: string;
         };
         Steps: {
             /** Format: int32 */
@@ -1635,10 +1639,10 @@ export interface components {
             public?: boolean;
         };
         PageInterviewContentAdminResponseDto: {
-            /** Format: int64 */
-            totalElements?: number;
             /** Format: int32 */
             totalPages?: number;
+            /** Format: int64 */
+            totalElements?: number;
             first?: boolean;
             last?: boolean;
             /** Format: int32 */
@@ -1647,9 +1651,9 @@ export interface components {
             /** Format: int32 */
             number?: number;
             sort?: components["schemas"]["SortObject"];
+            pageable?: components["schemas"]["PageableObject"];
             /** Format: int32 */
             numberOfElements?: number;
-            pageable?: components["schemas"]["PageableObject"];
             empty?: boolean;
         };
         RsDataUnit: {

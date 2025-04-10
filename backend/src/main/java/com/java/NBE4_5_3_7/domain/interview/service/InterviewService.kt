@@ -37,8 +37,10 @@ class InterviewService(
         val likedByUser = likeRepository.findByInterviewContentAndMember(content, member).isPresent
         val likeCount = likeRepository.countByInterviewContent(content)
 
-        val nextList =
-            content.interviewContentId?.let { interviewRepository.findNextInterviewContent(it, Pageable.ofSize(1)) }
+        // 현재 content의 id를 사용하여 head_id가 null인 다음 항목 찾기
+        val nextList = content.interviewContentId?.let {
+            interviewRepository.findNextHeadInterviewContent(it, Pageable.ofSize(1))
+        }
         val nextId = nextList?.firstOrNull()?.interviewContentId
 
         return InterviewResponseDto(

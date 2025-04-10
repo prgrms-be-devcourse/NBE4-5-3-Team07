@@ -27,4 +27,8 @@ interface InterviewContentRepository : JpaRepository<InterviewContent, Long> {
     fun findNextInterviewContent(@Param("id") id: Long, pageable: Pageable): List<InterviewContent>
 
     fun existsByQuestion(question: String): Boolean
+
+    // InterviewRepository.kt에 추가할 메서드
+    @Query("SELECT i FROM InterviewContent i WHERE i.headId IS NULL AND i.interviewContentId > :currentId ORDER BY i.interviewContentId ASC")
+    fun findNextHeadInterviewContent(currentId: Long, pageable: Pageable): List<InterviewContent>
 }
