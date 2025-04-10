@@ -77,17 +77,35 @@ class Rq(
         return null
     }
 
+//    fun addCookie(name: String, value: String) {
+//        val accsessTokenCookie = Cookie(name, value)
+//
+//        accsessTokenCookie.domain = "localhost"
+//        accsessTokenCookie.path = "/"
+//        accsessTokenCookie.isHttpOnly = true
+//        accsessTokenCookie.secure = true
+//        accsessTokenCookie.setAttribute("SameSite", "Strict")
+//
+//        response.addCookie(accsessTokenCookie)
+//    }
     fun addCookie(name: String, value: String) {
-        val accsessTokenCookie = Cookie(name, value)
+        val cookie = Cookie(name, value)
 
-        accsessTokenCookie.domain = "localhost"
-        accsessTokenCookie.path = "/"
-        accsessTokenCookie.isHttpOnly = true
-        accsessTokenCookie.secure = true
-        accsessTokenCookie.setAttribute("SameSite", "Strict")
+        cookie.path = "/"
+        cookie.isHttpOnly = true
+        cookie.secure = true
+        cookie.setAttribute("SameSite", "Strict")
 
-        response.addCookie(accsessTokenCookie)
+        val serverName = request.serverName // ex: www.devprep.shop 또는 localhost
+
+        // 배포 환경인 경우에만 domain 설정
+        if (!serverName.equals("localhost", ignoreCase = true)) {
+            cookie.domain = ".devprep.shop"  // 서브도메인 공유도 가능하게 하려면 앞에 '.' 붙이기
+        }
+
+        response.addCookie(cookie)
     }
+
 
     fun getRealActor(actor: Member): Member {
         return memberService.findById(actor.id).orElseThrow { RuntimeException("해당 멤버를 찾을 수 없습니다.") }
