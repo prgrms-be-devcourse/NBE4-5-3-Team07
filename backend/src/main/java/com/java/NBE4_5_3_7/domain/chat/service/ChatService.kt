@@ -1,7 +1,9 @@
 package com.java.NBE4_5_3_7.domain.chat.service
 
+import com.java.NBE4_5_3_7.domain.chat.entity.ChatMessageEntity
 import com.java.NBE4_5_3_7.domain.chat.model.ChatRoom
 import com.java.NBE4_5_3_7.domain.chat.model.Message
+import com.java.NBE4_5_3_7.domain.chat.repository.ChatMessageRepository
 import com.java.NBE4_5_3_7.domain.mail.EmailService
 import com.java.NBE4_5_3_7.domain.member.entity.Member
 import com.java.NBE4_5_3_7.domain.member.service.MemberService
@@ -15,6 +17,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.stream.Collectors
 
@@ -23,6 +26,7 @@ class ChatService(
     private val redisTemplate: RedisTemplate<String, Message>,
     private val emailService: EmailService,
     private val memberService: MemberService,
+    private val chatMessageRepository: ChatMessageRepository,
     private val rq: Rq,
     private val applicationContext: ApplicationContext
 ) {
@@ -145,5 +149,38 @@ class ChatService(
             candidate--
         }
         return candidate
+    }
+
+    @Scheduled(cron = "0 */10 * * * *") // 매 10분마다 실행
+    @Transactional
+    fun backupMessagesToMySQL() {
+        val keys = redisTemplate.keys("chat:*")
+        val formatter = DateTimeFormatter.ISO_DATE_TIME
+        val messagesToSave = mutableListOf<ChatMessageEntity>()
+
+        for (key in keys) {
+            // Redis 키에서 ID추출
+            val roomId = key.removePrefix("chat:").toLongOrNull() ?: continue
+            val messages = redisTemplate.opsForList().range(key, 0, -1) ?: continue
+
+            for (message in messages) {
+                try {
+                    val time = message.timestamp?.let { LocalDateTime.parse(it, formatter) } ?: continue
+
+                    val entity = ChatMessageEntity(
+                        roomId = roomId,
+                        sender = message.sender,
+                        content = message.content,
+                        timestamp = time
+                    )
+                    messagesToSave.add(entity)
+                } catch (e: Exception) {
+                    System.err.println("⚠️ 백업 실패: roomId=$roomId, content=${message.content}, error=${e.message}")
+                }
+            }
+        }
+
+        chatMessageRepository.saveAll(messagesToSave)
+        println("✅ 백업 완료: ${messagesToSave.size}건")
     }
 }
