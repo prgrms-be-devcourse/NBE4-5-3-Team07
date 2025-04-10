@@ -77,30 +77,19 @@ class Rq(
         return null
     }
 
-//    fun addCookie(name: String, value: String) {
-//        val accsessTokenCookie = Cookie(name, value)
-//
-//        accsessTokenCookie.domain = "localhost"
-//        accsessTokenCookie.path = "/"
-//        accsessTokenCookie.isHttpOnly = true
-//        accsessTokenCookie.secure = true
-//        accsessTokenCookie.setAttribute("SameSite", "Strict")
-//
-//        response.addCookie(accsessTokenCookie)
-//    }
     fun addCookie(name: String, value: String) {
         val cookie = Cookie(name, value)
 
         cookie.path = "/"
         cookie.isHttpOnly = true
         cookie.secure = true
-        cookie.setAttribute("SameSite", "Strict")
+        cookie.setAttribute("SameSite", "None")
 
         val serverName = request.serverName // ex: www.devprep.shop 또는 localhost
 
         // 배포 환경인 경우에만 domain 설정
         if (!serverName.equals("localhost", ignoreCase = true)) {
-            cookie.domain = "www.devprep.shop"  // 서브도메인 공유도 가능하게 하려면 앞에 '.' 붙이기
+            cookie.domain = ".www.devprep.shop"  // 서브도메인 공유도 가능하게 하려면 앞에 '.' 붙이기
         }
 
         response.addCookie(cookie)
