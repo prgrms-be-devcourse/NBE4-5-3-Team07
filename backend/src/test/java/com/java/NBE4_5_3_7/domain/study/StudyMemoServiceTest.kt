@@ -12,8 +12,9 @@ import com.java.NBE4_5_3_7.domain.study.entity.StudyMemo
 import com.java.NBE4_5_3_7.domain.study.repository.StudyContentRepository
 import com.java.NBE4_5_3_7.domain.study.repository.StudyMemoRepository
 import com.java.NBE4_5_3_7.domain.study.service.StudyMemoService
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -64,19 +65,21 @@ class StudyMemoServiceTest {
     }
 
     @Test
-    fun `createStudyMemo should create a new memo`() {
+    @DisplayName("메모를 생성한다")
+    fun createMemo() {
         val dto = StudyMemoCreateRequestDto("메모 내용", true)
 
         studyMemoService.createStudyMemo(dto, testContent.study_content_id!!, testMember)
 
         val savedMemo = studyMemoRepository.findByMemberAndStudyContent(testMember, testContent)
-        assertNotNull(savedMemo)
-        assertEquals("메모 내용", savedMemo?.memoContent)
-        assertTrue(savedMemo?.isPublished == true)
+        Assertions.assertNotNull(savedMemo)
+        Assertions.assertEquals("메모 내용", savedMemo?.memoContent)
+        Assertions.assertTrue(savedMemo?.isPublished == true)
     }
 
     @Test
-    fun `getStudyMemoByStudyMemberAndContentId should return memo response`() {
+    @DisplayName("회원과 콘텐츠로 메모를 조회한다")
+    fun getMemo() {
         val memo = studyMemoRepository.save(
             StudyMemo(
                 "초기 메모", testContent, testMember, true
@@ -85,11 +88,12 @@ class StudyMemoServiceTest {
 
         val response = studyMemoService.getStudyMemoByStudyMemberAndContentId(testMember, testContent)
 
-        assertEquals(memo.memoContent, response.memoContent)
+        Assertions.assertEquals(memo.memoContent, response.memoContent)
     }
 
     @Test
-    fun `updateStudyMemo should update memo correctly`() {
+    @DisplayName("메모를 수정한다")
+    fun updateMemo() {
         val memo = studyMemoRepository.save(
             StudyMemo(
                 "초기 내용", testContent, testMember, true
@@ -99,11 +103,12 @@ class StudyMemoServiceTest {
         val updateDto = StudyMemoRequestDto("수정된 내용")
         val result = studyMemoService.updateStudyMemo(memo.id, updateDto, testMember)
 
-        assertEquals("수정된 내용", result.memoContent)
+        Assertions.assertEquals("수정된 내용", result.memoContent)
     }
 
     @Test
-    fun `deleteStudyMemo should remove the memo`() {
+    @DisplayName("메모를 삭제한다")
+    fun deleteMemo() {
         val memo = studyMemoRepository.save(
             StudyMemo(
                 "삭제할 메모", testContent, testMember, true
@@ -113,11 +118,12 @@ class StudyMemoServiceTest {
         studyMemoService.deleteStudyMemo(memo.id, testMember)
 
         val deleted = studyMemoRepository.findById(memo.id)
-        assertTrue(deleted.isEmpty)
+        Assertions.assertTrue(deleted.isEmpty)
     }
 
     @Test
-    fun `getStudyMemoListByStudyContentId should return all memos for content`() {
+    @DisplayName("해당 콘텐츠의 모든 메모를 조회한다")
+    fun getMemoList() {
         studyMemoRepository.save(
             StudyMemo("메모1", testContent, testMember, true)
         )
@@ -126,6 +132,6 @@ class StudyMemoServiceTest {
         )
 
         val list = studyMemoService.getStudyMemoListByStudyContentId(testContent.study_content_id!!)
-        assertEquals(2, list.size)
+        Assertions.assertEquals(2, list.size)
     }
 }
