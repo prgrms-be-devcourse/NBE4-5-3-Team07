@@ -27,11 +27,9 @@ class InterviewContentDataInit(private val repository: InterviewContentRepositor
     }
 
     fun importCsvData() {
-        val headData = ArrayList<InterviewContent>()
-        val tailData = ArrayList<InterviewContent>()
+        val contentList = mutableListOf<InterviewContent>()
 
         try {
-            // resources 폴더에 위치한 CSV 파일을 불러옴
             val csvFile = File("data/기술면접컨텐츠데이터-종합.csv")
             val streamReader = InputStreamReader(FileInputStream(csvFile), StandardCharsets.UTF_8)
             val csvReader = CSVReader(streamReader)
@@ -40,7 +38,6 @@ class InterviewContentDataInit(private val repository: InterviewContentRepositor
             var line: Array<String>?
 
             while (csvReader.readNext().also { line = it } != null) {
-                // 첫 번째 라인은 헤더이므로 건너뜀
                 if (isFirstLine) {
                     isFirstLine = false
                     continue
@@ -50,7 +47,7 @@ class InterviewContentDataInit(private val repository: InterviewContentRepositor
                     val headIdStr = currentLine[1]
                     val headId = if (!"NULL".equals(headIdStr, ignoreCase = true)) headIdStr.toLong() else null
 
-                    val category = when (currentLine[2].toLowerCase()) {
+                    val category = when (currentLine[2].lowercase()) {
                         "database" -> InterviewCategory.DATABASE
                         "network" -> InterviewCategory.NETWORK
                         "operatingsystem" -> InterviewCategory.OperatingSystem
@@ -66,9 +63,12 @@ class InterviewContentDataInit(private val repository: InterviewContentRepositor
                     val modelAnswer = currentLine[5]
                     val isHead = "TRUE".equals(currentLine[6], ignoreCase = true)
 
-                    // 중복 방지
                     if (repository.existsByQuestion(question)) {
                         return@let
+                    }
+
+                    if (isHead && headId != null) {
+                        throw IllegalStateException("isHead=true인데 headId가 존재합니다. 질문: [$question]")
                     }
 
                     val content = InterviewContent().apply {
@@ -80,17 +80,12 @@ class InterviewContentDataInit(private val repository: InterviewContentRepositor
                         this.isHead = isHead
                     }
 
-                    if (isHead) {
-                        headData.add(content)
-                    } else {
-                        tailData.add(content)
-                    }
+                    contentList.add(content)
                 }
             }
             csvReader.close()
 
-            repository.saveAll(headData)
-            repository.saveAll(tailData)
+            repository.saveAll(contentList)
 
         } catch (e: Exception) {
             throw RuntimeException("CSV 데이터를 DB에 저장하는데 실패했습니다.", e)
@@ -99,16 +94,39 @@ class InterviewContentDataInit(private val repository: InterviewContentRepositor
 
     @Transactional
     fun updateHasTailField() {
-        repository.findAll().stream()
-            .filter { interview -> interview.headId != null }
-            .forEach { tail ->
-                tail.headId?.let { headId ->
-                    repository.findById(headId).ifPresent { head ->
-                        head.hasTail = true
-                        head.tailId = tail.interviewContentId
-                        repository.save(head)
-                    }
-                }
+        val contents = repository.findAll()
+            .associateBy { it.interviewContentId!! }
+
+        // headId → 꼬리 리스트
+        val headToTails = contents.values
+            .filter { it.headId != null }
+            .groupBy { it.headId!! }
+            .mapValues { entry -> entry.value.sortedBy { it.interviewContentId } }
+
+        headToTails.forEach { (headId, tails) ->
+            val head = contents[headId]
+            val firstTail = tails.firstOrNull()
+
+            if (head != null && firstTail != null) {
+                head.hasTail = true
+                head.tailId = firstTail.interviewContentId
+                repository.save(head)
             }
+
+            // 꼬리들 사이도 순차 연결
+            tails.zipWithNext { a, b ->
+                a.hasTail = true
+                a.tailId = b.interviewContentId
+                repository.save(a)
+            }
+
+            // 마지막 꼬리 처리
+            val last = tails.lastOrNull()
+            if (last != null) {
+                last.hasTail = false
+                last.tailId = null
+                repository.save(last)
+            }
+        }
     }
 }
