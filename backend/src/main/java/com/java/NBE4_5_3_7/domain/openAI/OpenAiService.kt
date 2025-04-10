@@ -2,13 +2,16 @@ package com.java.NBE4_5_3_7.domain.openAI
 
 import com.java.NBE4_5_3_7.domain.openAI.dto.ChatRequest
 import com.java.NBE4_5_3_7.domain.openAI.dto.ChatResponse
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClient
 import java.util.*
 
 @Service
-class OpenAiService(webClientBuilder: WebClient.Builder) {
+class OpenAiService(
+    webClientBuilder: WebClient.Builder,
+) {
     private val webClient: WebClient = webClientBuilder.baseUrl("https://api.openai.com/v1").build()
 
     @Value("\${openai.api.key}")
@@ -106,20 +109,46 @@ class OpenAiService(webClientBuilder: WebClient.Builder) {
         return extractContent(chatResponse, "평가 결과를 생성하는 중 오류가 발생했습니다.")
     }
 
-    private fun sendToOpenAI(chatRequest: ChatRequest): ChatResponse? {
-        return try {
-            webClient.post()
-                .uri("/chat/completions")
-                .header("Authorization", "Bearer $apiKey")
-                .header("Content-Type", "application/json")
-                .bodyValue(chatRequest)
-                .retrieve()
-                .bodyToMono(ChatResponse::class.java)
-                .block()
-        } catch (e: Exception) {
-            null
+    @CircuitBreaker(name = "openai", fallbackMethod = "fallbackOpenAi")
+    fun sendToOpenAI(chatRequest: ChatRequest): ChatResponse? {
+        return webClient.post()
+            .uri("/chat/completions")
+            .header("Authorization", "Bearer $apiKey")
+            .header("Content-Type", "application/json")
+            .bodyValue(chatRequest)
+            .retrieve()
+            .bodyToMono(ChatResponse::class.java)
+            .block() // 동기 호출
+    }
+
+    fun fallbackOpenAi(chatRequest: ChatRequest, t: Throwable): ChatResponse {
+        val fallbackMessage = Message("system", "현재 OpenAI 호출이 불가능합니다. 잠시 후 다시 시도해주세요.")
+
+        val fallbackChoice = ChatResponse.Choice().apply {
+            message = fallbackMessage
+        }
+
+        return ChatResponse().apply {
+            choices = listOf(fallbackChoice)
         }
     }
+
+
+
+//    private fun sendToOpenAI(chatRequest: ChatRequest): ChatResponse? {
+//        return try {
+//            webClient.post()
+//                .uri("/chat/completions")
+//                .header("Authorization", "Bearer $apiKey")
+//                .header("Content-Type", "application/json")
+//                .bodyValue(chatRequest)
+//                .retrieve()
+//                .bodyToMono(ChatResponse::class.java)
+//                .block()
+//        } catch (e: Exception) {
+//            null
+//        }
+//    }
 
     private fun extractContent(chatResponse: ChatResponse?, fallback: String): String {
         return if (chatResponse != null && !chatResponse.choices.isNullOrEmpty()) {

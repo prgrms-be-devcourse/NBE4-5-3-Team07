@@ -99,6 +99,10 @@ dependencies {
 
 	implementation ("io.micrometer:micrometer-registry-prometheus")
 
+	// Resilience4j core + circuitbreaker
+	implementation ("io.github.resilience4j:resilience4j-spring-boot3:2.1.0")
+	implementation ("io.github.resilience4j:resilience4j-circuitbreaker:2.1.0")
+
 }
 
 tasks.test {
