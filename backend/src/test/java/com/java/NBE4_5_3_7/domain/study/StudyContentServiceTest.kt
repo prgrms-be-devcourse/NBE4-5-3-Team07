@@ -63,8 +63,8 @@ class StudyContentServiceTest {
     @DisplayName("1차 카테고리를 조회할 수 있다.")
     fun getFirstCategory() {
         val categories = studyContentService.firstCategory
-        assertTrue(categories.contains("Web"))
-        assertTrue(categories.contains("Database"))
+        assertTrue(categories.contains("웹"))
+        assertTrue(categories.contains("데이터베이스"))
     }
 
     @Test
