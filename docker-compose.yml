@@ -16,6 +16,8 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
+    command:
+      - "--web.external-url=/prometheus"
 
   grafana:
     image: grafana/grafana
