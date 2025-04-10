@@ -11,6 +11,7 @@ import com.siot.IamportRestClient.IamportClient
 import com.siot.IamportRestClient.exception.IamportResponseException
 import com.siot.IamportRestClient.response.IamportResponse
 import com.siot.IamportRestClient.response.Payment
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import jakarta.annotation.PostConstruct
 import jakarta.transaction.Transactional
 import lombok.RequiredArgsConstructor
@@ -38,8 +39,8 @@ class PaymentService(
         iamportClient = IamportClient(apiKey, apiSecret)
     }
 
-    // 결제 검증 (DB 저장은 하지 않음)
     @Transactional
+    @CircuitBreaker(name = "iamport", fallbackMethod = "fallbackVerifyPayment")
     fun verifyPayment(requestDto: PaymentRequestDto): PaymentResponseDto {
         val member = memberService.getMemberFromRq()
         try {
@@ -58,6 +59,10 @@ class PaymentService(
         } catch (e: Exception) {
             throw RuntimeException("결제 검증 중 오류 발생: " + e.message)
         }
+    }
+
+    fun fallbackVerifyPayment(requestDto: PaymentRequestDto, throwable: Throwable): PaymentResponseDto {
+        throw RuntimeException("결제 서비스가 현재 이용 불가능합니다. 잠시 후 다시 시도해주세요.")
     }
 
     @Transactional
@@ -144,7 +149,7 @@ class PaymentService(
         memberService.saveMember(member) // 회원 정보 업데이트
 
         // 4. 회원이 결제한 주문을 찾아서 취소 처리
-        val orderOptional = orderRepository!!.findByMemberAndStatus(member, "paid") // 결제 완료된 주문을 조회
+        val orderOptional = orderRepository.findByMemberAndStatus(member, "paid") // 결제 완료된 주문을 조회
         if (orderOptional.isPresent) {
             val order = orderOptional.get()
             order.status = "cancelled" // 주문 상태를 '취소'로 업데이트

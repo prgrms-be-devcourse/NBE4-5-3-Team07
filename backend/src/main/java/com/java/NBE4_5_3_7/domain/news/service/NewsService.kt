@@ -5,10 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.JobResponseDto
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.JobsDetailDto
 import com.java.NBE4_5_3_7.domain.news.dto.responseDto.NewResponseDto
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
+import org.springframework.http.*
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
@@ -23,6 +22,7 @@ class NewsService {
     @Value("\${publicData.key}")
     protected val public_data_key: String? = null
 
+    @CircuitBreaker(name = "naverNews", fallbackMethod = "naverNewsFallback")
     fun getNaverNews(keyWord: String, page: Int): NewResponseDto? {
         val restTemplate = RestTemplate()
         val headers = HttpHeaders()
@@ -56,6 +56,11 @@ class NewsService {
         return newsResponse
     }
 
+    fun naverNewsFallback(keyWord: String, page: Int, t: Throwable): NewResponseDto {
+        return NewResponseDto().apply { errorMessage = "(FallBack) 뉴스 정보를 불러올 수 없습니다. 잠시 후에 시도해주세요." }
+    }
+
+    @CircuitBreaker(name = "jobList", fallbackMethod = "jobListFallback")
     fun getJobList(ncsCdLst: String, page: Int): JobResponseDto? {
         val restTemplate = RestTemplate()
         val objectMapper = ObjectMapper()
@@ -89,12 +94,16 @@ class NewsService {
 
             return jobResponseDto
         } catch (e: Exception) {
-            e.printStackTrace()
-            return null
+            throw RuntimeException("채용 공고 데이터 호출 실패", e)
         }
     }
 
+    fun jobListFallback(ncsCdLst: String, page: Int, t: Throwable): JobResponseDto {
+        return JobResponseDto().apply { errorMessage = "(FallBack) 채용 정보를 불러올 수 없습니다. 잠시 후에 시도해주세요." }
+    }
 
+
+    @CircuitBreaker(name = "jobDetail", fallbackMethod = "jobDetailFallback")
     fun getJobDetail(recrutPblntSn: String): JobsDetailDto? {
         val restTemplate = RestTemplate()
         val objectMapper = ObjectMapper()
@@ -123,5 +132,9 @@ class NewsService {
             e.printStackTrace()
             return null
         }
+    }
+
+    fun jobDetailFallback(recrutPblntSn: String, t: Throwable): JobsDetailDto {
+        return JobsDetailDto().apply { errorMessage = "(FallBack) 채용 상세 정보를 불러올 수 없습니다. 잠시 후에 시도해주세요." }
     }
 }
