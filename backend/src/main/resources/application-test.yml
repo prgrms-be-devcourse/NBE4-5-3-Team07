@@ -7,7 +7,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop  # 테스트 후 DB 초기화
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
