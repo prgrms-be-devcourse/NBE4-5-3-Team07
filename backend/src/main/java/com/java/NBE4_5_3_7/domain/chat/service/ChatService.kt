@@ -159,7 +159,6 @@ class ChatService(
         val messagesToSave = mutableListOf<ChatMessageEntity>()
 
         for (key in keys) {
-            // Redis 키에서 ID추출
             val roomId = key.removePrefix("chat:").toLongOrNull() ?: continue
             val messages = redisTemplate.opsForList().range(key, 0, -1) ?: continue
 
@@ -167,13 +166,20 @@ class ChatService(
                 try {
                     val time = message.timestamp?.let { LocalDateTime.parse(it, formatter) } ?: continue
 
-                    val entity = ChatMessageEntity(
-                        roomId = roomId,
-                        sender = message.sender,
-                        content = message.content,
-                        timestamp = time
+                    // 중복 여부 확인
+                    val isDuplicate = chatMessageRepository.existsByRoomIdAndSenderAndContentAndTimestamp(
+                        roomId, message.sender, message.content, time
                     )
-                    messagesToSave.add(entity)
+
+                    if (!isDuplicate) {
+                        val entity = ChatMessageEntity(
+                            roomId = roomId,
+                            sender = message.sender,
+                            content = message.content,
+                            timestamp = time
+                        )
+                        messagesToSave.add(entity)
+                    }
                 } catch (e: Exception) {
                     System.err.println("⚠️ 백업 실패: roomId=$roomId, content=${message.content}, error=${e.message}")
                 }
@@ -181,6 +187,6 @@ class ChatService(
         }
 
         chatMessageRepository.saveAll(messagesToSave)
-        println("✅ 백업 완료: ${messagesToSave.size}건")
+        println("✅ 백업 완료: ${messagesToSave.size}건 (중복 제외)")
     }
 }
