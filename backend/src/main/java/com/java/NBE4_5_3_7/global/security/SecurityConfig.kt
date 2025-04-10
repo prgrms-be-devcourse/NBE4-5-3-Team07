@@ -54,16 +54,17 @@ class SecurityConfig(
                 session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             }
             .anonymous { it.disable() }
-            .logout { logout ->
-                logout
-                    .logoutUrl("/member/logout")
-                    .logoutRequestMatcher(AntPathRequestMatcher("/member/logout", "DELETE"))
-                    .invalidateHttpSession(true)
-                    .deleteCookies("accessToken", "apiKey", "refreshToken", "JSESSIONID")
-                    .logoutSuccessHandler { _, response, _ ->
-                        response.status = HttpServletResponse.SC_OK
-                    }
-            }
+            .logout { it.disable() }
+//            .logout { logout ->
+//                logout
+//                    .logoutUrl("/member/logout")
+//                    .logoutRequestMatcher(AntPathRequestMatcher("/member/logout", "DELETE"))
+//                    .invalidateHttpSession(true)
+//                    .deleteCookies("accessToken", "apiKey", "refreshToken", "JSESSIONID")
+//                    .logoutSuccessHandler { _, response, _ ->
+//                        response.status = HttpServletResponse.SC_OK
+//                    }
+//            }
             .exceptionHandling { exceptions ->
                 exceptions
                     .authenticationEntryPoint { _, response, _ ->

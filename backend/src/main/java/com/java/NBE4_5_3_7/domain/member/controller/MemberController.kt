@@ -23,23 +23,33 @@ class MemberController(
 
     @DeleteMapping("/logout")
     fun logout(response: HttpServletResponse): RsData<Unit> {
-        val accessTokenCookie = Cookie("accessToken", null)
+        val domain = "devprep.shop"
+        val isProd = System.getenv("SPRING_PROFILES_ACTIVE") == "prod"
+
+        val accessTokenCookie = Cookie("accessToken", "")
         accessTokenCookie.maxAge = 0
         accessTokenCookie.path = "/"
         accessTokenCookie.isHttpOnly = true
-        accessTokenCookie.secure = true // HTTPS일 경우
 
-        val refreshTokenCookie = Cookie("refreshToken", null)
+        val refreshTokenCookie = Cookie("refreshToken", "")
         refreshTokenCookie.maxAge = 0
         refreshTokenCookie.path = "/"
         refreshTokenCookie.isHttpOnly = true
-        refreshTokenCookie.secure = true
+
+        if (isProd) {
+            accessTokenCookie.secure = true
+            accessTokenCookie.domain = domain
+
+            refreshTokenCookie.secure = true
+            refreshTokenCookie.domain = domain
+        }
 
         response.addCookie(accessTokenCookie)
         response.addCookie(refreshTokenCookie)
 
         return RsData("200-1", "로그아웃이 완료되었습니다.")
     }
+
 
 
     @GetMapping("/me")
