@@ -20,7 +20,7 @@ interface InterviewContentRepository : JpaRepository<InterviewContent, Long> {
     @Query(value = "select distinct keyword from interview_content", nativeQuery = true)
     fun findDistinctCategories(): List<String>
 
-    @Query("select ic.interviewContentId from InterviewContent ic where ic.keyword in :keywords and ic.isHead = true and ic.headId is null")
+    @Query("select ic.interviewContentId from InterviewContent ic where ic.keyword in :keywords")
     fun findInterviewKeyword(@Param("keywords") keywords: List<String>): List<Long>
 
     @Query("SELECT c FROM InterviewContent c WHERE c.interviewContentId > :id ORDER BY c.interviewContentId ASC")
