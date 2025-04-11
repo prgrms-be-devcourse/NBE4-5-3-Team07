@@ -22,6 +22,7 @@ class StudyMemo : BaseEntity {
     var member: Member? = null
 
     @JvmField
+    @Column(columnDefinition = "TEXT")
     var memoContent: String? = null
 
     @JvmField
