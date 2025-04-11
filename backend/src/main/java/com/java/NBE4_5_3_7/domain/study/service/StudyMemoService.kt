@@ -40,7 +40,9 @@ class StudyMemoService(
     // 메모 단건 조회
     fun getStudyMemoByStudyMemberAndContentId(member: Member, studyContent: StudyContent?): StudyMemoResponseDto {
         val studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContent)
-        val likeCount = studyMemoLikeService.getLikeCount(studyMemo!!.id)
+            ?: throw ServiceException("404", "해당 멤버의 학습 컨텐츠 메모가 존재하지 않습니다.")
+
+        val likeCount = studyMemoLikeService.getLikeCount(studyMemo.id)
         return StudyMemoResponseDto(studyMemo, likeCount)
     }
 
