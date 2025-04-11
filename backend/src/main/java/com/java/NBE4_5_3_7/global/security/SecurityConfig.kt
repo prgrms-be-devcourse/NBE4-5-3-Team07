@@ -72,7 +72,7 @@ class SecurityConfig(
                                 isHttpOnly = true
                                 secure = true
                                 // SameSite 설정 통일
-                                setAttribute("SameSite", "None")
+                                setAttribute("SameSite", "Strict")
 
                                 val serverName = request.serverName
                                 if (!serverName.equals("localhost", ignoreCase = true)) {

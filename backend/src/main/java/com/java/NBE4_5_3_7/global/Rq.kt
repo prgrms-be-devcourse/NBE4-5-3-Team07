@@ -82,7 +82,7 @@ class Rq(
         cookie.maxAge = maxAge
 
         // SameSite 속성 설정
-        cookie.setAttribute("SameSite", "None")
+        cookie.setAttribute("SameSite", "Strict")
 
         val serverName = request.serverName
         val isProd = !serverName.equals("localhost", ignoreCase = true)
@@ -99,7 +99,7 @@ class Rq(
         cookie.maxAge = 0
         cookie.isHttpOnly = true
         cookie.secure = true
-        cookie.setAttribute("SameSite", "None")
+        cookie.setAttribute("SameSite", "Strict")
 
         val serverName = request.serverName
         val isProd = !serverName.equals("localhost", ignoreCase = true)
