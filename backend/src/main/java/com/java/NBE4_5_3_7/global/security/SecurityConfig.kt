@@ -16,7 +16,6 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import kotlin.math.log
 
 @Configuration
 @Profile("!test")
@@ -72,7 +71,7 @@ class SecurityConfig(
                                 isHttpOnly = true
                                 secure = true
                                 // SameSite 설정 통일
-                                setAttribute("SameSite", "None")
+                                setAttribute("SameSite", "Strict")
 
                                 val serverName = request.serverName
                                 if (!serverName.equals("localhost", ignoreCase = true)) {

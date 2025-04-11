@@ -82,7 +82,7 @@ class Rq(
         cookie.maxAge = maxAge
 
         // SameSite 속성 설정
-        cookie.setAttribute("SameSite", "None")
+        cookie.setAttribute("SameSite", "Strict")
 
         val serverName = request.serverName
         val isProd = !serverName.equals("localhost", ignoreCase = true)
@@ -93,22 +93,22 @@ class Rq(
         response.addCookie(cookie)
     }
 
-    fun deleteCookie(name: String) {
-        val cookie = Cookie(name, "")
-        cookie.path = "/"
-        cookie.maxAge = 0
-        cookie.isHttpOnly = true
-        cookie.secure = true
-        cookie.setAttribute("SameSite", "None")
-
-        val serverName = request.serverName
-        val isProd = !serverName.equals("localhost", ignoreCase = true)
-        if (isProd) {
-            cookie.domain = "www.devprep.shop"
-        }
-
-        response.addCookie(cookie)
-    }
+//    fun deleteCookie(name: String) {
+//        val cookie = Cookie(name, "")
+//        cookie.path = "/"
+//        cookie.maxAge = 0
+//        cookie.isHttpOnly = true
+//        cookie.secure = true
+//        cookie.setAttribute("SameSite", "None")
+//
+//        val serverName = request.serverName
+//        val isProd = !serverName.equals("localhost", ignoreCase = true)
+//        if (isProd) {
+//            cookie.domain = "www.devprep.shop"
+//        }
+//
+//        response.addCookie(cookie)
+//    }
 
     fun getRealActor(actor: Member): Member {
         return memberService.findById(actor.id).orElseThrow {
