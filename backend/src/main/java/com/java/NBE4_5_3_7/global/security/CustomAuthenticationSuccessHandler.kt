@@ -5,6 +5,7 @@ import com.java.NBE4_5_3_7.global.Rq
 import com.java.NBE4_5_3_7.global.app.AppConfig
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler
 import org.springframework.stereotype.Component
@@ -12,7 +13,11 @@ import org.springframework.stereotype.Component
 @Component
 class CustomAuthenticationSuccessHandler(
     private val rq: Rq,
-    private val memberService: MemberService
+    private val memberService: MemberService,
+    @Value("\${custom.jwt.expire-seconds}")
+    private val expireSeconds: Int = 1800,
+    @Value("\${custom.jwt.refresh-expire-seconds}")
+    private val refreshExpireSeconds: Int = 604800
 ) : AuthenticationSuccessHandler {
 
     override fun onAuthenticationSuccess(
@@ -31,10 +36,9 @@ class CustomAuthenticationSuccessHandler(
         val accessToken = memberService.genAccessToken(member)
         val refreshToken = memberService.genRefreshToken(member)
 
-        rq.addCookie("accessToken", accessToken)
-        rq.addCookie("refreshToken", refreshToken)
-        rq.addCookie("apiKey", member.apiKey)
-
+        rq.addCookie("accessToken", accessToken, expireSeconds)
+        rq.addCookie("refreshToken", refreshToken, refreshExpireSeconds)
+        rq.addCookie("apiKey", member.apiKey, refreshExpireSeconds) // apiKey는 refreshToken과 동일한 만료 시간 사용
         response.sendRedirect(redirectUrl)
     }
 }
