@@ -1,7 +1,6 @@
 package com.java.NBE4_5_3_7.domain.study.service
 
 import com.java.NBE4_5_3_7.domain.member.entity.Member
-import com.java.NBE4_5_3_7.domain.member.service.MemberService
 import com.java.NBE4_5_3_7.domain.study.dto.request.StudyMemoCreateRequestDto
 import com.java.NBE4_5_3_7.domain.study.dto.request.StudyMemoRequestDto
 import com.java.NBE4_5_3_7.domain.study.dto.response.StudyMemoResponseDto
