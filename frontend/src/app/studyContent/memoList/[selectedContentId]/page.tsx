@@ -7,6 +7,7 @@ type StudyMemoResponseDto = {
   memoId: number;
   memoContent: string;
   likeCount: number;
+  likedByUser?: boolean;
   createdAt?: string;
 };
 
@@ -29,10 +30,28 @@ const MemoList = () => {
             },
           }
         );
-        if (!response.ok)
-          throw new Error("메모 리스트를 불러오는 데 실패했습니다.");
+        if (!response.ok) throw new Error("메모 리스트를 불러오는 데 실패했습니다.");
         const data = await response.json();
-        setMemoList(data);
+
+        const enriched = await Promise.all(
+          data.map(async (memo: any) => {
+            const res = await fetch(
+              `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/studyMemo/like/${memo.memoId}/status`,
+              {
+                method: "GET",
+                credentials: "include",
+              }
+            );
+            const status = await res.json();
+            return {
+              ...memo,
+              likeCount: status.count,
+              likedByUser: status.liked,
+            };
+          })
+        );
+
+        setMemoList(enriched);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -62,18 +81,22 @@ const MemoList = () => {
 
       const responseMessage = await response.text();
       if (responseMessage === "좋아요 추가") {
-        setMemoList((prevMemoList) =>
-          prevMemoList.map((memo) =>
+        setMemoList((prev) =>
+          prev.map((memo) =>
             memo.memoId === memoId
-              ? { ...memo, likeCount: memo.likeCount + 1 }
+              ? { ...memo, likeCount: memo.likeCount + 1, likedByUser: true }
               : memo
           )
         );
       } else if (responseMessage === "좋아요 취소") {
-        setMemoList((prevMemoList) =>
-          prevMemoList.map((memo) =>
+        setMemoList((prev) =>
+          prev.map((memo) =>
             memo.memoId === memoId
-              ? { ...memo, likeCount: memo.likeCount - 1 }
+              ? {
+                ...memo,
+                likeCount: Math.max(memo.likeCount - 1, 0),
+                likedByUser: false,
+              }
               : memo
           )
         );
@@ -123,7 +146,7 @@ const MemoList = () => {
                       className="flex items-center justify-center w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-800/50 rounded-full transition-colors p-2"
                     >
                       <span role="img" aria-label="heart" className="text-xl">
-                        🧡
+                        {memo.likedByUser ? "🧡" : "🤍"}
                       </span>
                     </button>
                     <span className="font-semibold text-gray-700 dark:text-gray-300">
