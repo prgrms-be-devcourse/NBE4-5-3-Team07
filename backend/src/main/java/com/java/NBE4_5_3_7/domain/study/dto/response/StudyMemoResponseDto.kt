@@ -7,6 +7,7 @@ class StudyMemoResponseDto {
     var memoContent: String? = null
     var studyContentId: Long? = null
     var firstCategory: String? = null
+    var isPublished: Boolean? = null
     var title: String? = null
     var body: String? = null
     var likeCount: Int = 0
@@ -15,6 +16,7 @@ class StudyMemoResponseDto {
         this.memoId = studyMemo.id
         this.memoContent = studyMemo.memoContent
         this.studyContentId = studyMemo.studyContent?.study_content_id
+        this.isPublished = studyMemo.isPublished
         this.likeCount = likeCount
     }
 

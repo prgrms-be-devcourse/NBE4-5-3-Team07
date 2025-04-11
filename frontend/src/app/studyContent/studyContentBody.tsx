@@ -31,10 +31,12 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
     if (selectedCategory) {
       setCategory(selectedCategory);
       setMemo("")
+      setIsPublished(false)
       setPage(0);
     } else {
       setCategory(DEFAULT_CATEGORY);
       setMemo("")
+      setIsPublished(false)
       setPage(0);
     }
   }, [selectedCategory]);
@@ -63,6 +65,7 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
   const handleNextPage = () => {
     if (page < totalPages - 1) {
       setMemo("")
+      setIsPublished(false)
       setPage(page + 1);
     }
   };
@@ -70,6 +73,7 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
   const handlePreviousPage = () => {
     if (page > 0) {
       setMemo("")
+      setIsPublished(false)
       setPage(page - 1);
     }
   };
@@ -110,7 +114,7 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
       }
       const data = await response.json();
       if (data.memoContent) {
-        setIsPublished(data.isPublished ?? true);
+        setIsPublished(data.published ?? false);
         setMemo(data.memoContent);
       } else {
         alert("메모가 없습니다.");
@@ -147,7 +151,6 @@ const StudyContentBody = ({ selectedCategory }: { selectedCategory: any }) => {
       }
       if (response.ok) {
         alert("메모가 저장되었습니다.");
-        setMemo("");
       }
     } catch (error) {
       alert("서버와 연결할 수 없습니다.");

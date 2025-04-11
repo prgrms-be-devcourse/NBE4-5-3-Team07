@@ -31,7 +31,6 @@ class StudyMemoService(
         if (studyMemo == null) {
             studyMemo = StudyMemo(requestDto.content, studyContent, member, requestDto.isPublished)
         } else {
-//            updateStudyMemo(studyMemo.getId(), new StudyMemoRequestDto(studyMemo), member);
             studyMemo.memoContent = requestDto.content
             studyMemo.isPublished = requestDto.isPublished
         }
