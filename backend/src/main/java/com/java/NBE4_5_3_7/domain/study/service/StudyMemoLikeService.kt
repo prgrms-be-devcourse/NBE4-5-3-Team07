@@ -1,7 +1,6 @@
 package com.java.NBE4_5_3_7.domain.study.service
 
 import com.java.NBE4_5_3_7.domain.member.entity.Member
-import com.java.NBE4_5_3_7.domain.member.service.MemberService
 import com.java.NBE4_5_3_7.domain.study.entity.StudyMemoLike
 import com.java.NBE4_5_3_7.domain.study.repository.StudyMemoLikeRepository
 import com.java.NBE4_5_3_7.domain.study.repository.StudyMemoRepository
@@ -13,7 +12,6 @@ import java.util.concurrent.TimeUnit
 class StudyMemoLikeService(
     private val studyMemoLikeRepository: StudyMemoLikeRepository,
     private val studyMemoRepository: StudyMemoRepository,
-    private val memberService: MemberService,
     private val redissonClient: RedissonClient
 ) {
     fun getLikeCount(studyMemoId: Long): Int {
@@ -32,7 +30,7 @@ class StudyMemoLikeService(
             if (!isLocked) {
                 throw RuntimeException("시스템이 바빠 요청을 처리할 수 없습니다. 잠시 후 다시 시도해주세요.")
             }
-            val existingLike = studyMemoLikeRepository.findByStudyMemo(studyMemo)
+            val existingLike = studyMemoLikeRepository.findByStudyMemoAndMember(studyMemo, member)
             if (existingLike!!.isPresent) {
                 studyMemoLikeRepository.delete(existingLike.get())
                 return "좋아요 취소"
