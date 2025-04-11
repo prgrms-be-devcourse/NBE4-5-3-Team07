@@ -13,6 +13,9 @@
 ---
 
 ### 1. 프로젝트 - DevPrep  
+
+### 🌍 DevPrep site
+- [devprep.shop](https://devprep.shop) - 배포 중
 <img src="https://github.com/user-attachments/assets/e8527c12-1a3b-44c1-aa6a-3faeae4a0b2f" width="1000">
 
 ---
@@ -93,5 +96,3 @@
 ### 🛠 Git 컨벤션
 - [Wiki](https://github.com/prgrms-be-devcourse/NBE4-5-3-Team07/wiki/Git-Convention)
 
-### 🌍 배포된 서비스
-- ⚠[서비스 URL](https://chilldevprep.vercel.app/) - 배포 중단
