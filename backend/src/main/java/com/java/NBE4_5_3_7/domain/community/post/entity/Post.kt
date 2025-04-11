@@ -51,6 +51,10 @@ class Post {
     var likes: List<PostLike>? = null
         private set
 
+    @Column(name = "like_count")
+    var likeCount: Int? = 0
+
+
     // 기본 생성자 (NoArgsConstructor)
     constructor()
 

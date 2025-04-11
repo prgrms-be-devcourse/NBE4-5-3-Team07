@@ -46,7 +46,8 @@ class SecurityConfig(
                         "/chat/**",
                         "/app/**",
                         "/api/**",
-                        "/actuator/**"
+                        "/actuator/**",
+                        "/community/test/**"
                     ).permitAll()
                     .anyRequest().authenticated()
             }

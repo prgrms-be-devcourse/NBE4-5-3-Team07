@@ -596,6 +596,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/community/test/post/like/v2": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["postLikeV2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/community/post/my": {
         parameters: {
             query?: never;
@@ -1460,6 +1476,13 @@ export interface components {
             question?: string;
             answer?: string;
         };
+        LikeResponseDto: {
+            /** Format: int64 */
+            postId?: number;
+            /** Format: int32 */
+            likeCount?: number;
+            message?: string;
+        };
         PostListResponseDto: {
             /** Format: int64 */
             postId?: number;
@@ -1467,13 +1490,6 @@ export interface components {
             author?: string;
             /** Format: date-time */
             createdAt?: string;
-        };
-        LikeResponseDto: {
-            /** Format: int64 */
-            postId?: number;
-            /** Format: int32 */
-            likeCount?: number;
-            message?: string;
         };
         PagePostListResponseDto: {
             /** Format: int64 */
@@ -1497,12 +1513,12 @@ export interface components {
             /** Format: int64 */
             offset?: number;
             sort?: components["schemas"]["SortObject"];
+            unpaged?: boolean;
             paged?: boolean;
             /** Format: int32 */
             pageNumber?: number;
             /** Format: int32 */
             pageSize?: number;
-            unpaged?: boolean;
         };
         SortObject: {
             empty?: boolean;
@@ -3050,6 +3066,37 @@ export interface operations {
                     "*/*": {
                         [key: string]: Record<string, never>;
                     };
+                };
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["RsDataVoid"];
+                };
+            };
+        };
+    };
+    postLikeV2: {
+        parameters: {
+            query: {
+                postId: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["LikeResponseDto"];
                 };
             };
             /** @description Internal Server Error */
