@@ -5,6 +5,10 @@ import com.java.NBE4_5_3_7.domain.member.entity.Member
 import jakarta.persistence.*
 
 @Entity
+@Table(
+    name = "post_like",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["post_id", "member_id"])]
+)
 class PostLike {
     // Getter & Setter
     @Id

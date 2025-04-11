@@ -10,6 +10,7 @@ import com.java.NBE4_5_3_7.domain.community.post.dto.PostListResponseDto
 import com.java.NBE4_5_3_7.domain.community.post.dto.PostResponseDto
 import com.java.NBE4_5_3_7.domain.community.post.service.PostService
 import com.java.NBE4_5_3_7.domain.member.service.MemberService
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/community")
 class CommunityController // RequiredArgsConstructor 대신 명시적 생성자
     (private val postService: PostService, private val memberService: MemberService) {
+
+    private val log = LoggerFactory.getLogger(this::class.java)
+
     @PostMapping("/article/post")
     fun articlePost(@RequestBody postRequestDto: AddPostRequestDto): ResponseEntity<PostResponseDto> {
         return ResponseEntity.ok(postService.addPost(memberService.getIdFromRq(), postRequestDto))
@@ -114,6 +118,8 @@ class CommunityController // RequiredArgsConstructor 대신 명시적 생성자
 
     @GetMapping("/post/like")
     fun postLike(@RequestParam postId: Long): ResponseEntity<LikeResponseDto> {
+        val memberId = memberService.getIdFromRq()
+        log.info("좋아요 요청 - memberId: $memberId, postId: $postId")
         return ResponseEntity.ok(postService.postLike(memberService.getIdFromRq(), postId))
     }
 
@@ -124,4 +130,13 @@ class CommunityController // RequiredArgsConstructor 대신 명시적 생성자
     ): ResponseEntity<List<PostListResponseDto>> {
         return ResponseEntity.ok(postService.myPost(memberService.getIdFromRq(), page, size))
     }
+
+    //test api start
+    @GetMapping("/test/post/like/v2")
+    fun postLikeV2(@RequestParam postId: Long): ResponseEntity<LikeResponseDto> {
+        log.info("⚡ [V2] 좋아요 요청 - postId: $postId")
+        return ResponseEntity.ok(postService.postLike(1L, postId))
+    }
+    //test api end
+
 }

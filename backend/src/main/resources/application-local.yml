@@ -64,6 +64,8 @@ spring:
     cache: false
   logging:
     level:
+      root: info
+      com.java.NBE4_5_3_7: debug  # 필요한 경우 더 상세하게 로그 찍고 싶은 패키지
       org:
         hibernate:
           SQL: DEBUG
