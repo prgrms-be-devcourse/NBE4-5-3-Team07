@@ -1,7 +1,6 @@
 package com.java.NBE4_5_3_7.domain.study.service
 
 import com.java.NBE4_5_3_7.domain.member.entity.Member
-import com.java.NBE4_5_3_7.domain.member.service.MemberService
 import com.java.NBE4_5_3_7.domain.study.dto.request.StudyMemoCreateRequestDto
 import com.java.NBE4_5_3_7.domain.study.dto.request.StudyMemoRequestDto
 import com.java.NBE4_5_3_7.domain.study.dto.response.StudyMemoResponseDto
@@ -42,8 +41,8 @@ class StudyMemoService(
     // 메모 단건 조회
     fun getStudyMemoByStudyMemberAndContentId(member: Member, studyContent: StudyContent?): StudyMemoResponseDto {
         val studyMemo = studyMemoRepository.findByMemberAndStudyContent(member, studyContent)
-        val likeCount = studyMemoLikeService.getLikeCount(studyContent?.study_content_id!!)
-        return StudyMemoResponseDto(studyMemo!!, likeCount)
+        val likeCount = studyMemoLikeService.getLikeCount(studyMemo!!.id)
+        return StudyMemoResponseDto(studyMemo, likeCount)
     }
 
     fun getStudyMemosByMemberAndCategory(member: Member, category: FirstCategory): List<StudyMemoResponseDto> {
@@ -58,7 +57,7 @@ class StudyMemoService(
                     memo.studyContent!!.firstCategory!!.category,
                     memo.studyContent!!.title,
                     memo.studyContent!!.body,
-                    studyMemoLikeService.getLikeCount(memo.studyContent?.study_content_id!!)
+                    studyMemoLikeService.getLikeCount(memo.id)
                 )
             }
             .collect(Collectors.toList())
@@ -82,7 +81,7 @@ class StudyMemoService(
             updatedMemo.studyContent!!.firstCategory!!.category,
             updatedMemo.studyContent!!.title,
             updatedMemo.studyContent!!.body,
-            studyMemoLikeService.getLikeCount(updatedMemo.studyContent?.study_content_id!!)
+            studyMemoLikeService.getLikeCount(updatedMemo.id)
         )
     }
 
@@ -97,12 +96,11 @@ class StudyMemoService(
         studyMemoRepository.delete(studyMemo)
     }
 
-    fun getStudyMemoListByStudyContentId(studyContentId: Long): List<StudyMemoResponseDto> {
+    fun  getStudyMemoListByStudyContentId(studyContentId: Long): List<StudyMemoResponseDto> {
         val studyContent = studyContentRepository.findById(studyContentId).orElse(null)
         val studyMemo = studyMemoRepository.findByStudyContent(studyContent)
-        val likeCount = studyMemoLikeService.getLikeCount(studyContentId)
         return studyMemo!!.stream()
-            .map { memo: StudyMemo? -> StudyMemoResponseDto(memo!!, likeCount) }
+            .map { memo: StudyMemo? -> StudyMemoResponseDto(memo!!, studyMemoLikeService.getLikeCount(memo.id)) }
             .toList()
     }
 }
