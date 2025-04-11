@@ -9,5 +9,5 @@ import java.util.*
 interface StudyMemoLikeRepository : JpaRepository<StudyMemoLike?, Int?> {
     fun countByStudyMemoId(studyMemoId: Long?): Int
 
-    fun findByStudyMemoAndMember(studyMemo: StudyMemo?, member: Member): Optional<StudyMemoLike?>?
+    fun findByStudyMemoAndMember(studyMemo: StudyMemo?, member: Member): Optional<StudyMemoLike?>
 }
