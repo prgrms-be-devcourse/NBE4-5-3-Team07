@@ -35,6 +35,9 @@ class StudyMemo : BaseEntity {
     @LastModifiedDate
     var updatedAt: LocalDateTime? = null
 
+    @OneToMany(mappedBy = "studyMemo", cascade = [CascadeType.REMOVE], orphanRemoval = true)
+    var likes: MutableList<StudyMemoLike> = mutableListOf()
+
     constructor(memoContent: String?, studyContent: StudyContent?, member: Member?, isPublished: Boolean) {
         this.memoContent = memoContent
         this.studyContent = studyContent
