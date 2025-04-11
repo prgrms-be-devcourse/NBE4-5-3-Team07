@@ -21,6 +21,5 @@ interface StudyMemoRepository : JpaRepository<StudyMemo?, Long?> {
     @Query("SELECT s FROM StudyMemo s WHERE s.studyContent = :studyContent AND s.isPublished = true")
     fun findByStudyContent(studyContent: StudyContent?): List<StudyMemo?>?
 
-
-    fun findByMemberAndStudyContent(member: Member?, studyContentId: StudyContent?): StudyMemo?
+    fun findByMemberAndStudyContent(member: Member, studyContentId: StudyContent?): StudyMemo?
 }

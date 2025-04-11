@@ -18,6 +18,13 @@ class StudyMemoLikeService(
         return studyMemoLikeRepository.countByStudyMemoId(studyMemoId)
     }
 
+    fun getLikeStatus(studyMemoId: Long, member: Member): Map<String, Any> {
+        val studyMemo = studyMemoRepository.findById(studyMemoId).orElseThrow()
+        val liked = studyMemoLikeRepository.findByStudyMemoAndMember(studyMemo, member).isPresent
+        val count = studyMemoLikeRepository.countByStudyMemoId(studyMemoId)
+        return mapOf("liked" to liked, "count" to count)
+    }
+
     fun memoLike(studyMemoId: Long, member: Member): String {
         val studyMemo = studyMemoRepository.findById(studyMemoId).orElse(null)
 
