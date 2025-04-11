@@ -159,11 +159,7 @@ const MemoList = () => {
 
   // 이전 페이지로 이동
   const handleGoBack = () => {
-    if (previousPage) {
-      window.location.href = previousPage;
-    } else {
-      router.back();
-    }
+    router.push("/studyContent"); // ✨ 무조건 studyContent로 이동
   };
 
   // 날짜 포맷팅 함수
