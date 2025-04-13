@@ -16,27 +16,25 @@ interface PostRepository : JpaRepository<Post, Long> {
     )
     fun findAllPostList(pageable: Pageable): Page<PostListResponseDto?>?
 
-    // 좋아요 수 내림차순 (많은 순)
+    // 좋아요 수 내림차순
     @Query(
         "SELECT new com.java.NBE4_5_3_7.domain.community.post.dto.PostListResponseDto(" +
                 "p.postId, p.title, p.author.nickname, p.createdAt) " +
                 "FROM Post p " +
-                "LEFT JOIN PostLike pl ON pl.post = p " +
-                "GROUP BY p.postId, p.title, p.author.nickname, p.createdAt " +
-                "ORDER BY COUNT(pl) DESC"
+                "ORDER BY p.likeCount DESC"
     )
     fun findAllOrderByLikesDesc(pageable: Pageable): Page<PostListResponseDto?>?
 
-    // 좋아요 수 오름차순 (낮은 순)
+
+    // 좋아요 수 오름차순
     @Query(
         "SELECT new com.java.NBE4_5_3_7.domain.community.post.dto.PostListResponseDto(" +
                 "p.postId, p.title, p.author.nickname, p.createdAt) " +
                 "FROM Post p " +
-                "LEFT JOIN PostLike pl ON pl.post = p " +
-                "GROUP BY p.postId, p.title, p.author.nickname, p.createdAt " +
-                "ORDER BY COUNT(pl) ASC"
+                "ORDER BY p.likeCount ASC"
     )
     fun findAllOrderByLikesAsc(pageable: Pageable): Page<PostListResponseDto?>?
+
 
     // 댓글 수 내림차순 (많은 순)
     @Query(
