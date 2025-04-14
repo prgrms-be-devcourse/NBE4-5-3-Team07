@@ -82,7 +82,7 @@
 ## 📌 추가 문서
 
 ### 🔗 ERD
-<img src="https://github.com/user-attachments/assets/40cd2649-b774-425d-8aad-ae0f753dd067" width="600">
+<img src="https://github.com/user-attachments/assets/d3b97c6a-ecad-47a0-876f-ac1aea5246b5" width="600">
 
 ### 📜 프로젝트 기획
 
