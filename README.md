@@ -23,6 +23,7 @@
 ### 2. 프로젝트 소개
 
 개발자 취업을 준비하는 취준생, 지식이 필요한 전공자에게 CS 학습과 기술 면접을 대비할 수 있는 플랫폼입니다.
+- [2차 프로젝트](https://github.com/prgrms-be-devcourse/NBE4-5-2-Team07)의 JAVA to Kotlin 마이그레이션
 
 ---
 
@@ -45,6 +46,16 @@
 
 - **본인의 면접 경험을 공유하는 공간** - 좋아요, 댓글 기능
 - **최신 IT뉴스와 채용공고**
+
+#### 🔥 마이그레이션 이후 주요 변경점
+
+- 테스트 라이브러리 활용 테스트 수행
+- 배포시 불안정한 기능 개선 - 백,프론트 전체 EC2전환 및 NGINX 도입
+- 채팅 내역 영속성 부여
+- 외부 API에 대한 안정성 강화 - Circuit Breaker패턴
+- 서버 모니터링- Prometheus, Grafana
+- 서버 캐싱 - Redis OSS Cache, cache.t2.micro
+- 배포 자동화 - Github Action CI/CD
 
 ## 🛠 기술 스택
 
