@@ -50,14 +50,10 @@
 
 ### 💻 언어
 
-![Java](https://img.shields.io/badge/java-%23ED8B00.svg?style=for-the-badge&logo=openjdk&logoColor=white)
-![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+<img src="https://img.shields.io/badge/kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white"> <img src="https://img.shields.io/badge/typescript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">
 
 ### ⚙ 프레임워크 및 라이브러리
-
-![SpringBoot](https://img.shields.io/badge/springboot-%236DB33F.svg?style=for-the-badge&logo=springboot&logoColor=white)
-![Next JS](https://img.shields.io/badge/NextJS-black?style=for-the-badge&logo=nextJS.js&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+<img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/nextdotjs-000000?style=for-the-badge&logo=nextdotjs&logoColor=white"> <img src="https://img.shields.io/badge/tailwindcss-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
 
 ### 🗄 데이터베이스
 
@@ -71,7 +67,6 @@
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
-![Vercel](https://img.shields.io/badge/vercel-%23000000.svg?style=for-the-badge&logo=vercel&logoColor=white)
 
 ### 🔧 버전 관리 및 협업 도구
 
@@ -81,6 +76,9 @@
 ![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)
 ![Zep](https://img.shields.io/badge/Zep-6001D2?style=for-the-badge&logo=Zep&logoColor=white)
 
+### 🖥️ 모니터링
+<img src="https://img.shields.io/badge/prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white"> <img src="https://img.shields.io/badge/grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white">
+
 ## 📌 추가 문서
 
 ### 🔗 ERD
@@ -88,10 +86,10 @@
 
 ### 📜 프로젝트 기획
 
-- [Notion-Link](https://www.notion.so/1a73550b7b5580e79941dee541e21e8a)
+- [Notion-Link](https://www.notion.so/1c73550b7b5581c48105eab55af65f9c?pvs=4)
 
 ### 📌 API 명세서
-- [Notion-Link](https://www.notion.so/API-1b93550b7b558053892acd78b6678dcb?pvs=4)
+- [Notion-Link](https://www.notion.so/API-1c73550b7b558183b245fd5659d64abe?pvs=4#1d23550b7b558022a628c45279c3412c)
 
 ### 🛠 Git 컨벤션
 - [Wiki](https://github.com/prgrms-be-devcourse/NBE4-5-3-Team07/wiki/Git-Convention)
